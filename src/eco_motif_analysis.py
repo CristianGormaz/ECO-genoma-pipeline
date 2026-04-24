@@ -99,7 +99,7 @@ def parse_fasta(path: str | Path) -> Dict[str, str]:
             line = raw_line.strip()
             if not line:
                 continue
-            if line.startswith(">"): 
+            if line.startswith(">"):
                 current_id = line[1:].split()[0] or f"sequence_{len(records) + 1}"
                 records.setdefault(current_id, [])
                 continue
@@ -299,21 +299,24 @@ def main() -> None:
     parser = build_arg_parser()
     args = parser.parse_args()
 
-    sequences = parse_fasta(args.fasta)
-    reports = [
-        scan_sequence(seq, sequence_id=seq_id, allow_n=not args.strict_acgt)
-        for seq_id, seq in sequences.items()
-    ]
+    try:
+        sequences = parse_fasta(args.fasta)
+        reports = [
+            scan_sequence(seq, sequence_id=seq_id, allow_n=not args.strict_acgt)
+            for seq_id, seq in sequences.items()
+        ]
 
-    print_human_report(reports)
+        print_human_report(reports)
 
-    if args.json_output:
-        Path(args.json_output).write_text(reports_to_json(reports), encoding="utf-8")
-        print(f"\nReporte JSON guardado en: {args.json_output}")
+        if args.json_output:
+            Path(args.json_output).write_text(reports_to_json(reports), encoding="utf-8")
+            print(f"\nReporte JSON guardado en: {args.json_output}")
 
-    if args.csv_output:
-        write_csv(reports, args.csv_output)
-        print(f"Reporte CSV guardado en: {args.csv_output}")
+        if args.csv_output:
+            write_csv(reports, args.csv_output)
+            print(f"Reporte CSV guardado en: {args.csv_output}")
+    except (FileNotFoundError, ValueError) as exc:
+        parser.exit(status=1, message=f"Error: {exc}\n")
 
 
 if __name__ == "__main__":
