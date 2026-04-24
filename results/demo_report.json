@@ -66,8 +66,8 @@
   },
   {
     "sequence_id": "sin_motivos_clasicos",
-    "length": 33,
-    "gc_percent": 51.5152,
+    "length": 32,
+    "gc_percent": 53.125,
     "n_percent": 0.0,
     "hits": []
   }
