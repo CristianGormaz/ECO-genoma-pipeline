@@ -43,26 +43,37 @@ Además calcula:
 ## Uso básico
 
 ```bash
-python src/eco_motif_analysis.py --fasta data/secuencia.fa
+python src/eco_motif_analysis.py --fasta examples/demo_promoter.fa
 ```
 
 Guardar reporte JSON:
 
 ```bash
-python src/eco_motif_analysis.py --fasta data/secuencia.fa --json results/reporte.json
+python src/eco_motif_analysis.py --fasta examples/demo_promoter.fa --json results/reporte.json
 ```
 
 Guardar reporte CSV:
 
 ```bash
-python src/eco_motif_analysis.py --fasta data/secuencia.fa --csv results/reporte.csv
+python src/eco_motif_analysis.py --fasta examples/demo_promoter.fa --csv results/reporte.csv
 ```
 
 Modo estricto, rechazando bases `N`:
 
 ```bash
-python src/eco_motif_analysis.py --fasta data/secuencia.fa --strict-acgt
+python src/eco_motif_analysis.py --fasta examples/demo_promoter.fa --strict-acgt
 ```
+
+## Ejemplos incluidos
+
+El repositorio incluye:
+
+```text
+examples/demo_promoter.fa
+results/demo_report.json
+```
+
+El archivo `examples/demo_promoter.fa` contiene secuencias pequeñas de demostración. El archivo `results/demo_report.json` muestra una salida esperada para revisar rápidamente el formato del reporte.
 
 ## Ejemplo mínimo de FASTA
 
@@ -70,6 +81,27 @@ python src/eco_motif_analysis.py --fasta data/secuencia.fa --strict-acgt
 >ejemplo_promotor
 ACGTACGTCCAATTTTTTTTATAAAGGGCGGAATAAA
 ```
+
+## Limitaciones
+
+Este proyecto se encuentra en fase MVP/prototipo. Actualmente detecta motivos mediante expresiones regulares simples y no reemplaza herramientas bioinformáticas especializadas.
+
+Limitaciones actuales:
+
+- La presencia de un motivo no confirma por sí sola actividad regulatoria real.
+- No considera todavía contexto cromatínico, conservación evolutiva, accesibilidad, metilación ni expresión génica.
+- No integra aún datos reales de ENCODE, EnhancerAtlas u otras bases externas dentro del flujo automatizado.
+- No usa todavía embeddings de DNABERT ni modelos de clasificación MLP en esta primera versión funcional.
+- Las posiciones reportadas son relativas a la secuencia entregada, no necesariamente a coordenadas genómicas absolutas.
+- Los ejemplos incluidos son pequeños y sirven para validar funcionamiento, no para obtener conclusiones biológicas.
+
+## Próximos pasos
+
+- Integrar datos regulatorios reales en formato BED/FASTA.
+- Añadir conversión desde coordenadas BED hacia secuencias FASTA.
+- Incorporar embeddings tipo DNABERT.
+- Entrenar un clasificador inicial para distinguir regiones regulatorias y no regulatorias.
+- Agregar visualizaciones y reportes comparativos.
 
 ## Firma conceptual
 
