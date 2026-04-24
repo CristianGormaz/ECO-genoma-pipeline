@@ -1,0 +1,8 @@
+>caat_box_region|chrDemo:8-13(+)
+CCAAT
+>tata_box_region|chrDemo:19-25(+)
+TATAAA
+>gc_box_region|chrDemo:25-31(+)
+GGGCGG
+>reverse_demo|chrReverse:4-8(-)
+GGGG
