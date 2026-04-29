@@ -78,9 +78,14 @@ def first_non_empty(*values: str) -> str:
     return "no informado"
 
 
+def variation_identifier(row: Dict[str, str]) -> str:
+    """Obtiene un ID estable para deduplicar filas de ClinVar."""
+    return first_non_empty(row.get("VariationID", ""), row.get("#AlleleID", ""), row.get("AlleleID", ""))
+
+
 def clinvar_row_to_variant_record(row: Dict[str, str]) -> VariantRecord:
     """Convierte una fila de variant_summary.txt a VariantRecord E.C.O."""
-    variation_id = first_non_empty(row.get("VariationID", ""), row.get("#AlleleID", ""), row.get("AlleleID", ""))
+    variation_id = variation_identifier(row)
     gene = first_non_empty(row.get("GeneSymbol", ""), row.get("GeneID", ""))
     variant_name = first_non_empty(row.get("Name", ""), f"ClinVar Variation {variation_id}")
     hgvs = first_non_empty(row.get("Name", ""), row.get("OtherIDs", ""))
@@ -125,16 +130,21 @@ def row_gene_is_wanted(row: Dict[str, str], wanted: set[str]) -> bool:
 
 
 def collect_records(path: Path, genes: List[str], max_records: int) -> List[VariantRecord]:
-    """Recolecta los primeros registros por genes desde ClinVar.
+    """Recolecta los primeros registros únicos por genes desde ClinVar.
 
     Este modo se mantiene como opción reproducible simple, pero puede sesgarse
     según el orden del archivo externo.
     """
     wanted = normalize_gene_list(genes)
     records: List[VariantRecord] = []
+    seen_variants: set[str] = set()
     for row in iter_clinvar_rows(path):
         if not row_gene_is_wanted(row, wanted):
             continue
+        variant_key = variation_identifier(row)
+        if variant_key in seen_variants:
+            continue
+        seen_variants.add(variant_key)
         records.append(clinvar_row_to_variant_record(row))
         if len(records) >= max_records:
             break
@@ -142,7 +152,7 @@ def collect_records(path: Path, genes: List[str], max_records: int) -> List[Vari
 
 
 def collect_balanced_records(path: Path, genes: List[str], max_records: int) -> List[VariantRecord]:
-    """Recolecta variantes intentando balancear categorías E.C.O.
+    """Recolecta variantes únicas intentando balancear categorías E.C.O.
 
     Recorre ClinVar una vez, agrupa por categoría interpretativa y luego toma
     registros en ronda por categoría. Esto evita que una muestra educativa quede
@@ -151,10 +161,15 @@ def collect_balanced_records(path: Path, genes: List[str], max_records: int) -> 
     wanted = normalize_gene_list(genes)
     buckets: Dict[str, List[VariantRecord]] = {category: [] for category in CATEGORY_PRIORITY}
     per_category_soft_limit = max(2, max_records // max(1, len(CATEGORY_PRIORITY)) + 2)
+    seen_variants: set[str] = set()
 
     for row in iter_clinvar_rows(path):
         if not row_gene_is_wanted(row, wanted):
             continue
+        variant_key = variation_identifier(row)
+        if variant_key in seen_variants:
+            continue
+        seen_variants.add(variant_key)
         record = clinvar_row_to_variant_record(row)
         category = classify_clinical_significance(record.clinical_significance)
         bucket = buckets.setdefault(category, [])
@@ -164,15 +179,21 @@ def collect_balanced_records(path: Path, genes: List[str], max_records: int) -> 
             break
 
     selected: List[VariantRecord] = []
+    selected_ids: set[str] = set()
     while len(selected) < max_records:
         added_in_round = False
         for category in CATEGORY_PRIORITY:
             bucket = buckets.get(category, [])
-            if bucket:
-                selected.append(bucket.pop(0))
+            while bucket:
+                record = bucket.pop(0)
+                if record.variant_id in selected_ids:
+                    continue
+                selected.append(record)
+                selected_ids.add(record.variant_id)
                 added_in_round = True
-                if len(selected) >= max_records:
-                    break
+                break
+            if len(selected) >= max_records:
+                break
         if not added_in_round:
             break
     return selected
