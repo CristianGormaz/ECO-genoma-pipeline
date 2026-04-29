@@ -29,6 +29,12 @@ results/test_*.csv
 # Notebooks / Jupyter
 .ipynb_checkpoints/
 
+# Carpeta local de datos del usuario
+# Se conserva la estructura y documentación, pero no los datos reales.
+data/*
+!data/README.md
+!data/.gitkeep
+
 # Datos pesados bioinformáticos descargados localmente
 *.tar
 *.tar.gz
