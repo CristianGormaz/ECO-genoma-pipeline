@@ -26,11 +26,12 @@ make check
 Resultado esperado:
 
 ```text
-15 passed
+16 passed
 OK: metabolismo informacional mínimo funcionando.
+Estado: OK, intestino informacional demo funcionando.
 ```
 
-Con esto se ejecutan las pruebas automáticas y la validación oficial del metabolismo E.C.O.
+Con esto se ejecutan las pruebas automáticas, la validación oficial del metabolismo E.C.O. y la demo integrada BED → FASTA → eco_core → análisis de motivos.
 
 ## Marco conceptual SNE-E.C.O.
 
@@ -50,13 +51,14 @@ En términos simples:
 
 ## Estado actual del repositorio
 
-Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, pruebas automáticas y comandos de desarrollo:
+Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pruebas automáticas y comandos de desarrollo:
 
 ```text
 src/eco_motif_analysis.py
 src/eco_bed_to_fasta.py
 src/eco_core/
 scripts/run_eco_validation.py
+scripts/run_eco_demo_pipeline.py
 tests/
 docs/modulo-sne-eco-digestion-bioinspirada.md
 Makefile
@@ -87,7 +89,7 @@ make install-dev
 
 ## Comando único de prueba
 
-Para ejecutar pruebas automáticas y validación oficial del metabolismo E.C.O. en una sola orden:
+Para ejecutar pruebas automáticas, validación oficial y demo integrada del metabolismo E.C.O. en una sola orden:
 
 ```bash
 make check
@@ -98,6 +100,7 @@ Este comando ejecuta:
 ```bash
 make test
 make validate
+make demo
 ```
 
 También puedes correr cada parte por separado:
@@ -105,7 +108,48 @@ También puedes correr cada parte por separado:
 ```bash
 make test      # Ejecuta pytest
 make validate  # Ejecuta scripts/run_eco_validation.py
+make demo      # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
 make clean     # Limpia cachés y resultados temporales de prueba
+```
+
+## Demo integrada BED → FASTA → eco_core → análisis de motivos
+
+El repositorio incluye una demo del primer recorrido completo del alimento informacional:
+
+```bash
+make demo
+```
+
+Equivalente directo:
+
+```bash
+python3 scripts/run_eco_demo_pipeline.py
+```
+
+La demo usa:
+
+```text
+examples/demo_regions.bed
+examples/tiny_reference.fa
+```
+
+Y genera:
+
+```text
+results/eco_demo_pipeline.fa
+results/eco_demo_pipeline_report.json
+```
+
+Resultado esperado resumido:
+
+```text
+E.C.O. DEMO PIPELINE REPORT
+Regiones procesadas: 4
+Motivos encontrados: 4
+Aceptados: 4
+Rechazados: 0
+Absorbidos: 4
+Estado: OK, intestino informacional demo funcionando.
 ```
 
 ## Motivos regulatorios incluidos
@@ -260,7 +304,7 @@ Limitaciones actuales:
 
 ## Próximos pasos
 
-- Conectar la salida BED → FASTA con el análisis de motivos.
+- Convertir la demo integrada en un pipeline parametrizable para archivos propios.
 - Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas.
 - Incorporar embeddings tipo DNABERT.
 - Entrenar un clasificador inicial para distinguir regiones regulatorias y no regulatorias.
