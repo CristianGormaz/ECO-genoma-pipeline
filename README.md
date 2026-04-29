@@ -26,14 +26,15 @@ make check
 Resultado esperado:
 
 ```text
-18 passed
+19 passed
 OK: metabolismo informacional mínimo funcionando.
 Estado: OK, intestino informacional demo funcionando.
 OK: el reporte muestra digestión informacional completa y sin rechazos.
 Reporte Markdown generado: results/eco_demo_pipeline_report.md
+Estado: OK, pipeline parametrizable E.C.O. funcionando.
 ```
 
-Con esto se ejecutan las pruebas automáticas, la validación oficial del metabolismo E.C.O., la demo integrada BED → FASTA → eco_core → análisis de motivos, la revisión humana del JSON y la exportación Markdown del reporte.
+Con esto se ejecutan las pruebas automáticas, la validación oficial del metabolismo E.C.O., la demo integrada BED → FASTA → eco_core → análisis de motivos, la revisión humana del JSON, la exportación Markdown del reporte y una ejecución parametrizable con BED/FASTA definidos por argumentos.
 
 ## Resultado demostrativo
 
@@ -69,7 +70,7 @@ En términos simples:
 
 ## Estado actual del repositorio
 
-Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, exportación Markdown, pruebas automáticas y comandos de desarrollo:
+Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pipeline parametrizable, exportación Markdown, pruebas automáticas y comandos de desarrollo:
 
 ```text
 src/eco_motif_analysis.py
@@ -77,6 +78,7 @@ src/eco_bed_to_fasta.py
 src/eco_core/
 scripts/run_eco_validation.py
 scripts/run_eco_demo_pipeline.py
+scripts/run_eco_pipeline.py
 scripts/review_eco_demo_report.py
 scripts/export_eco_demo_markdown.py
 tests/
@@ -110,7 +112,7 @@ make install-dev
 
 ## Comando único de prueba
 
-Para ejecutar pruebas automáticas, validación oficial, demo integrada, revisión humana y exportación Markdown en una sola orden:
+Para ejecutar pruebas automáticas, validación oficial, demo integrada, revisión humana, exportación Markdown y pipeline parametrizable en una sola orden:
 
 ```bash
 make check
@@ -124,6 +126,7 @@ make validate
 make demo
 make review
 make report
+make pipeline
 ```
 
 También puedes correr cada parte por separado:
@@ -134,8 +137,37 @@ make validate  # Ejecuta scripts/run_eco_validation.py
 make demo      # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
 make review    # Revisa el JSON integrado en formato humano
 make report    # Exporta el JSON integrado a Markdown
+make pipeline  # Ejecuta el pipeline parametrizable con archivos definidos por argumentos
 make clean     # Limpia cachés y resultados temporales de prueba
 ```
+
+## Pipeline parametrizable para archivos propios
+
+Para ejecutar E.C.O. con tu propio archivo BED y tu propio FASTA de referencia:
+
+```bash
+python3 scripts/run_eco_pipeline.py \
+  --bed ruta/a/mis_regiones.bed \
+  --reference ruta/a/mi_referencia.fa \
+  --output-dir results \
+  --prefix mi_analisis
+```
+
+Esto genera:
+
+```text
+results/mi_analisis.fa
+results/mi_analisis_report.json
+results/mi_analisis_report.md
+```
+
+También puedes probar la interfaz parametrizable con los archivos de ejemplo:
+
+```bash
+make pipeline
+```
+
+Esta etapa convierte la demo en una herramienta más flexible: ya no depende únicamente de `examples/demo_regions.bed` y `examples/tiny_reference.fa`.
 
 ## Demo integrada BED → FASTA → eco_core → análisis de motivos
 
@@ -358,7 +390,6 @@ Limitaciones actuales:
 
 ## Próximos pasos
 
-- Convertir la demo integrada en un pipeline parametrizable para archivos propios.
 - Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas.
 - Incorporar embeddings tipo DNABERT.
 - Entrenar un clasificador inicial para distinguir regiones regulatorias y no regulatorias.
