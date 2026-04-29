@@ -7,7 +7,7 @@
 El proyecto trabaja hoy con dos rutas principales:
 
 1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
-2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML.
+2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
 
 > Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
 
@@ -49,7 +49,7 @@ Para preparar una demo completa de presentación:
 make portfolio-demo
 ```
 
-Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar y exporta el informe HTML.
+Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG y exporta el informe HTML integrado.
 
 Al finalizar, deja rutas listas para revisar:
 
@@ -59,13 +59,20 @@ results/eco_custom_demo_report.md
 results/eco_variant_demo_report.md
 results/eco_clinvar_sample_report.md
 results/eco_clinvar_sample_report.html
+results/eco_clinvar_sample_charts/index.html
 docs/caso-estudio-portafolio-eco.md
 ```
 
 Abrir HTML:
 
 ```bash
-xdg-open results/eco_clinvar_sample_report.html
+make open-clinvar-html
+```
+
+Abrir gráficos:
+
+```bash
+make open-clinvar-charts
 ```
 
 ## Caso de estudio para portafolio
@@ -97,19 +104,24 @@ Reglas centrales:
 ## Comandos principales
 
 ```bash
-make test            # Ejecuta pytest
-make validate        # Valida ingesta, filtro, absorción, descarte y feedback
-make demo            # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
-make review          # Revisa el JSON integrado en formato humano
-make report          # Exporta el reporte integrado a Markdown
-make pipeline        # Ejecuta pipeline parametrizable con BED/FASTA
-make public-demo     # Descarga referencia pública pequeña y genera informe
-make variant-demo    # Demo educativa de variantes desde TSV local
-make clinvar-sample  # Muestra pública real desde ClinVar con reporte E.C.O.
-make clinvar-html    # Convierte el reporte JSON de ClinVar en HTML estático
-make portfolio-demo  # Prepara demo completa para portafolio/entrevista
-make check           # Pruebas + demos locales estables
-make clean           # Limpieza de cachés/resultados temporales
+make test                  # Ejecuta pytest
+make validate              # Valida ingesta, filtro, absorción, descarte y feedback
+make demo                  # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
+make review                # Revisa el JSON integrado en formato humano
+make report                # Exporta el reporte integrado a Markdown
+make pipeline              # Ejecuta pipeline parametrizable con BED/FASTA
+make public-demo           # Descarga referencia pública pequeña y genera informe
+make variant-demo          # Demo educativa de variantes desde TSV local
+make clinvar-sample        # Muestra pública real desde ClinVar con reporte E.C.O.
+make clinvar-charts        # Genera visualizaciones SVG desde el JSON ClinVar
+make clinvar-html          # Convierte el reporte JSON de ClinVar en HTML estático integrado
+make preview-clinvar       # Vista rápida del Markdown ClinVar en terminal
+make inspect-clinvar-json  # Vista rápida del JSON ClinVar formateado
+make open-clinvar-html     # Abre el HTML principal en navegador
+make open-clinvar-charts   # Abre el índice visual de gráficos SVG
+make portfolio-demo        # Prepara demo completa para portafolio/entrevista
+make check                 # Pruebas + demos locales estables
+make clean                 # Limpieza de cachés/resultados temporales
 ```
 
 `make clinvar-sample` y `make portfolio-demo` quedan fuera de `make check` porque dependen de red externa/cache y de un archivo público cambiante.
@@ -194,7 +206,23 @@ results/eco_clinvar_sample_report.json
 results/eco_clinvar_sample_report.md
 ```
 
-Para generar una vista HTML estática desde el JSON:
+Para generar visualizaciones desde el JSON:
+
+```bash
+make clinvar-charts
+```
+
+Salidas:
+
+```text
+results/eco_clinvar_sample_charts/variants_by_gene.svg
+results/eco_clinvar_sample_charts/categories.svg
+results/eco_clinvar_sample_charts/evidence_strength.svg
+results/eco_clinvar_sample_charts/gene_category_matrix.svg
+results/eco_clinvar_sample_charts/index.html
+```
+
+Para generar una vista HTML estática integrada desde el JSON y los gráficos:
 
 ```bash
 make clinvar-html
@@ -209,7 +237,8 @@ results/eco_clinvar_sample_report.html
 Abrir en navegador:
 
 ```bash
-xdg-open results/eco_clinvar_sample_report.html
+make open-clinvar-html
+make open-clinvar-charts
 ```
 
 El informe incluye:
@@ -217,6 +246,7 @@ El informe incluye:
 - Resumen por categoría.
 - Resumen por gen.
 - Matriz gen × categoría.
+- Visualizaciones SVG integradas.
 - Resumen ejecutivo.
 - Lectura prudente del conjunto.
 - Detalle por variante.
@@ -225,13 +255,13 @@ El informe incluye:
 Para leerlo en terminal:
 
 ```bash
-sed -n '1,180p' results/eco_clinvar_sample_report.md
+make preview-clinvar
 ```
 
-Para abrirlo en entorno gráfico:
+Para inspeccionar el JSON:
 
 ```bash
-xdg-open results/eco_clinvar_sample_report.md
+make inspect-clinvar-json
 ```
 
 Guía completa:
@@ -328,6 +358,7 @@ scripts/run_eco_pipeline.py
 scripts/run_eco_public_chrM_report.py
 scripts/run_eco_variant_demo.py
 scripts/run_eco_clinvar_sample_report.py
+scripts/export_eco_clinvar_charts.py
 scripts/export_eco_variant_html.py
 scripts/review_eco_demo_report.py
 scripts/export_eco_demo_markdown.py
