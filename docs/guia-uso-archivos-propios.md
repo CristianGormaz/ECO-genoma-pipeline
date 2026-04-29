@@ -90,6 +90,12 @@ chr1  0  4
 
 Extrae las bases en posiciones 0, 1, 2 y 3. No incluye la posición 4.
 
+Para ver un caso local completo con coordenadas incorrectas, coordenadas corregidas y resultado esperado, revisa:
+
+```text
+docs/ejemplo-local-coordenadas-bed.md
+```
+
 ## Formato FASTA esperado
 
 Ejemplo:
@@ -218,6 +224,7 @@ Si aparecen otros caracteres, el sistema rechazará la secuencia o reportará el
 - Usa prefijos descriptivos, por ejemplo `experimento_promotores_01`.
 - No subas archivos genómicos pesados al repositorio si son grandes.
 - Conserva siempre el dato original y genera resultados en `results/`.
+- Si un motivo no aparece, revisa primero el FASTA extraído antes de asumir un error del analizador.
 
 ## Lectura final
 
