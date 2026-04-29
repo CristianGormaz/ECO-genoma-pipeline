@@ -26,12 +26,14 @@ make check
 Resultado esperado:
 
 ```text
-16 passed
+18 passed
 OK: metabolismo informacional mínimo funcionando.
 Estado: OK, intestino informacional demo funcionando.
+OK: el reporte muestra digestión informacional completa y sin rechazos.
+Reporte Markdown generado: results/eco_demo_pipeline_report.md
 ```
 
-Con esto se ejecutan las pruebas automáticas, la validación oficial del metabolismo E.C.O. y la demo integrada BED → FASTA → eco_core → análisis de motivos.
+Con esto se ejecutan las pruebas automáticas, la validación oficial del metabolismo E.C.O., la demo integrada BED → FASTA → eco_core → análisis de motivos, la revisión humana del JSON y la exportación Markdown del reporte.
 
 ## Marco conceptual SNE-E.C.O.
 
@@ -51,7 +53,7 @@ En términos simples:
 
 ## Estado actual del repositorio
 
-Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pruebas automáticas y comandos de desarrollo:
+Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, exportación Markdown, pruebas automáticas y comandos de desarrollo:
 
 ```text
 src/eco_motif_analysis.py
@@ -59,6 +61,8 @@ src/eco_bed_to_fasta.py
 src/eco_core/
 scripts/run_eco_validation.py
 scripts/run_eco_demo_pipeline.py
+scripts/review_eco_demo_report.py
+scripts/export_eco_demo_markdown.py
 tests/
 docs/modulo-sne-eco-digestion-bioinspirada.md
 Makefile
@@ -89,7 +93,7 @@ make install-dev
 
 ## Comando único de prueba
 
-Para ejecutar pruebas automáticas, validación oficial y demo integrada del metabolismo E.C.O. en una sola orden:
+Para ejecutar pruebas automáticas, validación oficial, demo integrada, revisión humana y exportación Markdown en una sola orden:
 
 ```bash
 make check
@@ -101,6 +105,8 @@ Este comando ejecuta:
 make test
 make validate
 make demo
+make review
+make report
 ```
 
 También puedes correr cada parte por separado:
@@ -109,6 +115,8 @@ También puedes correr cada parte por separado:
 make test      # Ejecuta pytest
 make validate  # Ejecuta scripts/run_eco_validation.py
 make demo      # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
+make review    # Revisa el JSON integrado en formato humano
+make report    # Exporta el JSON integrado a Markdown
 make clean     # Limpia cachés y resultados temporales de prueba
 ```
 
@@ -151,6 +159,35 @@ Rechazados: 0
 Absorbidos: 4
 Estado: OK, intestino informacional demo funcionando.
 ```
+
+## Reporte Markdown para portafolio
+
+Para transformar el JSON integrado en un reporte Markdown legible:
+
+```bash
+make report
+```
+
+Equivalente directo:
+
+```bash
+python3 scripts/export_eco_demo_markdown.py
+```
+
+Esto genera:
+
+```text
+results/eco_demo_pipeline_report.md
+```
+
+El reporte incluye:
+
+- Resumen ejecutivo.
+- Entradas y salidas.
+- Detalle por región.
+- Motivos encontrados.
+- Lectura final.
+- Nota metodológica.
 
 ## Motivos regulatorios incluidos
 
