@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo check clean
+.PHONY: install-dev test validate demo review check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -19,7 +19,10 @@ validate:
 demo:
 	$(PY) scripts/run_eco_demo_pipeline.py
 
-check: test validate demo
+review:
+	$(PY) scripts/review_eco_demo_report.py
+
+check: test validate demo review
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
