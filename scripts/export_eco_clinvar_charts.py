@@ -10,7 +10,7 @@ from __future__ import annotations
 import html
 import json
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, Tuple
+from typing import Iterable, List, Mapping, Tuple
 
 DEFAULT_INPUT = Path("results/eco_clinvar_sample_report.json")
 DEFAULT_OUTPUT_DIR = Path("results/eco_clinvar_sample_charts")
@@ -65,9 +65,13 @@ def label_for(key: str, labels: Mapping[str, str]) -> str:
 def sorted_items(counts: Mapping[str, int], preferred_order: Iterable[str] | None = None) -> List[Tuple[str, int]]:
     if preferred_order:
         ordered = [(key, int(counts[key])) for key in preferred_order if key in counts]
-        rest = sorted((key, int(value)) for key, value in counts.items() if key not in dict(ordered))
+        ordered_keys = {key for key, _ in ordered}
+        rest = sorted(
+            ((key, int(value)) for key, value in counts.items() if key not in ordered_keys),
+            key=lambda item: item[0],
+        )
         return ordered + rest
-    return sorted((key, int(value)) for key, value in counts.items(), key=lambda item: item[0])
+    return sorted(((key, int(value)) for key, value in counts.items()), key=lambda item: item[0])
 
 
 def write_svg_bar_chart(
