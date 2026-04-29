@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo review report pipeline check clean
+.PHONY: install-dev test validate demo review report pipeline public-demo check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -28,6 +28,9 @@ report:
 pipeline:
 	$(PY) scripts/run_eco_pipeline.py --bed examples/demo_regions.bed --reference examples/tiny_reference.fa --output-dir results --prefix eco_custom_demo
 
+public-demo:
+	$(PY) scripts/run_eco_public_chrM_report.py
+
 check: test validate demo review report pipeline
 
 clean:
@@ -36,3 +39,4 @@ clean:
 	rm -f results/test_*.fa results/test_*.json results/test_*.csv
 	rm -f results/eco_demo_pipeline.fa results/eco_demo_pipeline_report.json results/eco_demo_pipeline_report.md
 	rm -f results/eco_custom_demo.fa results/eco_custom_demo_report.json results/eco_custom_demo_report.md
+	rm -f results/eco_public_chrM.fa results/eco_public_chrM_report.json results/eco_public_chrM_interpretive_report.md
