@@ -12,6 +12,26 @@ La metáfora operativa es:
 2. **Digestión**: extracción, limpieza, validación, generación de características y embeddings.
 3. **Nutrientes interpretables**: motivos regulatorios, métricas, clasificaciones y reportes.
 
+## Demo rápida / Quickstart
+
+Para clonar, instalar dependencias de desarrollo y validar el prototipo completo:
+
+```bash
+git clone https://github.com/CristianGormaz/ECO-genoma-pipeline.git
+cd ECO-genoma-pipeline
+make install-dev
+make check
+```
+
+Resultado esperado:
+
+```text
+15 passed
+OK: metabolismo informacional mínimo funcionando.
+```
+
+Con esto se ejecutan las pruebas automáticas y la validación oficial del metabolismo E.C.O.
+
 ## Marco conceptual SNE-E.C.O.
 
 El proyecto cuenta con una pieza maestra conceptual que conecta el **Sistema Nervioso Entérico (SNE)** con la arquitectura de procesamiento de datos de E.C.O.
