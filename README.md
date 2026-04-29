@@ -12,16 +12,33 @@ La metáfora operativa es:
 2. **Digestión**: extracción, limpieza, validación, generación de características y embeddings.
 3. **Nutrientes interpretables**: motivos regulatorios, métricas, clasificaciones y reportes.
 
+## Marco conceptual SNE-E.C.O.
+
+El proyecto cuenta con una pieza maestra conceptual que conecta el **Sistema Nervioso Entérico (SNE)** con la arquitectura de procesamiento de datos de E.C.O.
+
+Puedes revisarla aquí:
+
+```text
+docs/modulo-sne-eco-digestion-bioinspirada.md
+```
+
+Esta pieza define a E.C.O. como un **metabolismo de información**: un sistema que recibe datos crudos, los fragmenta, filtra, transforma, absorbe como conocimiento útil y descarta lo que no aporta valor.
+
+En términos simples:
+
+> Así como el intestino convierte alimento en energía disponible para el organismo, E.C.O. convierte datos crudos en conocimiento disponible para la inteligencia del sistema.
+
 ## Estado actual del repositorio
 
-Este repositorio ya incluye dos módulos funcionales:
+Este repositorio ya incluye dos módulos funcionales y una pieza conceptual base:
 
 ```text
 src/eco_motif_analysis.py
 src/eco_bed_to_fasta.py
+docs/modulo-sne-eco-digestion-bioinspirada.md
 ```
 
-El primer módulo analiza secuencias FASTA y busca patrones regulatorios clásicos. El segundo módulo convierte coordenadas BED en secuencias FASTA usando un genoma de referencia local.
+El primer módulo analiza secuencias FASTA y busca patrones regulatorios clásicos. El segundo módulo convierte coordenadas BED en secuencias FASTA usando un genoma de referencia local. La pieza conceptual documenta la arquitectura bioinspirada SNE-E.C.O. y sugiere cómo transformar el proyecto desde un conjunto de scripts hacia un pipeline orgánico, trazable y modular.
 
 ## Motivos regulatorios incluidos
 
@@ -132,6 +149,7 @@ Limitaciones actuales:
 - Las posiciones reportadas en el análisis de motivos son relativas a la secuencia entregada.
 - La conversión BED → FASTA depende de que el FASTA de referencia y las coordenadas BED usen el mismo sistema de referencia/genome build.
 - Los ejemplos incluidos son pequeños y sirven para validar funcionamiento, no para obtener conclusiones biológicas.
+- La analogía con el Sistema Nervioso Entérico se usa como inspiración arquitectónica, no como afirmación de que el software sea un organismo vivo o consciente.
 
 ## Próximos pasos
 
@@ -140,6 +158,7 @@ Limitaciones actuales:
 - Incorporar embeddings tipo DNABERT.
 - Entrenar un clasificador inicial para distinguir regiones regulatorias y no regulatorias.
 - Agregar visualizaciones y reportes comparativos.
+- Convertir el marco SNE-E.C.O. en módulos técnicos: ingesta, filtro, flujo, absorción, feedback y descarte.
 
 ## Firma conceptual
 
