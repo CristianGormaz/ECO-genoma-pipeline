@@ -34,6 +34,14 @@ results/eco_custom_demo.fa
 results/eco_custom_demo_report.json
 results/eco_custom_demo_report.md
 
+# Resultados locales generados por usuarios
+# Los resultados demostrativos versionados se mantienen si ya están trackeados.
+results/*.fa
+results/*.fasta
+results/*.json
+results/*.csv
+results/*.md
+
 # Notebooks / Jupyter
 .ipynb_checkpoints/
 
