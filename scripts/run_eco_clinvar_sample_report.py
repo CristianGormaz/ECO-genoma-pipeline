@@ -214,8 +214,9 @@ def collect_gene_balanced_records(path: Path, genes: List[str], max_records: int
     """Recolecta variantes únicas balanceando genes y categorías.
 
     Primero agrupa por gen y categoría E.C.O.; luego selecciona en ronda por
-    gen y por categoría. Es el modo recomendado para informes exploratorios,
-    porque evita que un gen abundante domine toda la muestra.
+    categoría y por gen. Es el modo recomendado para informes exploratorios:
+    evita que un gen abundante domine la muestra y reduce que una sola categoría
+    llene todo el cupo.
     """
     ordered_genes = ordered_gene_list(genes)
     wanted = set(ordered_genes)
@@ -251,10 +252,9 @@ def collect_gene_balanced_records(path: Path, genes: List[str], max_records: int
     selected_ids: set[str] = set()
     while len(selected) < max_records:
         added_in_round = False
-        for gene in ordered_genes:
-            gene_buckets = buckets.get(gene, {})
-            for category in CATEGORY_PRIORITY:
-                bucket = gene_buckets.get(category, [])
+        for category in CATEGORY_PRIORITY:
+            for gene in ordered_genes:
+                bucket = buckets.get(gene, {}).get(category, [])
                 while bucket:
                     record = bucket.pop(0)
                     if record.variant_id in selected_ids:
@@ -263,7 +263,7 @@ def collect_gene_balanced_records(path: Path, genes: List[str], max_records: int
                     selected_ids.add(record.variant_id)
                     added_in_round = True
                     break
-                if added_in_round or len(selected) >= max_records:
+                if len(selected) >= max_records:
                     break
             if len(selected) >= max_records:
                 break
