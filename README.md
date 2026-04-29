@@ -41,6 +41,16 @@ Estado: OK, pipeline parametrizable E.C.O. funcionando.
 Estado: OK, interpretación de variantes generada sin diagnóstico médico.
 ```
 
+## Caso de estudio para portafolio
+
+Para una lectura profesional, breve y orientada a empleabilidad, revisa:
+
+```text
+docs/caso-estudio-portafolio-eco.md
+```
+
+Este documento resume el problema, la solución, la arquitectura, los resultados demostrables, las tecnologías usadas, los límites responsables y frases listas para CV, LinkedIn o entrevista.
+
 ## Comandos principales
 
 ```bash
@@ -264,6 +274,7 @@ docs/modulo-sne-eco-digestion-bioinspirada.md
 docs/resultado-demostrativo-eco.md
 docs/guia-uso-archivos-propios.md
 docs/guia-interpretacion-variantes-eco.md
+docs/caso-estudio-portafolio-eco.md
 docs/ejemplo-local-coordenadas-bed.md
 examples/clinvar_style_demo_variants.tsv
 Makefile
