@@ -126,6 +126,40 @@ def evidence_explanation(evidence: str) -> str:
     )
 
 
+def build_gene_summary_section(summary: Dict[str, object]) -> List[str]:
+    """Construye resumen por gen y matriz gen x categoría."""
+    gene_counts = summary.get("gene_counts", {})
+    gene_category_matrix = summary.get("gene_category_matrix", {})
+    category_counts = summary.get("category_counts", {})
+
+    if not gene_counts:
+        return []
+
+    ordered_categories = [category for category in CATEGORY_TITLES if category in category_counts]
+    extra_categories = [category for category in category_counts if category not in ordered_categories]
+    ordered_categories.extend(extra_categories)
+
+    gene_rows = [[gene, count] for gene, count in gene_counts.items()]
+    matrix_rows: List[List[object]] = []
+    for gene, _count in gene_counts.items():
+        by_category = gene_category_matrix.get(gene, {})
+        matrix_rows.append([gene, *[by_category.get(category, 0) for category in ordered_categories]])
+
+    return [
+        "## 4. Resumen por gen",
+        "",
+        "Esta sección permite ver si la muestra está equilibrada entre genes y si algún gen concentra un tipo de hallazgo. "
+        "No expresa riesgo personal; describe la composición del subconjunto analizado.",
+        "",
+        *table(["Gen", "Variantes incluidas"], gene_rows),
+        "",
+        "### Matriz gen × categoría",
+        "",
+        *table(["Gen", *[category_title(category) for category in ordered_categories]], matrix_rows),
+        "",
+    ]
+
+
 def build_grouped_category_sections(interpretations: List[Dict[str, object]]) -> List[str]:
     grouped: Dict[str, List[Dict[str, object]]] = {}
     for item in interpretations:
@@ -178,7 +212,7 @@ def build_cautious_set_reading(report: Dict[str, object]) -> List[str]:
     category_counts = summary["category_counts"]
 
     lines: List[str] = [
-        "## 5. Lectura clínica prudente del conjunto",
+        "## 6. Lectura clínica prudente del conjunto",
         "",
         "Esta lectura resume el conjunto analizado como si fuera un informe de apoyo interpretativo. "
         "No transforma los datos en diagnóstico: ordena señales, evidencia y límites.",
@@ -276,7 +310,8 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         "",
         *table(["Categoría E.C.O.", "Cantidad"], [[key, value] for key, value in summary["category_counts"].items()]),
         "",
-        "## 4. Resumen ejecutivo de variantes",
+        *build_gene_summary_section(summary),
+        "## 5. Resumen ejecutivo de variantes",
         "",
         *table(
             ["ID", "Gen", "Condición resumida", "Clasificación externa", "Categoría E.C.O.", "Evidencia", "Acción prudente"],
@@ -284,10 +319,10 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         ),
         "",
         *build_cautious_set_reading(report),
-        "## 6. Lectura detallada por variante",
+        "## 7. Lectura detallada por variante",
         "",
         *detailed_sections,
-        "## 7. Límites científicos y clínicos",
+        "## 8. Límites científicos y clínicos",
         "",
         "- Este reporte interpreta registros de variantes, no interpreta a una persona.",
         "- No incorpora zigosidad, edad, sexo, etnia, historia familiar, síntomas, laboratorio, penetrancia ni consentimiento clínico.",
@@ -296,7 +331,7 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         "- Una clasificación benigna no descarta otros riesgos no analizados.",
         "- Toda conclusión clínica requiere validación profesional y fuente actualizada.",
         "",
-        "## 8. Próximo salto empírico",
+        "## 9. Próximo salto empírico",
         "",
         "Conectar este módulo a una descarga real y reducida desde ClinVar/NCBI para generar un informe reproducible con fuente externa actualizada. "
         "Ese paso debe mantener los mismos límites: investigación, educación y apoyo interpretativo, no diagnóstico médico.",
