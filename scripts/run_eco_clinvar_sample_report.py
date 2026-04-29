@@ -26,7 +26,12 @@ if str(PROJECT_ROOT) not in sys.path:
 if str(PROJECT_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from src.eco_variant_interpretation import VariantRecord, build_report, write_json_report  # noqa: E402
+from src.eco_variant_interpretation import (  # noqa: E402
+    VariantRecord,
+    build_report,
+    classify_clinical_significance,
+    write_json_report,
+)
 from scripts.run_eco_variant_demo import build_markdown  # noqa: E402
 
 DEFAULT_SOURCE_URL = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz"
@@ -34,6 +39,15 @@ DEFAULT_DATA_DIR = PROJECT_ROOT / "data" / "public" / "clinvar"
 DEFAULT_OUTPUT_DIR = PROJECT_ROOT / "results"
 DEFAULT_GENES = ["BRCA1", "BRCA2", "CFTR", "TP53"]
 DEFAULT_PREFIX = "eco_clinvar_sample"
+CATEGORY_PRIORITY = [
+    "alerta_clinica_alta",
+    "incertidumbre_clinica",
+    "probablemente_no_patogenica",
+    "evidencia_conflictiva",
+    "factor_de_riesgo_no_determinista",
+    "farmacogenomica_o_respuesta_a_farmacos",
+    "clasificacion_no_estandarizada",
+]
 
 
 def download_file(url: str, destination: Path, force: bool = False) -> str:
@@ -105,18 +119,63 @@ def iter_clinvar_rows(path: Path) -> Iterable[Dict[str, str]]:
             yield row
 
 
+def row_gene_is_wanted(row: Dict[str, str], wanted: set[str]) -> bool:
+    gene = (row.get("GeneSymbol", "") or "").strip().upper()
+    return not wanted or gene in wanted
+
+
 def collect_records(path: Path, genes: List[str], max_records: int) -> List[VariantRecord]:
-    """Recolecta registros por genes desde ClinVar."""
+    """Recolecta los primeros registros por genes desde ClinVar.
+
+    Este modo se mantiene como opción reproducible simple, pero puede sesgarse
+    según el orden del archivo externo.
+    """
     wanted = normalize_gene_list(genes)
     records: List[VariantRecord] = []
     for row in iter_clinvar_rows(path):
-        gene = (row.get("GeneSymbol", "") or "").strip().upper()
-        if wanted and gene not in wanted:
+        if not row_gene_is_wanted(row, wanted):
             continue
         records.append(clinvar_row_to_variant_record(row))
         if len(records) >= max_records:
             break
     return records
+
+
+def collect_balanced_records(path: Path, genes: List[str], max_records: int) -> List[VariantRecord]:
+    """Recolecta variantes intentando balancear categorías E.C.O.
+
+    Recorre ClinVar una vez, agrupa por categoría interpretativa y luego toma
+    registros en ronda por categoría. Esto evita que una muestra educativa quede
+    dominada por las primeras variantes del archivo externo.
+    """
+    wanted = normalize_gene_list(genes)
+    buckets: Dict[str, List[VariantRecord]] = {category: [] for category in CATEGORY_PRIORITY}
+    per_category_soft_limit = max(2, max_records // max(1, len(CATEGORY_PRIORITY)) + 2)
+
+    for row in iter_clinvar_rows(path):
+        if not row_gene_is_wanted(row, wanted):
+            continue
+        record = clinvar_row_to_variant_record(row)
+        category = classify_clinical_significance(record.clinical_significance)
+        bucket = buckets.setdefault(category, [])
+        if len(bucket) < per_category_soft_limit:
+            bucket.append(record)
+        if sum(len(values) for values in buckets.values()) >= max_records * 3:
+            break
+
+    selected: List[VariantRecord] = []
+    while len(selected) < max_records:
+        added_in_round = False
+        for category in CATEGORY_PRIORITY:
+            bucket = buckets.get(category, [])
+            if bucket:
+                selected.append(bucket.pop(0))
+                added_in_round = True
+                if len(selected) >= max_records:
+                    break
+        if not added_in_round:
+            break
+    return selected
 
 
 def write_tsv(records: List[VariantRecord], output_tsv: Path) -> None:
@@ -149,6 +208,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--prefix", default=DEFAULT_PREFIX, help="Prefijo de salida.")
     parser.add_argument("--genes", nargs="+", default=DEFAULT_GENES, help="Genes a muestrear, por ejemplo BRCA1 BRCA2 CFTR TP53.")
     parser.add_argument("--max-records", type=int, default=20, help="Máximo de variantes a incluir.")
+    parser.add_argument("--sampling", choices=["balanced", "first"], default="balanced", help="Estrategia de muestreo: balanced evita sesgo educativo; first toma primeras coincidencias.")
     parser.add_argument("--force-download", action="store_true", help="Descarga ClinVar aunque exista cache local.")
     return parser
 
@@ -167,7 +227,10 @@ def main() -> int:
 
     try:
         download_state = download_file(args.source_url, clinvar_gz, force=args.force_download)
-        records = collect_records(clinvar_gz, genes=args.genes, max_records=args.max_records)
+        if args.sampling == "first":
+            records = collect_records(clinvar_gz, genes=args.genes, max_records=args.max_records)
+        else:
+            records = collect_balanced_records(clinvar_gz, genes=args.genes, max_records=args.max_records)
         if not records:
             parser.exit(status=1, message="Error: no se encontraron variantes para los genes indicados.\n")
 
@@ -178,6 +241,7 @@ def main() -> int:
             "download_state": download_state,
             "genes": args.genes,
             "max_records": args.max_records,
+            "sampling": args.sampling,
             "tsv_sample": str(output_tsv),
         }
         write_json_report(report, output_json)
@@ -189,6 +253,7 @@ def main() -> int:
         print("============================")
         print(f"Fuente: {args.source_url}")
         print(f"Descarga: {download_state}")
+        print(f"Muestreo: {args.sampling}")
         print(f"Genes buscados: {', '.join(args.genes)}")
         print(f"Variantes procesadas: {summary['variants_processed']}")
         print(f"Categorías: {summary['category_counts']}")
