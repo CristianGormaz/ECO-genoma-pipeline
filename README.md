@@ -70,7 +70,7 @@ En términos simples:
 
 ## Estado actual del repositorio
 
-Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pipeline parametrizable, exportación Markdown, pruebas automáticas y comandos de desarrollo:
+Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pipeline parametrizable, exportación Markdown, pruebas automáticas, guías de uso y comandos de desarrollo:
 
 ```text
 src/eco_motif_analysis.py
@@ -84,6 +84,7 @@ scripts/export_eco_demo_markdown.py
 tests/
 docs/modulo-sne-eco-digestion-bioinspirada.md
 docs/resultado-demostrativo-eco.md
+docs/guia-uso-archivos-propios.md
 Makefile
 requirements-dev.txt
 ```
@@ -159,6 +160,12 @@ Esto genera:
 results/mi_analisis.fa
 results/mi_analisis_report.json
 results/mi_analisis_report.md
+```
+
+Guía práctica para preparar y usar archivos propios:
+
+```text
+docs/guia-uso-archivos-propios.md
 ```
 
 También puedes probar la interfaz parametrizable con los archivos de ejemplo:
