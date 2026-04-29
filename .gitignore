@@ -26,6 +26,14 @@ results/test_*.fa
 results/test_*.json
 results/test_*.csv
 
+# Resultados generados por la demo y el pipeline parametrizable
+results/eco_demo_pipeline.fa
+results/eco_demo_pipeline_report.json
+results/eco_demo_pipeline_report.md
+results/eco_custom_demo.fa
+results/eco_custom_demo_report.json
+results/eco_custom_demo_report.md
+
 # Notebooks / Jupyter
 .ipynb_checkpoints/
 
