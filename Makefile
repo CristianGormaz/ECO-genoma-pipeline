@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html check clean
+.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html portfolio-demo check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -39,6 +39,24 @@ clinvar-sample:
 
 clinvar-html:
 	$(PY) scripts/export_eco_variant_html.py
+
+portfolio-demo: check clinvar-sample clinvar-html
+	@echo ""
+	@echo "E.C.O. PORTFOLIO DEMO READY"
+	@echo "==========================="
+	@echo "Reportes principales generados:"
+	@echo "- results/eco_demo_pipeline_report.md"
+	@echo "- results/eco_custom_demo_report.md"
+	@echo "- results/eco_variant_demo_report.md"
+	@echo "- results/eco_clinvar_sample_report.md"
+	@echo "- results/eco_clinvar_sample_report.html"
+	@echo ""
+	@echo "Documentos de apoyo:"
+	@echo "- docs/caso-estudio-portafolio-eco.md"
+	@echo "- docs/guia-interpretacion-variantes-eco.md"
+	@echo "- docs/modulo-sne-eco-digestion-bioinspirada.md"
+	@echo ""
+	@echo "Abrir HTML: xdg-open results/eco_clinvar_sample_report.html"
 
 check: test validate demo review report pipeline variant-demo
 
