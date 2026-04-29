@@ -7,7 +7,7 @@
 El proyecto trabaja hoy con dos rutas principales:
 
 1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
-2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown.
+2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML.
 
 > Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
 
@@ -63,6 +63,7 @@ make pipeline        # Ejecuta pipeline parametrizable con BED/FASTA
 make public-demo     # Descarga referencia pública pequeña y genera informe
 make variant-demo    # Demo educativa de variantes desde TSV local
 make clinvar-sample  # Muestra pública real desde ClinVar con reporte E.C.O.
+make clinvar-html    # Convierte el reporte JSON de ClinVar en HTML estático
 make check           # Pruebas + demos locales estables
 make clean           # Limpieza de cachés/resultados temporales
 ```
@@ -147,6 +148,24 @@ Salidas:
 results/eco_clinvar_sample.tsv
 results/eco_clinvar_sample_report.json
 results/eco_clinvar_sample_report.md
+```
+
+Para generar una vista HTML estática desde el JSON:
+
+```bash
+make clinvar-html
+```
+
+Salida:
+
+```text
+results/eco_clinvar_sample_report.html
+```
+
+Abrir en navegador:
+
+```bash
+xdg-open results/eco_clinvar_sample_report.html
 ```
 
 El informe incluye:
@@ -265,6 +284,7 @@ scripts/run_eco_pipeline.py
 scripts/run_eco_public_chrM_report.py
 scripts/run_eco_variant_demo.py
 scripts/run_eco_clinvar_sample_report.py
+scripts/export_eco_variant_html.py
 scripts/review_eco_demo_report.py
 scripts/export_eco_demo_markdown.py
 tests/
