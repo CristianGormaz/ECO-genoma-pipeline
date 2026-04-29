@@ -30,15 +30,17 @@ En términos simples:
 
 ## Estado actual del repositorio
 
-Este repositorio ya incluye dos módulos funcionales y una pieza conceptual base:
+Este repositorio ya incluye módulos funcionales, una capa técnica base y una pieza conceptual:
 
 ```text
 src/eco_motif_analysis.py
 src/eco_bed_to_fasta.py
+src/eco_core/
+scripts/run_eco_validation.py
 docs/modulo-sne-eco-digestion-bioinspirada.md
 ```
 
-El primer módulo analiza secuencias FASTA y busca patrones regulatorios clásicos. El segundo módulo convierte coordenadas BED en secuencias FASTA usando un genoma de referencia local. La pieza conceptual documenta la arquitectura bioinspirada SNE-E.C.O. y sugiere cómo transformar el proyecto desde un conjunto de scripts hacia un pipeline orgánico, trazable y modular.
+El primer módulo analiza secuencias FASTA y busca patrones regulatorios clásicos. El segundo módulo convierte coordenadas BED en secuencias FASTA usando un genoma de referencia local. La carpeta `src/eco_core/` transforma la analogía SNE-E.C.O. en módulos técnicos de ingesta, filtrado, absorción, feedback y descarte. La pieza conceptual documenta la arquitectura bioinspirada SNE-E.C.O. y sugiere cómo transformar el proyecto desde un conjunto de scripts hacia un pipeline orgánico, trazable y modular.
 
 ## Motivos regulatorios incluidos
 
@@ -114,6 +116,39 @@ GGGCGG
 >reverse_demo|chrReverse:4-8(-)
 GGGG
 ```
+
+## Validación del metabolismo E.C.O.
+
+El repositorio incluye una validación oficial del metabolismo mínimo E.C.O. Esta prueba ejecuta una secuencia completa y legible:
+
+1. Ingesta de una secuencia válida.
+2. Filtrado de calidad.
+3. Absorción de features genómicas básicas.
+4. Ingesta de una secuencia inválida.
+5. Rechazo controlado.
+6. Descarte auditable.
+7. Feedback final del sistema.
+
+Ejecutar desde la raíz del repositorio:
+
+```bash
+python3 scripts/run_eco_validation.py
+```
+
+Resultado esperado resumido:
+
+```text
+E.C.O. VALIDATION REPORT
+Paquetes procesados: 2
+Aceptados: 1
+Rechazados: 1
+Absorbidos: 1
+Tasa de rechazo: 50.0%
+Tasa de absorción: 50.0%
+OK: metabolismo informacional mínimo funcionando.
+```
+
+Esta validación no reemplaza los tests automáticos, pero sirve como demostración UX del flujo SNE-E.C.O.: entrada, filtro, absorción, descarte y retroalimentación.
 
 ## Ejemplos incluidos
 
