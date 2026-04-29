@@ -2,21 +2,27 @@
 
 ![E.C.O. Validation](https://github.com/CristianGormaz/ECO-genoma-pipeline/actions/workflows/eco-validation.yml/badge.svg)
 
-Pipeline bioinspirado para análisis genómico utilizando datos regulatorios, ENCODE, embeddings tipo DNABERT y clasificación automática.
+**E.C.O. — Entérico Codificador Orgánico** es un pipeline bioinspirado para procesar datos genómicos como un metabolismo de información: ingesta, filtrado, transformación, absorción, feedback y descarte.
+
+El proyecto trabaja hoy con dos rutas principales:
+
+1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
+2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown.
+
+> Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
 
 ## Idea central
 
-E.C.O. significa **Entérico Codificador Orgánico**. El proyecto nace de una analogía funcional: así como el sistema digestivo recibe alimento, lo procesa y entrega nutrientes útiles al cuerpo, este pipeline recibe datos genómicos, los procesa computacionalmente y entrega señales interpretables sobre regiones regulatorias.
+Así como el sistema digestivo transforma alimento en nutrientes útiles, E.C.O. transforma datos genómicos crudos en señales interpretables.
 
-La metáfora operativa es:
+```text
+entrada de datos
+→ digestión computacional
+→ señales útiles
+→ reporte interpretable
+```
 
-1. **Entrada de alimento**: coordenadas genómicas, secuencias FASTA o regiones anotadas.
-2. **Digestión**: extracción, limpieza, validación, generación de características y embeddings.
-3. **Nutrientes interpretables**: motivos regulatorios, métricas, clasificaciones y reportes.
-
-## Demo rápida / Quickstart
-
-Para clonar, instalar dependencias de desarrollo y validar el prototipo completo:
+## Quickstart
 
 ```bash
 git clone https://github.com/CristianGormaz/ECO-genoma-pipeline.git
@@ -25,57 +31,161 @@ make install-dev
 make check
 ```
 
-Resultado esperado:
+Resultado esperado actual:
 
 ```text
-19 passed
+24 passed
 OK: metabolismo informacional mínimo funcionando.
 Estado: OK, intestino informacional demo funcionando.
-OK: el reporte muestra digestión informacional completa y sin rechazos.
-Reporte Markdown generado: results/eco_demo_pipeline_report.md
 Estado: OK, pipeline parametrizable E.C.O. funcionando.
+Estado: OK, interpretación de variantes generada sin diagnóstico médico.
 ```
 
-Con esto se ejecutan las pruebas automáticas, la validación oficial del metabolismo E.C.O., la demo integrada BED → FASTA → eco_core → análisis de motivos, la revisión humana del JSON, la exportación Markdown del reporte y una ejecución parametrizable con BED/FASTA definidos por argumentos.
-
-## Validación automática en GitHub Actions
-
-El repositorio incluye un workflow de validación automática:
-
-```text
-.github/workflows/eco-validation.yml
-```
-
-Este workflow se ejecuta en cada `push` o `pull request` hacia `main` y valida:
+## Comandos principales
 
 ```bash
-python -m pytest -q
-python scripts/run_eco_validation.py
+make test            # Ejecuta pytest
+make validate        # Valida ingesta, filtro, absorción, descarte y feedback
+make demo            # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
+make review          # Revisa el JSON integrado en formato humano
+make report          # Exporta el reporte integrado a Markdown
+make pipeline        # Ejecuta pipeline parametrizable con BED/FASTA
+make public-demo     # Descarga referencia pública pequeña y genera informe
+make variant-demo    # Demo educativa de variantes desde TSV local
+make clinvar-sample  # Muestra pública real desde ClinVar con reporte E.C.O.
+make check           # Pruebas + demos locales estables
+make clean           # Limpieza de cachés/resultados temporales
 ```
 
-Esto permite que E.C.O. no dependa solo de una prueba local: GitHub también verifica que el metabolismo informacional mínimo siga funcionando.
+`make clinvar-sample` queda fuera de `make check` porque depende de red externa y de un archivo público cambiante.
 
-## Demo pública con descarga real
+## Ruta 1: regiones y motivos regulatorios
 
-Para obtener un resultado tangible con un archivo público descargado desde UCSC/hg38:
+La demo integrada ejecuta:
+
+```bash
+make demo
+```
+
+Flujo:
+
+```text
+examples/demo_regions.bed
++ examples/tiny_reference.fa
+→ results/eco_demo_pipeline.fa
+→ results/eco_demo_pipeline_report.json
+```
+
+También puedes generar un reporte Markdown:
+
+```bash
+make report
+```
+
+Salida:
+
+```text
+results/eco_demo_pipeline_report.md
+```
+
+Motivos incluidos en el MVP:
+
+- TATA box canónica: `TATAAA`
+- TATA box degenerada: `TATA[AT][AT]`
+- CAAT box: `CCAAT`
+- GC box: `GGGCGG`
+- Señal de poliadenilación: `AATAAA`
+- Repeticiones homopoliméricas largas
+
+## Ruta 2: interpretación segura de variantes públicas
+
+Demo local con archivo pequeño incluido en el repositorio:
+
+```bash
+make variant-demo
+```
+
+Entradas/salidas:
+
+```text
+examples/clinvar_style_demo_variants.tsv
+results/eco_variant_demo_report.json
+results/eco_variant_demo_report.md
+```
+
+Muestra pública real desde ClinVar:
+
+```bash
+make clinvar-sample
+```
+
+El comando descarga o reutiliza cache local de:
+
+```text
+https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/variant_summary.txt.gz
+```
+
+Por defecto usa una muestra exploratoria `gene-balanced` con:
+
+```text
+BRCA1, BRCA2, CFTR, TP53
+```
+
+Salidas:
+
+```text
+results/eco_clinvar_sample.tsv
+results/eco_clinvar_sample_report.json
+results/eco_clinvar_sample_report.md
+```
+
+El informe incluye:
+
+- Resumen por categoría.
+- Resumen por gen.
+- Matriz gen × categoría.
+- Resumen ejecutivo.
+- Lectura prudente del conjunto.
+- Detalle por variante.
+- Límites de uso.
+
+Para leerlo en terminal:
+
+```bash
+sed -n '1,180p' results/eco_clinvar_sample_report.md
+```
+
+Para abrirlo en entorno gráfico:
+
+```bash
+xdg-open results/eco_clinvar_sample_report.md
+```
+
+Guía completa:
+
+```text
+docs/guia-interpretacion-variantes-eco.md
+```
+
+## Demo pública con descarga real de secuencia
 
 ```bash
 make public-demo
 ```
 
-Este comando ejecuta:
-
-```bash
-python scripts/run_eco_public_chrM_report.py
-```
-
-El flujo realiza:
+Flujo:
 
 ```text
-descarga pública chrM.fa.gz → descompresión → generación BED → FASTA → eco_core → análisis de motivos → informe interpretativo
+descarga pública chrM.fa.gz
+→ descompresión
+→ generación BED
+→ FASTA
+→ eco_core
+→ análisis de motivos
+→ informe interpretativo
 ```
 
-Genera resultados locales en:
+Salidas:
 
 ```text
 data/public/ucsc_hg38_chrM/
@@ -84,131 +194,9 @@ results/eco_public_chrM_report.json
 results/eco_public_chrM_interpretive_report.md
 ```
 
-La salida principal para lectura humana es:
+## Pipeline parametrizable
 
-```text
-results/eco_public_chrM_interpretive_report.md
-```
-
-Este informe usa un estilo parecido a reporte de laboratorio: identifica la muestra, resume métricas, explica hallazgos y declara límites. **No es diagnóstico médico**: usa una referencia genómica pública, no una muestra clínica personal.
-
-## Resultado demostrativo
-
-Puedes revisar una salida demostrativa ya versionada aquí:
-
-```text
-docs/resultado-demostrativo-eco.md
-```
-
-Este documento muestra el resultado del flujo:
-
-```text
-BED → FASTA → eco_core → análisis de motivos → reporte integrado
-```
-
-En la demo se procesan 4 regiones, se absorben 4 paquetes, se detectan 4 motivos regulatorios simples y se genera una lectura final sin rechazos. Sirve como vitrina rápida del valor del proyecto antes de ejecutar el código localmente.
-
-## Marco conceptual SNE-E.C.O.
-
-El proyecto cuenta con una pieza maestra conceptual que conecta el **Sistema Nervioso Entérico (SNE)** con la arquitectura de procesamiento de datos de E.C.O.
-
-Puedes revisarla aquí:
-
-```text
-docs/modulo-sne-eco-digestion-bioinspirada.md
-```
-
-Esta pieza define a E.C.O. como un **metabolismo de información**: un sistema que recibe datos crudos, los fragmenta, filtra, transforma, absorbe como conocimiento útil y descarta lo que no aporta valor.
-
-En términos simples:
-
-> Así como el intestino convierte alimento en energía disponible para el organismo, E.C.O. convierte datos crudos en conocimiento disponible para la inteligencia del sistema.
-
-## Estado actual del repositorio
-
-Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pipeline parametrizable, descarga pública, informe interpretativo, exportación Markdown, pruebas automáticas, validación automática con GitHub Actions, guías de uso y comandos de desarrollo:
-
-```text
-src/eco_motif_analysis.py
-src/eco_bed_to_fasta.py
-src/eco_core/
-scripts/run_eco_validation.py
-scripts/run_eco_demo_pipeline.py
-scripts/run_eco_pipeline.py
-scripts/run_eco_public_chrM_report.py
-scripts/review_eco_demo_report.py
-scripts/export_eco_demo_markdown.py
-tests/
-.github/workflows/eco-validation.yml
-data/README.md
-data/.gitkeep
-docs/modulo-sne-eco-digestion-bioinspirada.md
-docs/resultado-demostrativo-eco.md
-docs/guia-uso-archivos-propios.md
-docs/ejemplo-local-coordenadas-bed.md
-Makefile
-requirements-dev.txt
-```
-
-La carpeta `data/` está preparada como zona local para archivos propios, pero el repositorio ignora los datos reales para evitar subir archivos genómicos pesados por accidente.
-
-El primer módulo analiza secuencias FASTA y busca patrones regulatorios clásicos. El segundo módulo convierte coordenadas BED en secuencias FASTA usando un genoma de referencia local. La carpeta `src/eco_core/` transforma la analogía SNE-E.C.O. en módulos técnicos de ingesta, filtrado, absorción, feedback y descarte. La pieza conceptual documenta la arquitectura bioinspirada SNE-E.C.O. y sugiere cómo transformar el proyecto desde un conjunto de scripts hacia un pipeline orgánico, trazable y modular.
-
-## Instalación rápida para desarrollo
-
-Desde una terminal Linux:
-
-```bash
-git clone https://github.com/CristianGormaz/ECO-genoma-pipeline.git
-cd ECO-genoma-pipeline
-make install-dev
-```
-
-Esto crea un entorno virtual local en `.venv/`, actualiza `pip` e instala dependencias de desarrollo desde `requirements-dev.txt`.
-
-Si ya tienes el repositorio clonado:
-
-```bash
-cd ~/Proyectos/ECO-genoma-pipeline
-git pull origin main
-make install-dev
-```
-
-## Comando único de prueba
-
-Para ejecutar pruebas automáticas, validación oficial, demo integrada, revisión humana, exportación Markdown y pipeline parametrizable en una sola orden:
-
-```bash
-make check
-```
-
-Este comando ejecuta:
-
-```bash
-make test
-make validate
-make demo
-make review
-make report
-make pipeline
-```
-
-También puedes correr cada parte por separado:
-
-```bash
-make test         # Ejecuta pytest
-make validate     # Ejecuta scripts/run_eco_validation.py
-make demo         # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
-make review       # Revisa el JSON integrado en formato humano
-make report       # Exporta el JSON integrado a Markdown
-make pipeline     # Ejecuta el pipeline parametrizable con archivos definidos por argumentos
-make public-demo  # Descarga una referencia pública pequeña y genera informe interpretativo
-make clean        # Limpia cachés y resultados temporales de prueba
-```
-
-## Pipeline parametrizable para archivos propios
-
-Para ejecutar E.C.O. con tu propio archivo BED y tu propio FASTA de referencia:
+Para usar tus propios archivos BED y FASTA:
 
 ```bash
 python3 scripts/run_eco_pipeline.py \
@@ -218,7 +206,7 @@ python3 scripts/run_eco_pipeline.py \
   --prefix mi_analisis
 ```
 
-Esto genera:
+Genera:
 
 ```text
 results/mi_analisis.fa
@@ -226,251 +214,81 @@ results/mi_analisis_report.json
 results/mi_analisis_report.md
 ```
 
-Guía práctica para preparar y usar archivos propios:
+Guías útiles:
 
 ```text
 docs/guia-uso-archivos-propios.md
-```
-
-Caso práctico sobre coordenadas BED 0-based y semiabiertas:
-
-```text
 docs/ejemplo-local-coordenadas-bed.md
-```
-
-También puedes revisar la carpeta local de datos:
-
-```text
 data/README.md
 ```
 
-También puedes probar la interfaz parametrizable con los archivos de ejemplo:
+## Marco conceptual SNE-E.C.O.
 
-```bash
-make pipeline
-```
-
-Esta etapa convierte la demo en una herramienta más flexible: ya no depende únicamente de `examples/demo_regions.bed` y `examples/tiny_reference.fa`.
-
-## Demo integrada BED → FASTA → eco_core → análisis de motivos
-
-El repositorio incluye una demo del primer recorrido completo del alimento informacional:
-
-```bash
-make demo
-```
-
-Equivalente directo:
-
-```bash
-python3 scripts/run_eco_demo_pipeline.py
-```
-
-La demo usa:
+Documento principal:
 
 ```text
-examples/demo_regions.bed
-examples/tiny_reference.fa
+docs/modulo-sne-eco-digestion-bioinspirada.md
 ```
 
-Y genera:
+Define E.C.O. como un **metabolismo de información** inspirado en el Sistema Nervioso Entérico:
 
 ```text
-results/eco_demo_pipeline.fa
-results/eco_demo_pipeline_report.json
+dato crudo
+→ fragmentación
+→ filtro
+→ transformación
+→ absorción
+→ feedback
+→ descarte
 ```
 
-Resultado esperado resumido:
+## Estado actual del repositorio
 
 ```text
-E.C.O. DEMO PIPELINE REPORT
-Regiones procesadas: 4
-Motivos encontrados: 4
-Aceptados: 4
-Rechazados: 0
-Absorbidos: 4
-Estado: OK, intestino informacional demo funcionando.
+src/eco_motif_analysis.py
+src/eco_bed_to_fasta.py
+src/eco_variant_interpretation.py
+src/eco_core/
+scripts/run_eco_validation.py
+scripts/run_eco_demo_pipeline.py
+scripts/run_eco_pipeline.py
+scripts/run_eco_public_chrM_report.py
+scripts/run_eco_variant_demo.py
+scripts/run_eco_clinvar_sample_report.py
+scripts/review_eco_demo_report.py
+scripts/export_eco_demo_markdown.py
+tests/
+.github/workflows/eco-validation.yml
+data/README.md
+docs/modulo-sne-eco-digestion-bioinspirada.md
+docs/resultado-demostrativo-eco.md
+docs/guia-uso-archivos-propios.md
+docs/guia-interpretacion-variantes-eco.md
+docs/ejemplo-local-coordenadas-bed.md
+examples/clinvar_style_demo_variants.tsv
+Makefile
+requirements-dev.txt
 ```
 
-## Reporte Markdown para portafolio
+## Validación automática
 
-Para transformar el JSON integrado en un reporte Markdown legible:
-
-```bash
-make report
-```
-
-Equivalente directo:
-
-```bash
-python3 scripts/export_eco_demo_markdown.py
-```
-
-Esto genera:
+GitHub Actions ejecuta validación en cada `push` o `pull request` hacia `main`:
 
 ```text
-results/eco_demo_pipeline_report.md
+.github/workflows/eco-validation.yml
 ```
 
-El reporte incluye:
-
-- Resumen ejecutivo.
-- Entradas y salidas.
-- Detalle por región.
-- Motivos encontrados.
-- Lectura final.
-- Nota metodológica.
-
-## Motivos regulatorios incluidos
-
-El módulo `eco_motif_analysis.py` detecta:
-
-- **TATA box canónica**: `TATAAA`
-- **TATA box degenerada**: `TATA[AT][AT]`
-- **CAAT box**: `CCAAT`
-- **GC box**: `GGGCGG`
-- **Señal de poliadenilación**: `AATAAA`
-- **Repeticiones homopoliméricas largas**: `A{6,}`, `T{6,}`, `C{6,}`, `G{6,}`
-
-Además calcula:
-
-- Longitud de la secuencia.
-- Porcentaje GC.
-- Porcentaje de bases ambiguas `N`.
-- Posición de cada motivo en base 1.
-
-## Uso básico: análisis de motivos en FASTA
-
-```bash
-python src/eco_motif_analysis.py --fasta examples/demo_promoter.fa
-```
-
-Guardar reporte JSON:
-
-```bash
-python src/eco_motif_analysis.py --fasta examples/demo_promoter.fa --json results/reporte.json
-```
-
-Guardar reporte CSV:
-
-```bash
-python src/eco_motif_analysis.py --fasta examples/demo_promoter.fa --csv results/reporte.csv
-```
-
-Modo estricto, rechazando bases `N`:
-
-```bash
-python src/eco_motif_analysis.py --fasta examples/demo_promoter.fa --strict-acgt
-```
-
-## Uso básico: conversión BED → FASTA
-
-```bash
-python src/eco_bed_to_fasta.py \
-  --bed examples/demo_regions.bed \
-  --reference examples/tiny_reference.fa \
-  --output results/demo_regions.fa
-```
-
-Este paso permite pasar desde coordenadas genómicas a secuencias extraídas. El formato BED se interpreta como coordenadas 0-based y semiabiertas: `start` incluido y `end` excluido.
-
-Ejemplo BED:
-
-```text
-chrDemo	8	13	caat_box_region	0	+
-chrDemo	19	25	tata_box_region	0	+
-chrDemo	25	31	gc_box_region	0	+
-chrReverse	4	8	reverse_demo	0	-
-```
-
-Salida FASTA esperada:
-
-```fasta
->caat_box_region|chrDemo:8-13(+)
-CCAAT
->tata_box_region|chrDemo:19-25(+)
-TATAAA
->gc_box_region|chrDemo:25-31(+)
-GGGCGG
->reverse_demo|chrReverse:4-8(-)
-GGGG
-```
-
-## Validación del metabolismo E.C.O.
-
-El repositorio incluye una validación oficial del metabolismo mínimo E.C.O. Esta prueba ejecuta una secuencia completa y legible:
-
-1. Ingesta de una secuencia válida.
-2. Filtrado de calidad.
-3. Absorción de features genómicas básicas.
-4. Ingesta de una secuencia inválida.
-5. Rechazo controlado.
-6. Descarte auditable.
-7. Feedback final del sistema.
-
-Ejecutar desde la raíz del repositorio:
-
-```bash
-make validate
-```
-
-Equivalente directo:
-
-```bash
-python3 scripts/run_eco_validation.py
-```
-
-Resultado esperado resumido:
-
-```text
-E.C.O. VALIDATION REPORT
-Paquetes procesados: 2
-Aceptados: 1
-Rechazados: 1
-Absorbidos: 1
-Tasa de rechazo: 50.0%
-Tasa de absorción: 50.0%
-OK: metabolismo informacional mínimo funcionando.
-```
-
-Esta validación no reemplaza los tests automáticos, pero sirve como demostración UX del flujo SNE-E.C.O.: entrada, filtro, absorción, descarte y retroalimentación. Además, el script oficial está protegido por `pytest` mediante `tests/test_run_eco_validation.py`.
-
-## Ejemplos incluidos
-
-El repositorio incluye:
-
-```text
-examples/demo_promoter.fa
-examples/tiny_reference.fa
-examples/demo_regions.bed
-results/demo_report.json
-results/demo_regions.fa
-```
-
-Estos archivos son pequeños y demostrativos. Sirven para probar el funcionamiento del proyecto sin descargar datos externos.
-
-## Ejemplo mínimo de FASTA
-
-```fasta
->ejemplo_promotor
-ACGTACGTCCAATTTTTTTTATAAAGGGCGGAATAAA
-```
+Además, `make check` valida localmente las piezas principales del MVP.
 
 ## Limitaciones
 
-Este proyecto se encuentra en fase MVP/prototipo. Actualmente detecta motivos mediante expresiones regulares simples y no reemplaza herramientas bioinformáticas especializadas.
-
-Limitaciones actuales:
-
-- La presencia de un motivo no confirma por sí sola actividad regulatoria real.
-- No considera todavía contexto cromatínico, conservación evolutiva, accesibilidad, metilación ni expresión génica.
-- No integra aún datos reales de ENCODE, EnhancerAtlas u otras bases externas dentro del flujo automatizado.
-- No usa todavía embeddings de DNABERT ni modelos de clasificación MLP en esta primera versión funcional.
-- Las posiciones reportadas en el análisis de motivos son relativas a la secuencia entregada.
-- La conversión BED → FASTA depende de que el FASTA de referencia y las coordenadas BED usen el mismo sistema de referencia/genome build.
-- Los ejemplos incluidos son pequeños y sirven para validar funcionamiento, no para obtener conclusiones biológicas.
-- La analogía con el Sistema Nervioso Entérico se usa como inspiración arquitectónica, no como afirmación de que el software sea un organismo vivo o consciente.
-- El informe público `make public-demo` usa una referencia genómica pública y no debe interpretarse como resultado médico personal.
+- Proyecto en fase MVP/prototipo.
+- El análisis de motivos usa expresiones regulares simples.
+- Los ejemplos incluidos son pequeños y demostrativos.
+- La conversión BED → FASTA requiere que BED y FASTA usen el mismo sistema de referencia.
+- La ruta de variantes usa registros públicos y metadatos externos.
+- La analogía con el Sistema Nervioso Entérico es arquitectónica, no biológica literal.
+- Los reportes son educativos/bioinformáticos y no deben usarse como conclusión médica personal.
 
 ## Próximos pasos
 
@@ -478,7 +296,7 @@ Limitaciones actuales:
 - Incorporar embeddings tipo DNABERT.
 - Entrenar un clasificador inicial para distinguir regiones regulatorias y no regulatorias.
 - Agregar visualizaciones y reportes comparativos.
-- Convertir el marco SNE-E.C.O. en módulos técnicos: ingesta, filtro, flujo, absorción, feedback y descarte.
+- Expandir la normalización de variantes y fuentes externas.
 
 ## Firma conceptual
 
