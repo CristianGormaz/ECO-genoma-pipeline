@@ -1,5 +1,7 @@
 # ECO-genoma-pipeline
 
+![E.C.O. Validation](https://github.com/CristianGormaz/ECO-genoma-pipeline/actions/workflows/eco-validation.yml/badge.svg)
+
 Pipeline bioinspirado para análisis genómico utilizando datos regulatorios, ENCODE, embeddings tipo DNABERT y clasificación automática.
 
 ## Idea central
@@ -36,6 +38,23 @@ Estado: OK, pipeline parametrizable E.C.O. funcionando.
 
 Con esto se ejecutan las pruebas automáticas, la validación oficial del metabolismo E.C.O., la demo integrada BED → FASTA → eco_core → análisis de motivos, la revisión humana del JSON, la exportación Markdown del reporte y una ejecución parametrizable con BED/FASTA definidos por argumentos.
 
+## Validación automática en GitHub Actions
+
+El repositorio incluye un workflow de validación automática:
+
+```text
+.github/workflows/eco-validation.yml
+```
+
+Este workflow se ejecuta en cada `push` o `pull request` hacia `main` y valida:
+
+```bash
+python -m pytest -q
+python scripts/run_eco_validation.py
+```
+
+Esto permite que E.C.O. no dependa solo de una prueba local: GitHub también verifica que el metabolismo informacional mínimo siga funcionando.
+
 ## Resultado demostrativo
 
 Puedes revisar una salida demostrativa ya versionada aquí:
@@ -70,7 +89,7 @@ En términos simples:
 
 ## Estado actual del repositorio
 
-Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pipeline parametrizable, exportación Markdown, pruebas automáticas, guías de uso y comandos de desarrollo:
+Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pipeline parametrizable, exportación Markdown, pruebas automáticas, validación automática con GitHub Actions, guías de uso y comandos de desarrollo:
 
 ```text
 src/eco_motif_analysis.py
@@ -82,6 +101,7 @@ scripts/run_eco_pipeline.py
 scripts/review_eco_demo_report.py
 scripts/export_eco_demo_markdown.py
 tests/
+.github/workflows/eco-validation.yml
 data/README.md
 data/.gitkeep
 docs/modulo-sne-eco-digestion-bioinspirada.md
