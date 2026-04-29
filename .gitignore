@@ -1,0 +1,43 @@
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+
+# Configuración local
+.env
+.env.*
+*.local
+
+# Resultados generados durante pruebas locales
+results/test_*.fa
+results/test_*.json
+results/test_*.csv
+
+# Notebooks / Jupyter
+.ipynb_checkpoints/
+
+# Datos pesados bioinformáticos descargados localmente
+*.tar
+*.tar.gz
+*.zip
+*.bed.gz
+*.fa.gz
+*.fasta.gz
+*.bam
+*.bai
+*.sam
+*.vcf
+*.vcf.gz
