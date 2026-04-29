@@ -40,7 +40,9 @@ results/*.fa
 results/*.fasta
 results/*.json
 results/*.csv
+results/*.tsv
 results/*.md
+results/*.html
 
 # Notebooks / Jupyter
 .ipynb_checkpoints/
