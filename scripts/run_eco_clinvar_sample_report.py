@@ -70,6 +70,17 @@ def normalize_gene_list(genes: Iterable[str]) -> set[str]:
     return {gene.strip().upper() for gene in genes if gene.strip()}
 
 
+def ordered_gene_list(genes: Iterable[str]) -> List[str]:
+    ordered: List[str] = []
+    seen: set[str] = set()
+    for gene in genes:
+        normalized = gene.strip().upper()
+        if normalized and normalized not in seen:
+            ordered.append(normalized)
+            seen.add(normalized)
+    return ordered
+
+
 def first_non_empty(*values: str) -> str:
     for value in values:
         value = (value or "").strip()
@@ -199,6 +210,68 @@ def collect_balanced_records(path: Path, genes: List[str], max_records: int) -> 
     return selected
 
 
+def collect_gene_balanced_records(path: Path, genes: List[str], max_records: int) -> List[VariantRecord]:
+    """Recolecta variantes únicas balanceando genes y categorías.
+
+    Primero agrupa por gen y categoría E.C.O.; luego selecciona en ronda por
+    gen y por categoría. Es el modo recomendado para informes exploratorios,
+    porque evita que un gen abundante domine toda la muestra.
+    """
+    ordered_genes = ordered_gene_list(genes)
+    wanted = set(ordered_genes)
+    buckets: Dict[str, Dict[str, List[VariantRecord]]] = {
+        gene: {category: [] for category in CATEGORY_PRIORITY} for gene in ordered_genes
+    }
+    per_bucket_soft_limit = max(2, max_records // max(1, len(ordered_genes) * 2) + 1)
+    seen_variants: set[str] = set()
+
+    for row in iter_clinvar_rows(path):
+        if not row_gene_is_wanted(row, wanted):
+            continue
+        gene = (row.get("GeneSymbol", "") or "").strip().upper()
+        variant_key = variation_identifier(row)
+        if variant_key in seen_variants:
+            continue
+        seen_variants.add(variant_key)
+        record = clinvar_row_to_variant_record(row)
+        category = classify_clinical_significance(record.clinical_significance)
+        gene_buckets = buckets.setdefault(gene, {cat: [] for cat in CATEGORY_PRIORITY})
+        bucket = gene_buckets.setdefault(category, [])
+        if len(bucket) < per_bucket_soft_limit:
+            bucket.append(record)
+        total_buffered = sum(
+            len(records)
+            for by_category in buckets.values()
+            for records in by_category.values()
+        )
+        if total_buffered >= max_records * 4:
+            break
+
+    selected: List[VariantRecord] = []
+    selected_ids: set[str] = set()
+    while len(selected) < max_records:
+        added_in_round = False
+        for gene in ordered_genes:
+            gene_buckets = buckets.get(gene, {})
+            for category in CATEGORY_PRIORITY:
+                bucket = gene_buckets.get(category, [])
+                while bucket:
+                    record = bucket.pop(0)
+                    if record.variant_id in selected_ids:
+                        continue
+                    selected.append(record)
+                    selected_ids.add(record.variant_id)
+                    added_in_round = True
+                    break
+                if added_in_round or len(selected) >= max_records:
+                    break
+            if len(selected) >= max_records:
+                break
+        if not added_in_round:
+            break
+    return selected
+
+
 def write_tsv(records: List[VariantRecord], output_tsv: Path) -> None:
     output_tsv.parent.mkdir(parents=True, exist_ok=True)
     fieldnames = [
@@ -229,7 +302,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--prefix", default=DEFAULT_PREFIX, help="Prefijo de salida.")
     parser.add_argument("--genes", nargs="+", default=DEFAULT_GENES, help="Genes a muestrear, por ejemplo BRCA1 BRCA2 CFTR TP53.")
     parser.add_argument("--max-records", type=int, default=20, help="Máximo de variantes a incluir.")
-    parser.add_argument("--sampling", choices=["balanced", "first"], default="balanced", help="Estrategia de muestreo: balanced evita sesgo educativo; first toma primeras coincidencias.")
+    parser.add_argument(
+        "--sampling",
+        choices=["gene-balanced", "balanced", "first"],
+        default="gene-balanced",
+        help="Estrategia: gene-balanced equilibra genes y categorías; balanced equilibra categorías; first toma primeras coincidencias.",
+    )
     parser.add_argument("--force-download", action="store_true", help="Descarga ClinVar aunque exista cache local.")
     return parser
 
@@ -250,8 +328,10 @@ def main() -> int:
         download_state = download_file(args.source_url, clinvar_gz, force=args.force_download)
         if args.sampling == "first":
             records = collect_records(clinvar_gz, genes=args.genes, max_records=args.max_records)
-        else:
+        elif args.sampling == "balanced":
             records = collect_balanced_records(clinvar_gz, genes=args.genes, max_records=args.max_records)
+        else:
+            records = collect_gene_balanced_records(clinvar_gz, genes=args.genes, max_records=args.max_records)
         if not records:
             parser.exit(status=1, message="Error: no se encontraron variantes para los genes indicados.\n")
 
@@ -270,12 +350,14 @@ def main() -> int:
         output_md.write_text(build_markdown(report, output_tsv), encoding="utf-8")
 
         summary = report["summary"]
+        genes_found = sorted({record.gene for record in records})
         print("E.C.O. CLINVAR SAMPLE REPORT")
         print("============================")
         print(f"Fuente: {args.source_url}")
         print(f"Descarga: {download_state}")
         print(f"Muestreo: {args.sampling}")
         print(f"Genes buscados: {', '.join(args.genes)}")
+        print(f"Genes representados: {', '.join(genes_found)}")
         print(f"Variantes procesadas: {summary['variants_processed']}")
         print(f"Categorías: {summary['category_counts']}")
         print(f"Evidencia: {summary['evidence_strength_counts']}")
