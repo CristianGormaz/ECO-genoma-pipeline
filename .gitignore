@@ -43,6 +43,7 @@ results/*.csv
 results/*.tsv
 results/*.md
 results/*.html
+results/eco_clinvar_sample_charts/
 
 # Notebooks / Jupyter
 .ipynb_checkpoints/
