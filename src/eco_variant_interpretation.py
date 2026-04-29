@@ -187,13 +187,24 @@ def summarize_interpretations(interpretations: Iterable[VariantInterpretation]) 
     interpretations = list(interpretations)
     category_counts: Dict[str, int] = {}
     evidence_counts: Dict[str, int] = {}
+    gene_counts: Dict[str, int] = {}
+    gene_category_matrix: Dict[str, Dict[str, int]] = {}
+
     for item in interpretations:
+        gene = item.variant.gene or "no_informado"
         category_counts[item.category] = category_counts.get(item.category, 0) + 1
         evidence_counts[item.evidence_strength] = evidence_counts.get(item.evidence_strength, 0) + 1
+        gene_counts[gene] = gene_counts.get(gene, 0) + 1
+        gene_category_matrix.setdefault(gene, {})[item.category] = (
+            gene_category_matrix.setdefault(gene, {}).get(item.category, 0) + 1
+        )
+
     return {
         "variants_processed": len(interpretations),
         "category_counts": category_counts,
         "evidence_strength_counts": evidence_counts,
+        "gene_counts": gene_counts,
+        "gene_category_matrix": gene_category_matrix,
         "diagnostic_status": "no_diagnostico_resultado_bioinformatico_interpretativo",
     }
 
