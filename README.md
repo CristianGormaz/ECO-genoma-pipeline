@@ -87,6 +87,7 @@ data/.gitkeep
 docs/modulo-sne-eco-digestion-bioinspirada.md
 docs/resultado-demostrativo-eco.md
 docs/guia-uso-archivos-propios.md
+docs/ejemplo-local-coordenadas-bed.md
 Makefile
 requirements-dev.txt
 ```
@@ -170,6 +171,12 @@ Guía práctica para preparar y usar archivos propios:
 
 ```text
 docs/guia-uso-archivos-propios.md
+```
+
+Caso práctico sobre coordenadas BED 0-based y semiabiertas:
+
+```text
+docs/ejemplo-local-coordenadas-bed.md
 ```
 
 También puedes revisar la carpeta local de datos:
