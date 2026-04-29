@@ -82,12 +82,16 @@ scripts/run_eco_pipeline.py
 scripts/review_eco_demo_report.py
 scripts/export_eco_demo_markdown.py
 tests/
+data/README.md
+data/.gitkeep
 docs/modulo-sne-eco-digestion-bioinspirada.md
 docs/resultado-demostrativo-eco.md
 docs/guia-uso-archivos-propios.md
 Makefile
 requirements-dev.txt
 ```
+
+La carpeta `data/` está preparada como zona local para archivos propios, pero el repositorio ignora los datos reales para evitar subir archivos genómicos pesados por accidente.
 
 El primer módulo analiza secuencias FASTA y busca patrones regulatorios clásicos. El segundo módulo convierte coordenadas BED en secuencias FASTA usando un genoma de referencia local. La carpeta `src/eco_core/` transforma la analogía SNE-E.C.O. en módulos técnicos de ingesta, filtrado, absorción, feedback y descarte. La pieza conceptual documenta la arquitectura bioinspirada SNE-E.C.O. y sugiere cómo transformar el proyecto desde un conjunto de scripts hacia un pipeline orgánico, trazable y modular.
 
@@ -148,8 +152,8 @@ Para ejecutar E.C.O. con tu propio archivo BED y tu propio FASTA de referencia:
 
 ```bash
 python3 scripts/run_eco_pipeline.py \
-  --bed ruta/a/mis_regiones.bed \
-  --reference ruta/a/mi_referencia.fa \
+  --bed data/mis_regiones.bed \
+  --reference data/mi_referencia.fa \
   --output-dir results \
   --prefix mi_analisis
 ```
@@ -166,6 +170,12 @@ Guía práctica para preparar y usar archivos propios:
 
 ```text
 docs/guia-uso-archivos-propios.md
+```
+
+También puedes revisar la carpeta local de datos:
+
+```text
+data/README.md
 ```
 
 También puedes probar la interfaz parametrizable con los archivos de ejemplo:
