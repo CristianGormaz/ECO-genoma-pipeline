@@ -82,6 +82,32 @@ def table(headers: List[str], rows: List[List[object]]) -> List[str]:
     return lines
 
 
+def shorten(value: object, max_chars: int = 120) -> str:
+    """Acorta texto largo para tablas Markdown legibles."""
+    text = str(value).replace("\n", " ").strip()
+    if len(text) <= max_chars:
+        return text
+    return text[: max_chars - 1].rstrip() + "…"
+
+
+def compact_condition(value: object, max_items: int = 3, max_chars: int = 100) -> str:
+    """Resume listas largas de condiciones separadas por pipes o punto y coma."""
+    text = str(value).strip()
+    if not text:
+        return "no informado"
+    parts = []
+    for chunk in text.replace(";", "|").split("|"):
+        cleaned = " ".join(chunk.split())
+        if cleaned and cleaned not in parts and cleaned.lower() not in {"not provided", "not specified", "see cases"}:
+            parts.append(cleaned)
+    if not parts:
+        return shorten(text, max_chars)
+    rendered = "; ".join(parts[:max_items])
+    if len(parts) > max_items:
+        rendered += f"; +{len(parts) - max_items} más"
+    return shorten(rendered, max_chars)
+
+
 def category_title(category: str) -> str:
     return CATEGORY_TITLES.get(category, category.replace("_", " ").capitalize())
 
@@ -116,7 +142,7 @@ def build_grouped_category_sections(interpretations: List[Dict[str, object]]) ->
                     variant["gene"],
                     variant["clinical_significance"],
                     item["evidence_strength"],
-                    item["recommended_next_step"],
+                    shorten(item["recommended_next_step"], 90),
                 ]
             )
         sections.extend(
@@ -190,11 +216,11 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
             [
                 variant["variant_id"],
                 variant["gene"],
-                variant["condition"],
+                compact_condition(variant["condition"]),
                 variant["clinical_significance"],
                 item["category"],
                 item["evidence_strength"],
-                item["recommended_next_step"],
+                shorten(item["recommended_next_step"], 90),
             ]
         )
 
@@ -203,18 +229,19 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         variant = item["variant"]
         detailed_sections.extend(
             [
-                f"### {index}. {variant['gene']} — {variant['variant_name']}",
+                f"### {index}. {variant['gene']} — {shorten(variant['variant_name'], 120)}",
                 "",
                 *table(
                     ["Campo", "Valor"],
                     [
                         ["ID", variant["variant_id"]],
-                        ["HGVS", variant["hgvs"]],
-                        ["Condición asociada", variant["condition"]],
+                        ["HGVS", shorten(variant["hgvs"], 160)],
+                        ["Condición asociada", compact_condition(variant["condition"], max_items=6, max_chars=220)],
                         ["Significado clínico declarado", variant["clinical_significance"]],
                         ["Estado de revisión", variant["review_status"]],
                         ["Categoría E.C.O.", item["category"]],
                         ["Fuerza de evidencia", item["evidence_strength"]],
+                        ["Fuente", variant.get("source_url", "no informado")],
                     ],
                 ),
                 "",
@@ -252,7 +279,7 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         "## 4. Resumen ejecutivo de variantes",
         "",
         *table(
-            ["ID", "Gen", "Condición", "Clasificación externa", "Categoría E.C.O.", "Evidencia", "Acción prudente"],
+            ["ID", "Gen", "Condición resumida", "Clasificación externa", "Categoría E.C.O.", "Evidencia", "Acción prudente"],
             rows,
         ),
         "",
