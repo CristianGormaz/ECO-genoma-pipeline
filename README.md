@@ -41,6 +41,33 @@ Estado: OK, pipeline parametrizable E.C.O. funcionando.
 Estado: OK, interpretación de variantes generada sin diagnóstico médico.
 ```
 
+## Demo de portafolio
+
+Para preparar una demo completa de presentación:
+
+```bash
+make portfolio-demo
+```
+
+Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar y exporta el informe HTML.
+
+Al finalizar, deja rutas listas para revisar:
+
+```text
+results/eco_demo_pipeline_report.md
+results/eco_custom_demo_report.md
+results/eco_variant_demo_report.md
+results/eco_clinvar_sample_report.md
+results/eco_clinvar_sample_report.html
+docs/caso-estudio-portafolio-eco.md
+```
+
+Abrir HTML:
+
+```bash
+xdg-open results/eco_clinvar_sample_report.html
+```
+
 ## Caso de estudio para portafolio
 
 Para una lectura profesional, breve y orientada a empleabilidad, revisa:
@@ -64,11 +91,12 @@ make public-demo     # Descarga referencia pública pequeña y genera informe
 make variant-demo    # Demo educativa de variantes desde TSV local
 make clinvar-sample  # Muestra pública real desde ClinVar con reporte E.C.O.
 make clinvar-html    # Convierte el reporte JSON de ClinVar en HTML estático
+make portfolio-demo  # Prepara demo completa para portafolio/entrevista
 make check           # Pruebas + demos locales estables
 make clean           # Limpieza de cachés/resultados temporales
 ```
 
-`make clinvar-sample` queda fuera de `make check` porque depende de red externa y de un archivo público cambiante.
+`make clinvar-sample` y `make portfolio-demo` quedan fuera de `make check` porque dependen de red externa/cache y de un archivo público cambiante.
 
 ## Ruta 1: regiones y motivos regulatorios
 
