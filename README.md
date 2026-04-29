@@ -55,6 +55,43 @@ python scripts/run_eco_validation.py
 
 Esto permite que E.C.O. no dependa solo de una prueba local: GitHub también verifica que el metabolismo informacional mínimo siga funcionando.
 
+## Demo pública con descarga real
+
+Para obtener un resultado tangible con un archivo público descargado desde UCSC/hg38:
+
+```bash
+make public-demo
+```
+
+Este comando ejecuta:
+
+```bash
+python scripts/run_eco_public_chrM_report.py
+```
+
+El flujo realiza:
+
+```text
+descarga pública chrM.fa.gz → descompresión → generación BED → FASTA → eco_core → análisis de motivos → informe interpretativo
+```
+
+Genera resultados locales en:
+
+```text
+data/public/ucsc_hg38_chrM/
+results/eco_public_chrM.fa
+results/eco_public_chrM_report.json
+results/eco_public_chrM_interpretive_report.md
+```
+
+La salida principal para lectura humana es:
+
+```text
+results/eco_public_chrM_interpretive_report.md
+```
+
+Este informe usa un estilo parecido a reporte de laboratorio: identifica la muestra, resume métricas, explica hallazgos y declara límites. **No es diagnóstico médico**: usa una referencia genómica pública, no una muestra clínica personal.
+
 ## Resultado demostrativo
 
 Puedes revisar una salida demostrativa ya versionada aquí:
@@ -89,7 +126,7 @@ En términos simples:
 
 ## Estado actual del repositorio
 
-Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pipeline parametrizable, exportación Markdown, pruebas automáticas, validación automática con GitHub Actions, guías de uso y comandos de desarrollo:
+Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, demo integrada, pipeline parametrizable, descarga pública, informe interpretativo, exportación Markdown, pruebas automáticas, validación automática con GitHub Actions, guías de uso y comandos de desarrollo:
 
 ```text
 src/eco_motif_analysis.py
@@ -98,6 +135,7 @@ src/eco_core/
 scripts/run_eco_validation.py
 scripts/run_eco_demo_pipeline.py
 scripts/run_eco_pipeline.py
+scripts/run_eco_public_chrM_report.py
 scripts/review_eco_demo_report.py
 scripts/export_eco_demo_markdown.py
 tests/
@@ -158,13 +196,14 @@ make pipeline
 También puedes correr cada parte por separado:
 
 ```bash
-make test      # Ejecuta pytest
-make validate  # Ejecuta scripts/run_eco_validation.py
-make demo      # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
-make review    # Revisa el JSON integrado en formato humano
-make report    # Exporta el JSON integrado a Markdown
-make pipeline  # Ejecuta el pipeline parametrizable con archivos definidos por argumentos
-make clean     # Limpia cachés y resultados temporales de prueba
+make test         # Ejecuta pytest
+make validate     # Ejecuta scripts/run_eco_validation.py
+make demo         # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
+make review       # Revisa el JSON integrado en formato humano
+make report       # Exporta el JSON integrado a Markdown
+make pipeline     # Ejecuta el pipeline parametrizable con archivos definidos por argumentos
+make public-demo  # Descarga una referencia pública pequeña y genera informe interpretativo
+make clean        # Limpia cachés y resultados temporales de prueba
 ```
 
 ## Pipeline parametrizable para archivos propios
@@ -431,6 +470,7 @@ Limitaciones actuales:
 - La conversión BED → FASTA depende de que el FASTA de referencia y las coordenadas BED usen el mismo sistema de referencia/genome build.
 - Los ejemplos incluidos son pequeños y sirven para validar funcionamiento, no para obtener conclusiones biológicas.
 - La analogía con el Sistema Nervioso Entérico se usa como inspiración arquitectónica, no como afirmación de que el software sea un organismo vivo o consciente.
+- El informe público `make public-demo` usa una referencia genómica pública y no debe interpretarse como resultado médico personal.
 
 ## Próximos pasos
 
