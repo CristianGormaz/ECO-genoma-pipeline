@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo check clean
+.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -34,6 +34,9 @@ public-demo:
 variant-demo:
 	$(PY) scripts/run_eco_variant_demo.py
 
+clinvar-sample:
+	$(PY) scripts/run_eco_clinvar_sample_report.py
+
 check: test validate demo review report pipeline variant-demo
 
 clean:
@@ -44,3 +47,4 @@ clean:
 	rm -f results/eco_custom_demo.fa results/eco_custom_demo_report.json results/eco_custom_demo_report.md
 	rm -f results/eco_public_chrM.fa results/eco_public_chrM_report.json results/eco_public_chrM_interpretive_report.md
 	rm -f results/eco_variant_demo_report.json results/eco_variant_demo_report.md
+	rm -f results/eco_clinvar_sample.tsv results/eco_clinvar_sample_report.json results/eco_clinvar_sample_report.md
