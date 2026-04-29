@@ -30,17 +30,63 @@ En términos simples:
 
 ## Estado actual del repositorio
 
-Este repositorio ya incluye módulos funcionales, una capa técnica base y una pieza conceptual:
+Este repositorio ya incluye módulos funcionales, una capa técnica base, validación oficial, pruebas automáticas y comandos de desarrollo:
 
 ```text
 src/eco_motif_analysis.py
 src/eco_bed_to_fasta.py
 src/eco_core/
 scripts/run_eco_validation.py
+tests/
 docs/modulo-sne-eco-digestion-bioinspirada.md
+Makefile
+requirements-dev.txt
 ```
 
 El primer módulo analiza secuencias FASTA y busca patrones regulatorios clásicos. El segundo módulo convierte coordenadas BED en secuencias FASTA usando un genoma de referencia local. La carpeta `src/eco_core/` transforma la analogía SNE-E.C.O. en módulos técnicos de ingesta, filtrado, absorción, feedback y descarte. La pieza conceptual documenta la arquitectura bioinspirada SNE-E.C.O. y sugiere cómo transformar el proyecto desde un conjunto de scripts hacia un pipeline orgánico, trazable y modular.
+
+## Instalación rápida para desarrollo
+
+Desde una terminal Linux:
+
+```bash
+git clone https://github.com/CristianGormaz/ECO-genoma-pipeline.git
+cd ECO-genoma-pipeline
+make install-dev
+```
+
+Esto crea un entorno virtual local en `.venv/`, actualiza `pip` e instala dependencias de desarrollo desde `requirements-dev.txt`.
+
+Si ya tienes el repositorio clonado:
+
+```bash
+cd ~/Proyectos/ECO-genoma-pipeline
+git pull origin main
+make install-dev
+```
+
+## Comando único de prueba
+
+Para ejecutar pruebas automáticas y validación oficial del metabolismo E.C.O. en una sola orden:
+
+```bash
+make check
+```
+
+Este comando ejecuta:
+
+```bash
+make test
+make validate
+```
+
+También puedes correr cada parte por separado:
+
+```bash
+make test      # Ejecuta pytest
+make validate  # Ejecuta scripts/run_eco_validation.py
+make clean     # Limpia cachés y resultados temporales de prueba
+```
 
 ## Motivos regulatorios incluidos
 
@@ -132,6 +178,12 @@ El repositorio incluye una validación oficial del metabolismo mínimo E.C.O. Es
 Ejecutar desde la raíz del repositorio:
 
 ```bash
+make validate
+```
+
+Equivalente directo:
+
+```bash
 python3 scripts/run_eco_validation.py
 ```
 
@@ -148,7 +200,7 @@ Tasa de absorción: 50.0%
 OK: metabolismo informacional mínimo funcionando.
 ```
 
-Esta validación no reemplaza los tests automáticos, pero sirve como demostración UX del flujo SNE-E.C.O.: entrada, filtro, absorción, descarte y retroalimentación.
+Esta validación no reemplaza los tests automáticos, pero sirve como demostración UX del flujo SNE-E.C.O.: entrada, filtro, absorción, descarte y retroalimentación. Además, el script oficial está protegido por `pytest` mediante `tests/test_run_eco_validation.py`.
 
 ## Ejemplos incluidos
 
