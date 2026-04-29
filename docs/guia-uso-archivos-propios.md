@@ -8,6 +8,23 @@ El flujo ejecutado es:
 BED propio → FASTA extraído → eco_core → análisis de motivos → JSON → Markdown
 ```
 
+## Carpeta recomendada
+
+El repositorio incluye una carpeta local preparada para datos de entrada:
+
+```text
+data/
+```
+
+Puedes guardar ahí tus archivos locales, por ejemplo:
+
+```text
+data/mis_regiones.bed
+data/mi_referencia.fa
+```
+
+La carpeta `data/` conserva su estructura mediante `data/README.md` y `data/.gitkeep`, pero ignora los datos reales para evitar subir archivos genómicos pesados por accidente.
+
 ## Requisitos de entrada
 
 Necesitas dos archivos compatibles entre sí:
@@ -197,7 +214,7 @@ Si aparecen otros caracteres, el sistema rechazará la secuencia o reportará el
 ## Buenas prácticas
 
 - Usa nombres claros para las regiones en la columna 4 del BED.
-- Mantén tus archivos propios en una carpeta como `data/`.
+- Mantén tus archivos propios en `data/`.
 - Usa prefijos descriptivos, por ejemplo `experimento_promotores_01`.
 - No subas archivos genómicos pesados al repositorio si son grandes.
 - Conserva siempre el dato original y genera resultados en `results/`.
