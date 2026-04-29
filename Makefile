@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html portfolio-demo check clean
+.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html preview-clinvar inspect-clinvar-json open-clinvar-html portfolio-demo check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -40,6 +40,15 @@ clinvar-sample:
 clinvar-html:
 	$(PY) scripts/export_eco_variant_html.py
 
+preview-clinvar:
+	@sed -n '1,180p' results/eco_clinvar_sample_report.md
+
+inspect-clinvar-json:
+	@$(PY) -m json.tool results/eco_clinvar_sample_report.json | head -80
+
+open-clinvar-html:
+	@xdg-open results/eco_clinvar_sample_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_clinvar_sample_report.html"
+
 portfolio-demo: check clinvar-sample clinvar-html
 	@echo ""
 	@echo "E.C.O. PORTFOLIO DEMO READY"
@@ -56,7 +65,9 @@ portfolio-demo: check clinvar-sample clinvar-html
 	@echo "- docs/guia-interpretacion-variantes-eco.md"
 	@echo "- docs/modulo-sne-eco-digestion-bioinspirada.md"
 	@echo ""
-	@echo "Abrir HTML: xdg-open results/eco_clinvar_sample_report.html"
+	@echo "Vista rápida Markdown: make preview-clinvar"
+	@echo "Inspección JSON: make inspect-clinvar-json"
+	@echo "Abrir HTML: make open-clinvar-html"
 
 check: test validate demo review report pipeline variant-demo
 
