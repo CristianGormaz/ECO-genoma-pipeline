@@ -35,6 +35,22 @@ Reporte Markdown generado: results/eco_demo_pipeline_report.md
 
 Con esto se ejecutan las pruebas automáticas, la validación oficial del metabolismo E.C.O., la demo integrada BED → FASTA → eco_core → análisis de motivos, la revisión humana del JSON y la exportación Markdown del reporte.
 
+## Resultado demostrativo
+
+Puedes revisar una salida demostrativa ya versionada aquí:
+
+```text
+docs/resultado-demostrativo-eco.md
+```
+
+Este documento muestra el resultado del flujo:
+
+```text
+BED → FASTA → eco_core → análisis de motivos → reporte integrado
+```
+
+En la demo se procesan 4 regiones, se absorben 4 paquetes, se detectan 4 motivos regulatorios simples y se genera una lectura final sin rechazos. Sirve como vitrina rápida del valor del proyecto antes de ejecutar el código localmente.
+
 ## Marco conceptual SNE-E.C.O.
 
 El proyecto cuenta con una pieza maestra conceptual que conecta el **Sistema Nervioso Entérico (SNE)** con la arquitectura de procesamiento de datos de E.C.O.
@@ -65,6 +81,7 @@ scripts/review_eco_demo_report.py
 scripts/export_eco_demo_markdown.py
 tests/
 docs/modulo-sne-eco-digestion-bioinspirada.md
+docs/resultado-demostrativo-eco.md
 Makefile
 requirements-dev.txt
 ```
