@@ -37,11 +37,11 @@ variant-demo:
 clinvar-sample:
 	$(PY) scripts/run_eco_clinvar_sample_report.py
 
-clinvar-html:
-	$(PY) scripts/export_eco_variant_html.py
-
 clinvar-charts:
 	$(PY) scripts/export_eco_clinvar_charts.py
+
+clinvar-html:
+	$(PY) scripts/export_eco_variant_html.py
 
 preview-clinvar:
 	@sed -n '1,180p' results/eco_clinvar_sample_report.md
@@ -55,7 +55,7 @@ open-clinvar-html:
 open-clinvar-charts:
 	@xdg-open results/eco_clinvar_sample_charts/index.html >/dev/null 2>&1 || echo "No se pudo abrir el índice. Revisa: results/eco_clinvar_sample_charts/index.html"
 
-portfolio-demo: check clinvar-sample clinvar-html clinvar-charts
+portfolio-demo: check clinvar-sample clinvar-charts clinvar-html
 	@echo ""
 	@echo "E.C.O. PORTFOLIO DEMO READY"
 	@echo "==========================="
