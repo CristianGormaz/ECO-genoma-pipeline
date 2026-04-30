@@ -128,6 +128,61 @@ def predict(record: LabeledSequence, centroids: Dict[str, FeatureVector]) -> Pre
     )
 
 
+def safe_divide(numerator: float, denominator: float) -> float:
+    return numerator / denominator if denominator else 0.0
+
+
+def build_classification_metrics(labels: Sequence[str], matrix: Dict[str, Dict[str, int]]) -> Dict[str, object]:
+    per_class: Dict[str, Dict[str, float | int]] = {}
+    total_support = 0
+    macro_precision = 0.0
+    macro_recall = 0.0
+    macro_f1 = 0.0
+    weighted_precision = 0.0
+    weighted_recall = 0.0
+    weighted_f1 = 0.0
+
+    for label in labels:
+        tp = matrix[label].get(label, 0)
+        fp = sum(matrix[true_label].get(label, 0) for true_label in labels if true_label != label)
+        fn = sum(matrix[label].get(pred_label, 0) for pred_label in labels if pred_label != label)
+        support = sum(matrix[label].values())
+        precision = safe_divide(tp, tp + fp)
+        recall = safe_divide(tp, tp + fn)
+        f1 = safe_divide(2 * precision * recall, precision + recall)
+
+        total_support += support
+        macro_precision += precision
+        macro_recall += recall
+        macro_f1 += f1
+        weighted_precision += precision * support
+        weighted_recall += recall * support
+        weighted_f1 += f1 * support
+        per_class[label] = {
+            "precision": round(precision, 4),
+            "recall": round(recall, 4),
+            "f1": round(f1, 4),
+            "support": support,
+        }
+
+    label_count = len(labels) or 1
+    return {
+        "per_class": per_class,
+        "macro_avg": {
+            "precision": round(macro_precision / label_count, 4),
+            "recall": round(macro_recall / label_count, 4),
+            "f1": round(macro_f1 / label_count, 4),
+            "support": total_support,
+        },
+        "weighted_avg": {
+            "precision": round(safe_divide(weighted_precision, total_support), 4),
+            "recall": round(safe_divide(weighted_recall, total_support), 4),
+            "f1": round(safe_divide(weighted_f1, total_support), 4),
+            "support": total_support,
+        },
+    }
+
+
 def evaluate(records: Sequence[LabeledSequence], centroids: Dict[str, FeatureVector]) -> Dict[str, object]:
     predictions = [predict(record, centroids) for record in records]
     labels = sorted({record.label for record in records} | set(centroids))
@@ -143,6 +198,7 @@ def evaluate(records: Sequence[LabeledSequence], centroids: Dict[str, FeatureVec
         "accuracy": round(correct / total, 4) if total else 0.0,
         "labels": labels,
         "confusion_matrix": matrix,
+        "classification_metrics": build_classification_metrics(labels, matrix),
         "predictions": [asdict(prediction) for prediction in predictions],
     }
 
@@ -173,5 +229,5 @@ def build_classifier_report(records: Sequence[LabeledSequence]) -> Dict[str, obj
 
 
 def write_json_report(payload: Dict[str, object], output_path: str | Path) -> None:
-    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    Path(output_path).parent.mkdir(parents=True)
     Path(output_path).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
