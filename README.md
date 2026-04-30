@@ -4,10 +4,11 @@
 
 **E.C.O. — Entérico Codificador Orgánico** es un pipeline bioinspirado para procesar datos genómicos como un metabolismo de información: ingesta, filtrado, transformación, absorción, feedback y descarte.
 
-El proyecto trabaja hoy con dos rutas principales:
+El proyecto trabaja hoy con tres rutas principales:
 
 1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
 2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
+3. **Clasificación baseline:** secuencias etiquetadas → features explicables → clasificador por centroides → métricas JSON/Markdown.
 
 > Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
 
@@ -34,11 +35,12 @@ make check
 Resultado esperado actual:
 
 ```text
-24 passed
+26 passed
 OK: metabolismo informacional mínimo funcionando.
 Estado: OK, intestino informacional demo funcionando.
 Estado: OK, pipeline parametrizable E.C.O. funcionando.
 Estado: OK, interpretación de variantes generada sin diagnóstico médico.
+Estado: OK, baseline explicable ejecutado.
 ```
 
 ## Demo de portafolio
@@ -57,6 +59,7 @@ Al finalizar, deja rutas listas para revisar:
 results/eco_demo_pipeline_report.md
 results/eco_custom_demo_report.md
 results/eco_variant_demo_report.md
+results/eco_classifier_baseline_report.md
 results/eco_clinvar_sample_report.md
 results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
@@ -112,6 +115,7 @@ make report                # Exporta el reporte integrado a Markdown
 make pipeline              # Ejecuta pipeline parametrizable con BED/FASTA
 make public-demo           # Descarga referencia pública pequeña y genera informe
 make variant-demo          # Demo educativa de variantes desde TSV local
+make classifier-baseline   # Entrena/evalúa baseline explicable de secuencias
 make clinvar-sample        # Muestra pública real desde ClinVar con reporte E.C.O.
 make clinvar-charts        # Genera visualizaciones SVG desde el JSON ClinVar
 make clinvar-html          # Convierte el reporte JSON de ClinVar en HTML estático integrado
@@ -270,6 +274,42 @@ Guía completa:
 docs/guia-interpretacion-variantes-eco.md
 ```
 
+## Ruta 3: clasificador baseline de secuencias
+
+Antes de incorporar embeddings tipo DNABERT, E.C.O. incluye una línea base simple y medible:
+
+```bash
+make classifier-baseline
+```
+
+Flujo:
+
+```text
+examples/eco_labeled_sequences.tsv
+→ extracción de features explicables
+→ clasificador por centroides
+→ evaluación
+→ JSON/Markdown
+```
+
+Salidas:
+
+```text
+results/eco_classifier_baseline_report.json
+results/eco_classifier_baseline_report.md
+```
+
+Features iniciales:
+
+- longitud;
+- porcentaje GC;
+- porcentaje de N;
+- cantidad de motivos;
+- densidad de motivos;
+- presencia de TATA, CAAT, GC box, polyA y homopolímeros.
+
+El baseline entrega accuracy, matriz de confusión, predicciones, distancias y confianza heurística. Es una referencia demostrativa, no un benchmark científico general.
+
 ## Demo pública con descarga real de secuencia
 
 ```bash
@@ -351,6 +391,7 @@ dato crudo
 src/eco_motif_analysis.py
 src/eco_bed_to_fasta.py
 src/eco_variant_interpretation.py
+src/eco_sequence_classifier.py
 src/eco_core/
 scripts/run_eco_validation.py
 scripts/run_eco_demo_pipeline.py
@@ -358,6 +399,7 @@ scripts/run_eco_pipeline.py
 scripts/run_eco_public_chrM_report.py
 scripts/run_eco_variant_demo.py
 scripts/run_eco_clinvar_sample_report.py
+scripts/run_eco_classifier_baseline.py
 scripts/export_eco_clinvar_charts.py
 scripts/export_eco_variant_html.py
 scripts/review_eco_demo_report.py
@@ -373,6 +415,7 @@ docs/uso-responsable-datos-eco.md
 docs/caso-estudio-portafolio-eco.md
 docs/ejemplo-local-coordenadas-bed.md
 examples/clinvar_style_demo_variants.tsv
+examples/eco_labeled_sequences.tsv
 Makefile
 requirements-dev.txt
 ```
@@ -391,6 +434,7 @@ Además, `make check` valida localmente las piezas principales del MVP.
 
 - Proyecto en fase MVP/prototipo.
 - El análisis de motivos usa expresiones regulares simples.
+- El clasificador baseline usa un dataset pequeño de demostración y no representa desempeño general.
 - Los ejemplos incluidos son pequeños y demostrativos.
 - La conversión BED → FASTA requiere que BED y FASTA usen el mismo sistema de referencia.
 - La ruta de variantes usa registros públicos y metadatos externos.
@@ -401,7 +445,8 @@ Además, `make check` valida localmente las piezas principales del MVP.
 
 - Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas.
 - Incorporar embeddings tipo DNABERT.
-- Entrenar un clasificador inicial para distinguir regiones regulatorias y no regulatorias.
+- Comparar el baseline explicable contra un modelo con embeddings.
+- Entrenar un clasificador inicial con dataset más grande y separación train/test real.
 - Agregar visualizaciones y reportes comparativos.
 - Expandir la normalización de variantes y fuentes externas.
 
