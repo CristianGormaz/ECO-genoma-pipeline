@@ -207,3 +207,9 @@ embedding-semireal-repeated-eval:
 
 open-embedding-semireal-repeated-eval:
 	@xdg-open results/eco_embedding_semireal_repeated_eval_report.html >/dev/null 2>&1 || echo "No se pudo abrir: results/eco_embedding_semireal_repeated_eval_report.html"
+
+difficulty-eval:
+	.venv/bin/python scripts/run_eco_difficulty_eval.py --repeats 50 --embedding-k 4 --dimensions 128 --output-json results/eco_difficulty_eval_report.json --output-md results/eco_difficulty_eval_report.md --output-html results/eco_difficulty_eval_report.html
+
+open-difficulty-eval:
+	xdg-open results/eco_difficulty_eval_report.html >/dev/null 2>&1 || true
