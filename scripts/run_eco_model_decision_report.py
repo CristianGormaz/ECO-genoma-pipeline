@@ -17,13 +17,34 @@ def read(path: Path) -> str:
 
 
 def grab(pattern: str, text: str, default: str = "no_disponible") -> str:
-    match = re.search(pattern, text)
+    match = re.search(pattern, text, flags=re.MULTILINE)
     return match.group(1).strip() if match else default
 
 
 def grab_table_value(label: str, text: str, default: str = "no_disponible") -> str:
     pattern = r"\| " + re.escape(label) + r" \| ([^|]+) \|"
     return grab(pattern, text, default)
+
+
+def grab_embedding_delta(text: str, default: str = "no_disponible") -> str:
+    """Extract the practical delta between embedding_placeholder and baseline_v3.
+
+    The source report may expose this value in different forms:
+    - console-style sentence copied into Markdown;
+    - comparison table row;
+    - narrative sentence.
+    Keeping these fallbacks makes the decision report robust while the reports evolve.
+    """
+    patterns = [
+        r"Delta embedding vs v3 macro F1 promedio: ([0-9.\-]+)",
+        r"\| embedding_placeholder vs baseline_v3 \| ([0-9.\-]+) \|",
+        r"delta promedio es ([0-9.\-]+)",
+    ]
+    for pattern in patterns:
+        value = grab(pattern, text, "")
+        if value:
+            return value
+    return default
 
 
 def main() -> None:
@@ -36,10 +57,7 @@ def main() -> None:
     classifier_best = grab_table_value("Mejor promedio", classifier_repeated)
     embedding_best = grab_table_value("Mejor promedio", embedding_repeated)
     embedding_decision = grab_table_value("Decisión operativa", embedding_repeated)
-    embedding_delta = grab(
-        r"Delta embedding vs v3 macro F1 promedio: ([0-9.\-]+)",
-        embedding_repeated,
-    )
+    embedding_delta = grab_embedding_delta(embedding_repeated)
 
     md = f"""# E.C.O. - Reporte de decisión de modelos
 
