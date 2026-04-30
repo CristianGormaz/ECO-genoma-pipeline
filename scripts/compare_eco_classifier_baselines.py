@@ -42,6 +42,7 @@ def summarize_report(name: str, report: Dict[str, object]) -> Dict[str, object]:
         "name": name,
         "model_type": report["model_type"],
         "feature_mode": report.get("feature_mode", "motif"),
+        "feature_scaling": report.get("feature_scaling", "none"),
         "kmer_k": report.get("kmer_k") or "no_aplica",
         "train": split["train"],
         "test": split["test"],
@@ -58,6 +59,7 @@ def compare_rows(summaries: List[Dict[str, object]]) -> List[List[object]]:
             item["name"],
             item["model_type"],
             item["feature_mode"],
+            item["feature_scaling"],
             item["kmer_k"],
             item["train"],
             item["test"],
@@ -107,6 +109,7 @@ def limitation_lines(v1: Dict[str, object], v2: Dict[str, object]) -> List[str]:
         "La comparación mide esta muestra específica; no representa desempeño general sobre datasets reales grandes.",
         "La comparación se vuelve más útil al ampliar el dataset y agregar secuencias ambiguas adicionales.",
         "El baseline v2 solo agrega k-mers simples; no reemplaza embeddings ni modelos profundos.",
+        "La normalización min-max, cuando está activa, se ajusta solo con train para evitar fuga de información desde test.",
     ]
     if v1_f1 == v2_f1:
         lines.insert(1, "El empate actual indica rendimiento equivalente en esta muestra, no equivalencia general entre modelos.")
@@ -121,20 +124,35 @@ def next_step(v1: Dict[str, object], v2: Dict[str, object]) -> str:
     return "Ampliar el dataset etiquetado y repetir esta comparación para observar si la diferencia se mantiene."
 
 
+def headers() -> List[str]:
+    return [
+        "Modelo",
+        "Tipo",
+        "Feature mode",
+        "Scaling",
+        "k",
+        "Train",
+        "Test",
+        "Train acc",
+        "Test acc",
+        "Test macro F1",
+        "Test weighted F1",
+    ]
+
+
 def build_markdown(v1: Dict[str, object], v2: Dict[str, object]) -> str:
-    headers = ["Modelo", "Tipo", "Feature mode", "k", "Train", "Test", "Train acc", "Test acc", "Test macro F1", "Test weighted F1"]
     summaries = [v1, v2]
     lines = [
         "# E.C.O. - Comparación de baselines de clasificación",
         "",
         "## Propósito",
         "",
-        "Este informe compara el baseline v1 basado en motivos contra el baseline v2 que agrega frecuencias k-mer. "
+        "Este informe compara el baseline v1 basado en motivos contra el baseline v2 que agrega frecuencias k-mer y normalización opcional. "
         "La comparación es pre-embeddings y sirve como control antes de incorporar modelos más complejos.",
         "",
         "## Resumen comparativo",
         "",
-        *markdown_table(headers, compare_rows(summaries)),
+        *markdown_table(headers(), compare_rows(summaries)),
         "",
         "## Lectura E.C.O.",
         "",
@@ -153,7 +171,6 @@ def build_markdown(v1: Dict[str, object], v2: Dict[str, object]) -> str:
 
 
 def build_html(v1: Dict[str, object], v2: Dict[str, object]) -> str:
-    headers = ["Modelo", "Tipo", "Feature mode", "k", "Train", "Test", "Train acc", "Test acc", "Test macro F1", "Test weighted F1"]
     rows = compare_rows([v1, v2])
     limits_html = "".join(f"<li>{e(line)}</li>" for line in limitation_lines(v1, v2))
     return f"""<!doctype html>
@@ -180,7 +197,7 @@ def build_html(v1: Dict[str, object], v2: Dict[str, object]) -> str:
 <body>
   <header>
     <h1>E.C.O. - Comparación de baselines</h1>
-    <p>Baseline v1 basado en motivos versus baseline v2 con motivos + k-mers.</p>
+    <p>Baseline v1 basado en motivos versus baseline v2 con motivos + k-mers + normalización opcional.</p>
   </header>
   <main>
     <section class='grid'>
@@ -191,7 +208,7 @@ def build_html(v1: Dict[str, object], v2: Dict[str, object]) -> str:
     </section>
     <section class='section'>
       <h2>Resumen comparativo</h2>
-      {html_table(headers, rows)}
+      {html_table(headers(), rows)}
     </section>
     <section class='section'>
       <h2>Lectura E.C.O.</h2>
