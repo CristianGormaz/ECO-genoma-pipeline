@@ -40,7 +40,7 @@ OK: metabolismo informacional mínimo funcionando.
 Estado: OK, intestino informacional demo funcionando.
 Estado: OK, pipeline parametrizable E.C.O. funcionando.
 Estado: OK, interpretación de variantes generada sin diagnóstico médico.
-Estado: OK, baseline explicable ejecutado.
+Estado: OK, baseline explicable con métricas por clase ejecutado.
 ```
 
 ## Demo de portafolio
@@ -286,9 +286,10 @@ Flujo:
 
 ```text
 examples/eco_labeled_sequences.tsv
+→ split train/test
 → extracción de features explicables
 → clasificador por centroides
-→ evaluación
+→ evaluación por clase
 → JSON/Markdown
 ```
 
@@ -308,7 +309,18 @@ Features iniciales:
 - densidad de motivos;
 - presencia de TATA, CAAT, GC box, polyA y homopolímeros.
 
-El baseline entrega accuracy, matriz de confusión, predicciones, distancias y confianza heurística. Es una referencia demostrativa, no un benchmark científico general.
+El baseline entrega:
+
+- accuracy de entrenamiento y prueba;
+- precision, recall, F1 y support por clase;
+- macro average;
+- weighted average;
+- matriz de confusión;
+- predicciones por secuencia;
+- distancias a centroides;
+- confianza heurística.
+
+Es una referencia demostrativa pre-embeddings, no un benchmark científico general.
 
 ## Demo pública con descarga real de secuencia
 
