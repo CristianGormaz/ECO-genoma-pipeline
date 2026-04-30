@@ -229,5 +229,5 @@ def build_classifier_report(records: Sequence[LabeledSequence]) -> Dict[str, obj
 
 
 def write_json_report(payload: Dict[str, object], output_path: str | Path) -> None:
-    Path(output_path).parent.mkdir(parents=True)
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
     Path(output_path).write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
