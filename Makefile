@@ -231,3 +231,9 @@ confidence-router-calibrated-eval:
 
 open-confidence-router-calibrated-eval:
 	xdg-open results/eco_confidence_router_calibrated_eval_report.html >/dev/null 2>&1 || true
+
+adaptive-router-predict-demo:
+	.venv/bin/python scripts/run_eco_adaptive_router_predict.py --sequence ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTAC --sequence-id demo_adaptive_router --threshold 0.20 --embedding-k 4 --dimensions 128 --output-json results/eco_adaptive_router_prediction_demo.json --output-md results/eco_adaptive_router_prediction_demo.md --output-html results/eco_adaptive_router_prediction_demo.html
+
+open-adaptive-router-predict-demo:
+	xdg-open results/eco_adaptive_router_prediction_demo.html >/dev/null 2>&1 || true
