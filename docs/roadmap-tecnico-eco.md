@@ -12,7 +12,7 @@ E.C.O. ya cuenta con tres rutas funcionales:
 |---|---|---|
 | Regiones y motivos | Funcional | BED/FASTA → motivos → JSON/Markdown. |
 | Variantes públicas | Funcional | Registros públicos → categorías E.C.O. → Markdown/HTML/SVG. |
-| Clasificación baseline | Funcional + comparativa | Baseline v1 y v2 → comparación Markdown/HTML. |
+| Clasificación baseline | Funcional + comparativa | Baseline v1 y v2 normalizado → comparación Markdown/HTML. |
 
 Estado operativo actual:
 
@@ -63,16 +63,23 @@ make portfolio-demo
 
 ### Estado
 
-Siguiente foco técnico.
+Primera ampliación implementada.
 
-### Objetivo
+### Avance actual
 
-Ampliar el dataset etiquetado para que la evaluación no dependa de una muestra demasiado pequeña o fácil.
+El dataset etiquetado pasó a una muestra demostrativa más exigente:
 
-### Tareas
+```text
+Train: 16
+Test: 10
+```
+
+Incluye casos fáciles y casos ambiguos para que la evaluación no dependa de una muestra demasiado perfecta.
+
+### Tareas pendientes
 
 - Añadir más secuencias etiquetadas.
-- Incluir ejemplos ambiguos o difíciles.
+- Incluir ejemplos ambiguos adicionales.
 - Mantener separación train/test.
 - Documentar criterios de selección.
 - Evitar vender `accuracy: 1.0` como resultado general.
@@ -89,16 +96,17 @@ comparación v1/v2 más informativa
 
 ### Estado
 
-Primera versión implementada.
+Implementado en primera versión funcional.
 
 ### Implementado
 
 - Baseline v1 con `feature_mode=motif`.
-- Baseline v2 con `feature_mode=motif_kmer` y `k=2`.
+- Baseline v2 con `feature_mode=motif_kmer`, `k=2` y `feature_scaling=minmax_train`.
+- Normalización min-max ajustada solo con train para evitar fuga de información desde test.
 - Reportes JSON/Markdown/HTML para v1.
 - Reportes JSON/Markdown/HTML para v2.
 - Comparación Markdown/HTML v1 vs v2.
-- Tests para k-mers, modo v2 y comparación.
+- Tests para k-mers, modo v2, normalización y comparación.
 - Integración en `make check` y `make portfolio-demo`.
 
 ### Comandos
@@ -113,11 +121,11 @@ make open-classifier-comparison
 ### Lectura actual
 
 ```text
-v1 Test macro F1: 1.0
-v2 Test macro F1: 1.0
+baseline_v1 | motif | scaling none | Test macro F1 0.7917
+baseline_v2 | motif_kmer | scaling minmax_train | Test macro F1 1.0
 ```
 
-Ambos modelos empatan en la muestra actual. Eso valida el flujo, pero todavía no demuestra superioridad de v2.
+En la muestra actual, v2 mejora a v1. La lectura prudente es que esta mejora es una señal inicial útil, pero todavía debe validarse con más datos.
 
 ## 7. Fase 4: Embeddings / DNABERT
 
@@ -151,11 +159,11 @@ results/eco_classifier_comparison_report.html
 
 La versión completa debería comparar:
 
-| Modelo | Features | Train | Test | Accuracy | Macro F1 | Comentario |
-|---|---|---:|---:|---:|---:|---|
-| Baseline v1 | motivos + GC | n | n | x | x | Explicable. |
-| Baseline v2 | motivos + k-mers | n | n | x | x | Más granular. |
-| Embeddings | DNABERT/otro | n | n | x | x | Más complejo. |
+| Modelo | Features | Scaling | Train | Test | Accuracy | Macro F1 | Comentario |
+|---|---|---|---:|---:|---:|---:|---|
+| Baseline v1 | motivos + GC | none | n | n | x | x | Explicable. |
+| Baseline v2 | motivos + k-mers | minmax_train | n | n | x | x | Más granular. |
+| Embeddings | DNABERT/otro | por definir | n | n | x | x | Más complejo. |
 
 ## 9. Fase 6: Presentación pública controlada
 
@@ -166,7 +174,7 @@ Apta para portafolio y conversaciones laborales. Todavía conviene esperar antes
 Antes de publicar en espacios más técnicos, E.C.O. debería tener:
 
 - dataset más amplio;
-- comparación v1/v2 con resultados no triviales;
+- comparación v1/v2 repetida con más datos;
 - limitaciones explícitas;
 - reproducibilidad con comandos simples.
 
@@ -174,8 +182,8 @@ Antes de publicar en espacios más técnicos, E.C.O. debería tener:
 
 | Prioridad | Acción | Motivo |
 |---|---|---|
-| Alta | Ampliar dataset etiquetado | Hace más honesta la evaluación. |
-| Alta | Agregar casos ambiguos | Permite ver si v2 aporta. |
+| Alta | Ampliar dataset etiquetado | Verifica si la mejora de v2 se mantiene. |
+| Alta | Agregar casos ambiguos | Evita una evaluación demasiado fácil. |
 | Media | Mejorar visualización comparativa | Mejora la lectura UX. |
 | Media | Preparar embeddings | Abre camino a DNABERT. |
 | Baja por ahora | Publicación técnica exigente | Falta dataset más fuerte. |
@@ -183,7 +191,7 @@ Antes de publicar en espacios más técnicos, E.C.O. debería tener:
 ## 11. Próximo paso inmediato
 
 ```text
-ampliar examples/eco_labeled_sequences.tsv con más secuencias etiquetadas y casos ambiguos
+ampliar examples/eco_labeled_sequences.tsv con más secuencias etiquetadas y repetir la comparación v1/v2
 ```
 
 ## 12. Frase guía
