@@ -1,157 +1,82 @@
-# Ficha técnica del clasificador E.C.O.
+# Ficha tecnica del clasificador E.C.O.
 
-## Propósito
+## Proposito
 
-Esta ficha documenta el módulo de clasificación baseline del Proyecto **E.C.O. — Entérico Codificador Orgánico**. Su función es establecer una línea base explicable antes de incorporar embeddings o modelos más complejos.
+Esta ficha documenta el modulo de clasificacion baseline de E.C.O. Su funcion es mantener una linea base explicable antes de incorporar modelos mas complejos.
 
-## Tipo de modelo
+## Modelo
 
 ```text
 centroid_baseline_explicable
 centroid_baseline_motif_kmer_minmax
 ```
 
-El clasificador calcula centroides por clase y predice según distancia euclidiana al centroide más cercano.
+El clasificador calcula centroides por clase y predice segun distancia euclidiana al centroide mas cercano.
 
-## Dataset
-
-Archivo base:
+## Dataset actual
 
 ```text
-examples/eco_labeled_sequences.tsv
-```
-
-Campos:
-
-| Campo | Descripción |
-|---|---|
-| sequence_id | Identificador de la secuencia. |
-| sequence | Secuencia ADN. |
-| label | Clase esperada. |
-| split | División train/test. |
-
-Clases actuales:
-
-```text
-regulatory
-non_regulatory
+Archivo: examples/eco_labeled_sequences.tsv
+Total: 60 secuencias
+Train: 36
+Test: 24
+Clases: regulatory y non_regulatory
 ```
 
 ## Baseline v1
 
-Configuración:
-
 ```text
 feature_mode = motif
 feature_scaling = none
+Test accuracy = 0.8333
+Test macro F1 = 0.8333
 ```
 
-Features principales:
-
-- longitud;
-- porcentaje GC;
-- porcentaje N;
-- cantidad de motivos;
-- densidad de motivos;
-- presencia de TATA box;
-- presencia de CAAT box;
-- presencia de GC box;
-- presencia de señal polyA;
-- presencia de homopolímeros.
+v1 usa longitud, GC, N, conteo/densidad de motivos y senales simples.
 
 ## Baseline v2
-
-Configuración:
 
 ```text
 feature_mode = motif_kmer
 kmer_k = 2
 feature_scaling = minmax_train
+Test accuracy = 0.7500
+Test macro F1 = 0.7333
 ```
 
-Agrega frecuencias k-mer:
+v2 agrega k-mers de tamano 2. En el dataset ampliado actual queda bajo v1.
+
+## Baseline v3
 
 ```text
-AA, AC, AG, AT, CA, CC, CG, CT, GA, GC, GG, GT, TA, TC, TG, TT
+feature_mode = motif_kmer
+kmer_k = 3
+feature_scaling = minmax_train
+Test accuracy = 0.9167
+Test macro F1 = 0.9161
 ```
 
-La normalización `minmax_train` se ajusta solo usando datos de entrenamiento. Luego se aplica a train y test. Esto evita fuga de información desde test.
+v3 agrega k-mers de tamano 3. En el split fijo actual es la mejor configuracion y coincide con el reporte de sensibilidad, donde `kmer3_minmax` aparece como mejor promedio.
 
-## Métricas reportadas
-
-Cada baseline reporta:
-
-- accuracy de entrenamiento;
-- accuracy de prueba;
-- precision por clase;
-- recall por clase;
-- F1 por clase;
-- macro F1;
-- weighted F1;
-- matriz de confusión;
-- predicciones por secuencia;
-- confianza heurística;
-- distancias a centroides.
-
-## Resultado demostrativo actual
-
-Split fijo actual:
+## Comparacion resumida
 
 ```text
-baseline_v1 | Test macro F1 0.7917
-baseline_v2 | Test macro F1 1.0
+baseline_v1 | motif      | none       | Test macro F1 0.8333
+baseline_v2 | motif_kmer | k=2 minmax | Test macro F1 0.7333
+baseline_v3 | motif_kmer | k=3 minmax | Test macro F1 0.9161
 ```
 
-Lectura prudente:
+## Decision operativa
 
-> v2 mejora a v1 en el dataset demostrativo actual, pero esta diferencia debe repetirse con más datos, splits alternativos y evaluación externa antes de tratarla como generalización.
+- v1 queda como control minimo explicable.
+- v2 queda como variante exploratoria no principal.
+- v3 queda como candidato principal pre-embeddings.
 
-## Evaluación repetida
-
-Comando:
-
-```bash
-make classifier-repeated-eval
-```
-
-Salida:
+## Proximo avance tecnico
 
 ```text
-results/eco_classifier_repeated_eval_report.json
-results/eco_classifier_repeated_eval_report.md
-results/eco_classifier_repeated_eval_report.html
-```
-
-Objetivo:
-
-```text
-revisar si v2 mejora de forma estable o solo en un split puntual
-```
-
-## Uso permitido
-
-- Demostración educativa.
-- Portafolio técnico.
-- Comparación interna de features.
-- Línea base antes de DNABERT/embeddings.
-- Ejemplo de pipeline explicable.
-
-## Uso no permitido
-
-- Diagnóstico clínico.
-- Interpretación de pacientes.
-- Cálculo de riesgo genético personal.
-- Benchmark científico general.
-- Conclusiones médicas o terapéuticas.
-
-## Próximo avance técnico
-
-El paso natural es aumentar el dataset y repetir la comparación:
-
-```text
-más secuencias
-más casos ambiguos
-más splits
-comparación v1/v2 repetida
-ruta futura hacia embeddings
+1. actualizar README y roadmap con v3
+2. repetir evaluacion v1/v2/v3
+3. mantener sensibilidad como control
+4. preparar comparacion futura contra embeddings
 ```
