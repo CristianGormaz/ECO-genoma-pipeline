@@ -8,30 +8,30 @@ El objetivo no es fabricar un dataset perfecto. El objetivo es construir una mue
 
 ## 2. Estado actual
 
-Dataset actual:
+Dataset v3 implementado:
 
 ```text
-Total: 26 secuencias
-regulatory: 14
-non_regulatory: 12
-train: 16
-test: 10
+Total: 60 secuencias
+regulatory: 30
+non_regulatory: 30
+train: 36
+test: 24
 ```
 
-Resultado actual de evaluación repetida:
+Distribución conceptual aplicada:
 
 ```text
-v1 macro F1 promedio: 0.8134
-v2 macro F1 promedio: 0.9087
-delta promedio: +0.0952
-v2 gana: 7/10
-v2 empata: 3/10
-v2 pierde: 0/10
+regulatory easy
+regulatory ambiguous
+regulatory hard
+non_regulatory easy
+non_regulatory ambiguous
+non_regulatory hard
 ```
 
 Lectura prudente:
 
-> v2 muestra ventaja en la muestra demostrativa actual, pero se necesita un dataset más amplio y variado para confirmar si la mejora se mantiene.
+> Dataset v3 amplía la dificultad y mejora la trazabilidad del clasificador. El siguiente control real es ejecutar auditoría, comparación v1/v2 y evaluación repetida para revisar si la ventaja de v2 se mantiene.
 
 ## 3. Principios de construcción
 
@@ -39,14 +39,20 @@ Lectura prudente:
 
 Cada secuencia debe tener un identificador claro.
 
-Formato sugerido:
+Formato usado:
 
 ```text
 reg_train_easy_01
 reg_train_amb_01
+reg_train_hard_01
+reg_test_easy_01
+reg_test_amb_01
 reg_test_hard_01
 nonreg_train_easy_01
 nonreg_train_amb_01
+nonreg_train_hard_01
+nonreg_test_easy_01
+nonreg_test_amb_01
 nonreg_test_hard_01
 ```
 
@@ -70,7 +76,12 @@ regulatory: 50% aproximado
 non_regulatory: 50% aproximado
 ```
 
-No hace falta balance perfecto, pero sí evitar que una clase domine.
+Dataset v3 usa balance exacto:
+
+```text
+regulatory: 30
+non_regulatory: 30
+```
 
 ### 3.4. Dificultad gradual
 
@@ -163,12 +174,12 @@ segmentos con G/C altos sin patrón GGGCGG
 
 Uso: medir falsos positivos.
 
-## 6. Columnas recomendadas
+## 6. Columnas requeridas
 
-El dataset debe mantener columnas mínimas compatibles con el código actual:
+El dataset debe mantener columnas compatibles con el código actual:
 
 ```text
-id	sequence	label	split
+sequence_id	sequence	label	split
 ```
 
 Valores permitidos para `label`:
@@ -187,28 +198,28 @@ test
 
 ## 7. Tamaño recomendado para dataset v3
 
-Meta inicial:
+Meta inicial definida:
 
 ```text
 50 a 80 secuencias
 ```
 
-Distribución sugerida para 60 secuencias:
+Dataset v3 actual:
 
 | Grupo | Train | Test | Total |
 |---|---:|---:|---:|
 | regulatory easy | 6 | 4 | 10 |
-| regulatory ambiguous | 8 | 4 | 12 |
+| regulatory ambiguous | 6 | 4 | 10 |
 | regulatory hard | 6 | 4 | 10 |
 | non_regulatory easy | 6 | 4 | 10 |
-| non_regulatory ambiguous | 8 | 4 | 12 |
-| non_regulatory hard | 4 | 2 | 6 |
+| non_regulatory ambiguous | 6 | 4 | 10 |
+| non_regulatory hard | 6 | 4 | 10 |
 
-Total aproximado:
+Total:
 
 ```text
-train: 38
-test: 22
+train: 36
+test: 24
 total: 60
 ```
 
