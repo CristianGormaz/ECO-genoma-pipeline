@@ -195,3 +195,15 @@ clean:
 	rm -f results/eco_model_decision_report.md results/eco_model_decision_report.html
 	rm -f results/eco_clinvar_sample.tsv results/eco_clinvar_sample_report.json results/eco_clinvar_sample_report.md results/eco_clinvar_sample_report.html
 	rm -rf results/eco_clinvar_sample_charts
+
+embedding-semireal:
+	$(PY) scripts/run_eco_embedding_semireal.py --embedding-k 4 --dimensions 128 --output-json results/eco_embedding_semireal_report.json --output-md results/eco_embedding_semireal_report.md --output-html results/eco_embedding_semireal_report.html
+
+open-embedding-semireal:
+	@xdg-open results/eco_embedding_semireal_report.html >/dev/null 2>&1 || echo "No se pudo abrir: results/eco_embedding_semireal_report.html"
+
+embedding-semireal-repeated-eval:
+	$(PY) scripts/run_eco_embedding_semireal_repeated_eval.py --embedding-k 4 --dimensions 128 --output-json results/eco_embedding_semireal_repeated_eval_report.json --output-md results/eco_embedding_semireal_repeated_eval_report.md --output-html results/eco_embedding_semireal_repeated_eval_report.html
+
+open-embedding-semireal-repeated-eval:
+	@xdg-open results/eco_embedding_semireal_repeated_eval_report.html >/dev/null 2>&1 || echo "No se pudo abrir: results/eco_embedding_semireal_repeated_eval_report.html"
