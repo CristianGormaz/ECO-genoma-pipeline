@@ -17,6 +17,8 @@ import math
 from src.eco_motif_analysis import scan_sequence
 
 FeatureVector = Dict[str, float]
+VALID_FEATURE_MODES = {"motif", "motif_kmer"}
+DNA_ALPHABET = "ACGT"
 
 
 @dataclass(frozen=True)
@@ -67,7 +69,32 @@ def split_train_test(records: Sequence[LabeledSequence]) -> Tuple[List[LabeledSe
     return train, test
 
 
-def extract_features(sequence: str) -> FeatureVector:
+def all_kmers(k: int = 2) -> List[str]:
+    if k <= 0:
+        raise ValueError("k debe ser mayor que cero.")
+    kmers = [""]
+    for _ in range(k):
+        kmers = [prefix + base for prefix in kmers for base in DNA_ALPHABET]
+    return kmers
+
+
+def kmer_frequencies(sequence: str, k: int = 2) -> FeatureVector:
+    sequence = sequence.upper()
+    keys = all_kmers(k)
+    counts = {f"kmer_{k}_{key}": 0.0 for key in keys}
+    valid_windows = 0
+    for index in range(0, max(len(sequence) - k + 1, 0)):
+        window = sequence[index : index + k]
+        if len(window) == k and all(base in DNA_ALPHABET for base in window):
+            counts[f"kmer_{k}_{window}"] += 1.0
+            valid_windows += 1
+    if valid_windows:
+        for key in counts:
+            counts[key] = round(counts[key] / valid_windows, 4)
+    return counts
+
+
+def extract_motif_features(sequence: str) -> FeatureVector:
     report = scan_sequence(sequence)
     motif_names = [hit.motif_name for hit in report.hits]
     length = max(report.length, 1)
@@ -85,15 +112,26 @@ def extract_features(sequence: str) -> FeatureVector:
     }
 
 
+def extract_features(sequence: str, feature_mode: str = "motif", kmer_k: int = 2) -> FeatureVector:
+    if feature_mode not in VALID_FEATURE_MODES:
+        raise ValueError(f"feature_mode inválido: {feature_mode}. Usa: {', '.join(sorted(VALID_FEATURE_MODES))}")
+    features = extract_motif_features(sequence)
+    if feature_mode == "motif_kmer":
+        features.update(kmer_frequencies(sequence, k=kmer_k))
+    return features
+
+
 def average_vectors(vectors: Sequence[FeatureVector]) -> FeatureVector:
     keys = sorted(vectors[0].keys())
     return {key: sum(vector[key] for vector in vectors) / len(vectors) for key in keys}
 
 
-def train_centroid_classifier(records: Sequence[LabeledSequence]) -> Dict[str, FeatureVector]:
+def train_centroid_classifier(
+    records: Sequence[LabeledSequence], feature_mode: str = "motif", kmer_k: int = 2
+) -> Dict[str, FeatureVector]:
     grouped: Dict[str, List[FeatureVector]] = {}
     for record in records:
-        grouped.setdefault(record.label, []).append(extract_features(record.sequence))
+        grouped.setdefault(record.label, []).append(extract_features(record.sequence, feature_mode, kmer_k))
     if len(grouped) < 2:
         raise ValueError("Se requieren al menos dos clases.")
     return {label: average_vectors(vectors) for label, vectors in sorted(grouped.items())}
@@ -114,8 +152,10 @@ def confidence_from_distances(distances: Dict[str, float]) -> float:
     return round(min(max((second - best) / second, 0.0), 1.0), 4)
 
 
-def predict(record: LabeledSequence, centroids: Dict[str, FeatureVector]) -> Prediction:
-    features = extract_features(record.sequence)
+def predict(
+    record: LabeledSequence, centroids: Dict[str, FeatureVector], feature_mode: str = "motif", kmer_k: int = 2
+) -> Prediction:
+    features = extract_features(record.sequence, feature_mode, kmer_k)
     distances = {label: round(euclidean_distance(features, centroid), 4) for label, centroid in centroids.items()}
     predicted_label = min(distances, key=distances.get)
     return Prediction(
@@ -183,8 +223,10 @@ def build_classification_metrics(labels: Sequence[str], matrix: Dict[str, Dict[s
     }
 
 
-def evaluate(records: Sequence[LabeledSequence], centroids: Dict[str, FeatureVector]) -> Dict[str, object]:
-    predictions = [predict(record, centroids) for record in records]
+def evaluate(
+    records: Sequence[LabeledSequence], centroids: Dict[str, FeatureVector], feature_mode: str = "motif", kmer_k: int = 2
+) -> Dict[str, object]:
+    predictions = [predict(record, centroids, feature_mode, kmer_k) for record in records]
     labels = sorted({record.label for record in records} | set(centroids))
     matrix: Dict[str, Dict[str, int]] = {true: {pred: 0 for pred in labels} for true in labels}
     correct = 0
@@ -203,13 +245,18 @@ def evaluate(records: Sequence[LabeledSequence], centroids: Dict[str, FeatureVec
     }
 
 
-def build_classifier_report(records: Sequence[LabeledSequence]) -> Dict[str, object]:
+def build_classifier_report(
+    records: Sequence[LabeledSequence], feature_mode: str = "motif", kmer_k: int = 2
+) -> Dict[str, object]:
     train_records, test_records = split_train_test(records)
-    centroids = train_centroid_classifier(train_records)
-    train_evaluation = evaluate(train_records, centroids)
-    test_evaluation = evaluate(test_records, centroids)
+    centroids = train_centroid_classifier(train_records, feature_mode, kmer_k)
+    train_evaluation = evaluate(train_records, centroids, feature_mode, kmer_k)
+    test_evaluation = evaluate(test_records, centroids, feature_mode, kmer_k)
+    model_label = "centroid_baseline_motif_kmer" if feature_mode == "motif_kmer" else "centroid_baseline_explicable"
     return {
-        "model_type": "centroid_baseline_explicable",
+        "model_type": model_label,
+        "feature_mode": feature_mode,
+        "kmer_k": kmer_k if feature_mode == "motif_kmer" else None,
         "purpose": "baseline_pre_embeddings_para_clasificacion_de_secuencias",
         "data_split": {
             "train": len(train_records),
@@ -223,7 +270,7 @@ def build_classifier_report(records: Sequence[LabeledSequence]) -> Dict[str, obj
             "Baseline pequeño y demostrativo.",
             "La separación train/test evita reportar solo desempeño de entrenamiento.",
             "No representa desempeño general sobre datasets reales grandes.",
-            "Las features dependen de motivos simples del MVP.",
+            "Las features dependen de motivos simples del MVP y, opcionalmente, frecuencias k-mer.",
         ],
     }
 
