@@ -178,7 +178,7 @@ make pipeline                   # Ejecuta pipeline parametrizable con BED/FASTA
 make public-demo                # Descarga referencia pública pequeña y genera informe
 make variant-demo               # Demo educativa de variantes desde TSV local
 make classifier-baseline        # Entrena/evalúa baseline v1 con features de motivos
-make classifier-baseline-v2     # Entrena/evalúa baseline v2 con motivos + k-mers
+make classifier-baseline-v2     # Entrena/evalúa baseline v2 con motivos + k-mers + minmax_train
 make classifier-html            # Convierte el JSON del baseline v1 en HTML estático
 make classifier-html-v2         # Convierte el JSON del baseline v2 en HTML estático
 make classifier-compare         # Compara baseline v1 vs v2 en Markdown/HTML
@@ -358,9 +358,10 @@ Usa:
 
 ```text
 motivos + longitud + GC + N + señales simples
+feature_scaling = none
 ```
 
-### Baseline v2: motivos + k-mers
+### Baseline v2: motivos + k-mers + normalización
 
 ```bash
 make classifier-baseline-v2
@@ -371,7 +372,10 @@ Usa:
 
 ```text
 motivos + longitud + GC + N + frecuencias k-mer de k=2
+feature_scaling = minmax_train
 ```
+
+La normalización min-max se ajusta solo con el split de entrenamiento para evitar fuga de información desde prueba.
 
 ### Comparación formal v1/v2
 
@@ -392,7 +396,16 @@ results/eco_classifier_comparison_report.md
 results/eco_classifier_comparison_report.html
 ```
 
-La comparación actual valida el flujo, pero no demuestra superioridad de v2 porque el dataset sigue siendo pequeño y ambos modelos empatan en la muestra demostrativa.
+Resultado actual sobre el dataset demostrativo ampliado:
+
+```text
+baseline_v1 | motif | scaling none | Test macro F1 0.7917
+baseline_v2 | motif_kmer | scaling minmax_train | Test macro F1 1.0
+```
+
+Lectura prudente:
+
+> En la muestra actual, v2 mejora a v1. Esta mejora es una señal inicial útil, pero debe validarse con un dataset más grande y más variado antes de tratarla como evidencia general.
 
 ## Demo pública con descarga real de secuencia
 
@@ -523,6 +536,7 @@ Además, `make check` valida localmente las piezas principales del MVP.
 - Proyecto en fase MVP/prototipo.
 - El análisis de motivos usa expresiones regulares simples.
 - El clasificador baseline usa un dataset pequeño de demostración y no representa desempeño general.
+- La mejora actual de v2 sobre v1 es exploratoria y debe validarse con más datos.
 - Los ejemplos incluidos son pequeños y demostrativos.
 - La conversión BED → FASTA requiere que BED y FASTA usen el mismo sistema de referencia.
 - La ruta de variantes usa registros públicos y metadatos externos.
@@ -531,7 +545,7 @@ Además, `make check` valida localmente las piezas principales del MVP.
 
 ## Próximos pasos
 
-- Ampliar el dataset etiquetado para que la comparación v1/v2 tenga más valor empírico.
+- Ampliar el dataset etiquetado para validar si la mejora v2 sobre v1 se mantiene.
 - Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas.
 - Incorporar embeddings tipo DNABERT cuando exista una línea base más robusta.
 - Comparar el baseline explicable contra un modelo con embeddings.
