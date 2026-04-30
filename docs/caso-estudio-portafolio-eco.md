@@ -60,7 +60,7 @@ Permite descargar o procesar registros públicos de variantes, agruparlos por ca
 ```text
 secuencias etiquetadas
 → baseline v1 con motivos
-→ baseline v2 con motivos + k-mers
+→ baseline v2 con motivos + k-mers + minmax_train
 → comparación v1/v2
 → métricas JSON/Markdown/HTML
 ```
@@ -167,6 +167,7 @@ Usa:
 
 ```text
 motivos + longitud + GC + N + señales simples
+feature_scaling = none
 ```
 
 #### Baseline v2
@@ -180,7 +181,10 @@ Usa:
 
 ```text
 motivos + longitud + GC + N + frecuencias k-mer de k=2
+feature_scaling = minmax_train
 ```
+
+La normalización se ajusta solo con el split de entrenamiento, evitando que información de prueba influya en el ajuste de escala.
 
 #### Comparación formal
 
@@ -199,13 +203,13 @@ results/eco_classifier_comparison_report.html
 Estado actual de la demo:
 
 ```text
-v1 Test macro F1: 1.0
-v2 Test macro F1: 1.0
+baseline_v1 | motif | scaling none | Test accuracy 0.8 | Test macro F1 0.7917
+baseline_v2 | motif_kmer | scaling minmax_train | Test accuracy 1.0 | Test macro F1 1.0
 ```
 
 Lectura prudente:
 
-> Este resultado demuestra que el flujo técnico de comparación funciona sobre un dataset pequeño y controlado. No debe presentarse como desempeño científico general ni como superioridad de v2.
+> En el dataset demostrativo actual, v2 mejora a v1 al combinar k-mers con normalización `minmax_train`. La mejora es una señal inicial útil, pero no debe presentarse como evidencia general hasta repetir la comparación con más datos y casos más variados.
 
 ## 6. Criterios de calidad aplicados
 
@@ -220,6 +224,7 @@ El proyecto incorpora prácticas técnicas útiles para un MVP serio:
 - muestreo balanceado por gen y categoría;
 - separación explícita train/test para clasificación;
 - baseline v1 y baseline v2;
+- normalización `minmax_train` ajustada solo con datos de entrenamiento;
 - comparación Markdown/HTML entre modelos;
 - matriz de confusión y métricas de prueba;
 - reportes Markdown para lectura humana;
@@ -237,6 +242,7 @@ E.C.O. mantiene límites claros:
 - no reemplaza evaluación profesional;
 - no convierte una variante pública en conclusión médica individual;
 - no presenta los baselines como modelos científicos finales;
+- no presenta la mejora actual de v2 como generalización definitiva;
 - usa ejemplos pequeños o muestras exploratorias para demostrar funcionamiento.
 
 Estos límites no debilitan el proyecto; lo hacen más responsable y defendible.
@@ -254,7 +260,8 @@ Este proyecto demuestra habilidades transferibles a roles de calidad, experienci
 - traducción de datos complejos a lenguaje entendible;
 - creación de baseline medible antes de modelos avanzados;
 - comparación incremental entre modelos;
-- criterio para separar demostración técnica de conclusión clínica o científica.
+- criterio para separar demostración técnica de conclusión clínica o científica;
+- comprensión práctica de escalado de features y evaluación train/test.
 
 ## 9. Tecnologías y conceptos utilizados
 
@@ -270,17 +277,19 @@ Este proyecto demuestra habilidades transferibles a roles de calidad, experienci
 - Clasificador por centroides.
 - Features explicables.
 - K-mers.
+- Normalización min-max.
+- Separación train/test.
 - Matriz de confusión.
 - Reportes interpretativos.
 - Bioinformática educativa.
 
 ## 10. Frase breve para CV o LinkedIn
 
-> Desarrollé E.C.O., un pipeline bioinformático bioinspirado que convierte secuencias, coordenadas genómicas y registros públicos de variantes en reportes JSON/Markdown/HTML interpretables, incorporando validación automatizada, trazabilidad, visualizaciones y comparación de baselines explicables antes de modelos avanzados.
+> Desarrollé E.C.O., un pipeline bioinformático bioinspirado que convierte secuencias, coordenadas genómicas y registros públicos de variantes en reportes JSON/Markdown/HTML interpretables, incorporando validación automatizada, trazabilidad, visualizaciones y comparación de baselines explicables antes de modelos avanzados. En su módulo de clasificación, comparé un baseline por motivos contra una versión con k-mers y normalización `minmax_train`, mejorando el macro F1 de prueba de 0.7917 a 1.0 en el dataset demostrativo.
 
 ## 11. Frase breve para entrevista
 
-> E.C.O. nació como una metáfora del sistema digestivo aplicada a datos. Lo convertí en un prototipo funcional que ingiere datos genómicos, los filtra, extrae señales, organiza evidencia, genera reportes entendibles y compara baselines explicables antes de pasar a modelos más complejos como DNABERT.
+> E.C.O. nació como una metáfora del sistema digestivo aplicada a datos. Lo convertí en un prototipo funcional que ingiere datos genómicos, los filtra, extrae señales, organiza evidencia, genera reportes entendibles y compara baselines explicables antes de pasar a modelos más complejos como DNABERT. En la última iteración, el baseline v2 mejoró frente a v1 al agregar k-mers y normalización entrenada solo con el split de entrenamiento.
 
 ## 12. Próximo avance sugerido
 
