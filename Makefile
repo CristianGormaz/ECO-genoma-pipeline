@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-html classifier-html-v2 classifier-compare classifier-repeated-eval classifier-sensitivity open-classifier-html open-classifier-html-v2 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity portfolio-demo check clean
+.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity portfolio-demo check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -52,11 +52,17 @@ classifier-baseline:
 classifier-baseline-v2:
 	$(PY) scripts/run_eco_classifier_baseline.py --feature-mode motif_kmer --kmer-k 2 --normalize-features --output-json results/eco_classifier_baseline_v2_report.json --output-md results/eco_classifier_baseline_v2_report.md
 
+classifier-baseline-v3:
+	$(PY) scripts/run_eco_classifier_baseline.py --feature-mode motif_kmer --kmer-k 3 --normalize-features --output-json results/eco_classifier_baseline_v3_report.json --output-md results/eco_classifier_baseline_v3_report.md
+
 classifier-html:
 	$(PY) scripts/export_eco_classifier_html.py --input-json results/eco_classifier_baseline_report.json --output-html results/eco_classifier_baseline_report.html
 
 classifier-html-v2:
 	$(PY) scripts/export_eco_classifier_html.py --input-json results/eco_classifier_baseline_v2_report.json --output-html results/eco_classifier_baseline_v2_report.html
+
+classifier-html-v3:
+	$(PY) scripts/export_eco_classifier_html.py --input-json results/eco_classifier_baseline_v3_report.json --output-html results/eco_classifier_baseline_v3_report.html
 
 classifier-compare:
 	$(PY) scripts/compare_eco_classifier_baselines.py
@@ -85,6 +91,9 @@ open-classifier-html:
 open-classifier-html-v2:
 	@xdg-open results/eco_classifier_baseline_v2_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_classifier_baseline_v2_report.html"
 
+open-classifier-html-v3:
+	@xdg-open results/eco_classifier_baseline_v3_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_classifier_baseline_v3_report.html"
+
 open-classifier-comparison:
 	@xdg-open results/eco_classifier_comparison_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_classifier_comparison_report.html"
 
@@ -94,7 +103,7 @@ open-classifier-repeated-eval:
 open-classifier-sensitivity:
 	@xdg-open results/eco_classifier_sensitivity_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_classifier_sensitivity_report.html"
 
-portfolio-demo: check classifier-html classifier-html-v2 classifier-repeated-eval classifier-sensitivity clinvar-sample clinvar-charts clinvar-html
+portfolio-demo: check classifier-html classifier-html-v2 classifier-html-v3 classifier-repeated-eval classifier-sensitivity clinvar-sample clinvar-charts clinvar-html
 	@echo ""
 	@echo "E.C.O. PORTFOLIO DEMO READY"
 	@echo "==========================="
@@ -107,6 +116,8 @@ portfolio-demo: check classifier-html classifier-html-v2 classifier-repeated-eva
 	@echo "- results/eco_classifier_baseline_report.html"
 	@echo "- results/eco_classifier_baseline_v2_report.md"
 	@echo "- results/eco_classifier_baseline_v2_report.html"
+	@echo "- results/eco_classifier_baseline_v3_report.md"
+	@echo "- results/eco_classifier_baseline_v3_report.html"
 	@echo "- results/eco_classifier_comparison_report.md"
 	@echo "- results/eco_classifier_comparison_report.html"
 	@echo "- results/eco_classifier_repeated_eval_report.md"
@@ -129,11 +140,12 @@ portfolio-demo: check classifier-html classifier-html-v2 classifier-repeated-eva
 	@echo "Abrir gráficos ClinVar: make open-clinvar-charts"
 	@echo "Abrir HTML clasificador v1: make open-classifier-html"
 	@echo "Abrir HTML clasificador v2: make open-classifier-html-v2"
+	@echo "Abrir HTML clasificador v3: make open-classifier-html-v3"
 	@echo "Abrir comparación clasificadores: make open-classifier-comparison"
 	@echo "Abrir evaluación repetida: make open-classifier-repeated-eval"
 	@echo "Abrir sensibilidad del clasificador: make open-classifier-sensitivity"
 
-check: test validate demo review report pipeline variant-demo dataset-audit classifier-baseline classifier-baseline-v2 classifier-compare
+check: test validate demo review report pipeline variant-demo dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-compare
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
@@ -146,6 +158,7 @@ clean:
 	rm -f results/eco_dataset_audit_report.json results/eco_dataset_audit_report.md
 	rm -f results/eco_classifier_baseline_report.json results/eco_classifier_baseline_report.md results/eco_classifier_baseline_report.html
 	rm -f results/eco_classifier_baseline_v2_report.json results/eco_classifier_baseline_v2_report.md results/eco_classifier_baseline_v2_report.html
+	rm -f results/eco_classifier_baseline_v3_report.json results/eco_classifier_baseline_v3_report.md results/eco_classifier_baseline_v3_report.html
 	rm -f results/eco_classifier_comparison_report.md results/eco_classifier_comparison_report.html
 	rm -f results/eco_classifier_repeated_eval_report.json results/eco_classifier_repeated_eval_report.md results/eco_classifier_repeated_eval_report.html
 	rm -f results/eco_classifier_sensitivity_report.json results/eco_classifier_sensitivity_report.md results/eco_classifier_sensitivity_report.html
