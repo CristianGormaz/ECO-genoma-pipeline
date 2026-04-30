@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Dict, List, Sequence
+from typing import Dict, List, Sequence, Tuple
 import csv
 import json
 import math
@@ -24,6 +24,7 @@ class LabeledSequence:
     sequence_id: str
     sequence: str
     label: str
+    split: str = "train"
 
 
 @dataclass(frozen=True)
@@ -50,11 +51,20 @@ def parse_labeled_sequences_tsv(path: str | Path) -> List[LabeledSequence]:
                     sequence_id=row["sequence_id"].strip(),
                     sequence=row["sequence"].strip(),
                     label=row["label"].strip(),
+                    split=(row.get("split") or "train").strip().lower(),
                 )
             )
     if not records:
         raise ValueError(f"No hay secuencias etiquetadas en {path}")
     return records
+
+
+def split_train_test(records: Sequence[LabeledSequence]) -> Tuple[List[LabeledSequence], List[LabeledSequence]]:
+    train = [record for record in records if record.split == "train"]
+    test = [record for record in records if record.split == "test"]
+    if not train or not test:
+        raise ValueError("El dataset debe incluir split=train y split=test para evaluación explícita.")
+    return train, test
 
 
 def extract_features(sequence: str) -> FeatureVector:
@@ -138,15 +148,24 @@ def evaluate(records: Sequence[LabeledSequence], centroids: Dict[str, FeatureVec
 
 
 def build_classifier_report(records: Sequence[LabeledSequence]) -> Dict[str, object]:
-    centroids = train_centroid_classifier(records)
-    evaluation = evaluate(records, centroids)
+    train_records, test_records = split_train_test(records)
+    centroids = train_centroid_classifier(train_records)
+    train_evaluation = evaluate(train_records, centroids)
+    test_evaluation = evaluate(test_records, centroids)
     return {
         "model_type": "centroid_baseline_explicable",
         "purpose": "baseline_pre_embeddings_para_clasificacion_de_secuencias",
+        "data_split": {
+            "train": len(train_records),
+            "test": len(test_records),
+            "note": "Entrena con split=train y evalúa desempeño reportable en split=test.",
+        },
         "centroids": centroids,
-        "evaluation": evaluation,
+        "train_evaluation": train_evaluation,
+        "test_evaluation": test_evaluation,
         "limits": [
             "Baseline pequeño y demostrativo.",
+            "La separación train/test evita reportar solo desempeño de entrenamiento.",
             "No representa desempeño general sobre datasets reales grandes.",
             "Las features dependen de motivos simples del MVP.",
         ],
