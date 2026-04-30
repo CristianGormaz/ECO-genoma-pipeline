@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval portfolio-demo check clean
+.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval open-model-decision portfolio-demo check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -79,6 +79,9 @@ embedding-placeholder:
 embedding-repeated-eval:
 	$(PY) scripts/run_eco_embedding_repeated_eval.py
 
+model-decision: classifier-compare classifier-repeated-eval embedding-repeated-eval
+	$(PY) scripts/run_eco_model_decision_report.py
+
 preview-clinvar:
 	@sed -n '1,180p' results/eco_clinvar_sample_report.md
 
@@ -115,7 +118,10 @@ open-embedding-placeholder:
 open-embedding-repeated-eval:
 	@xdg-open results/eco_embedding_repeated_eval_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_embedding_repeated_eval_report.html"
 
-portfolio-demo: check classifier-html classifier-html-v2 classifier-html-v3 classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval clinvar-sample clinvar-charts clinvar-html
+open-model-decision:
+	@xdg-open results/eco_model_decision_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_model_decision_report.html"
+
+portfolio-demo: check classifier-html classifier-html-v2 classifier-html-v3 classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision clinvar-sample clinvar-charts clinvar-html
 	@echo ""
 	@echo "E.C.O. PORTFOLIO DEMO READY"
 	@echo "==========================="
@@ -140,6 +146,8 @@ portfolio-demo: check classifier-html classifier-html-v2 classifier-html-v3 clas
 	@echo "- results/eco_embedding_placeholder_report.html"
 	@echo "- results/eco_embedding_repeated_eval_report.md"
 	@echo "- results/eco_embedding_repeated_eval_report.html"
+	@echo "- results/eco_model_decision_report.md"
+	@echo "- results/eco_model_decision_report.html"
 	@echo "- results/eco_clinvar_sample_report.md"
 	@echo "- results/eco_clinvar_sample_report.html"
 	@echo "- results/eco_clinvar_sample_charts/index.html"
@@ -163,8 +171,9 @@ portfolio-demo: check classifier-html classifier-html-v2 classifier-html-v3 clas
 	@echo "Abrir sensibilidad del clasificador: make open-classifier-sensitivity"
 	@echo "Abrir embedding placeholder: make open-embedding-placeholder"
 	@echo "Abrir evaluación repetida embedding: make open-embedding-repeated-eval"
+	@echo "Abrir decisión de modelos: make open-model-decision"
 
-check: test validate demo review report pipeline variant-demo dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-compare embedding-placeholder embedding-repeated-eval
+check: test validate demo review report pipeline variant-demo dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-compare embedding-placeholder embedding-repeated-eval model-decision
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
@@ -183,5 +192,6 @@ clean:
 	rm -f results/eco_classifier_sensitivity_report.json results/eco_classifier_sensitivity_report.md results/eco_classifier_sensitivity_report.html
 	rm -f results/eco_embedding_placeholder_report.json results/eco_embedding_placeholder_report.md results/eco_embedding_placeholder_report.html
 	rm -f results/eco_embedding_repeated_eval_report.json results/eco_embedding_repeated_eval_report.md results/eco_embedding_repeated_eval_report.html
+	rm -f results/eco_model_decision_report.md results/eco_model_decision_report.html
 	rm -f results/eco_clinvar_sample.tsv results/eco_clinvar_sample_report.json results/eco_clinvar_sample_report.md results/eco_clinvar_sample_report.html
 	rm -rf results/eco_clinvar_sample_charts
