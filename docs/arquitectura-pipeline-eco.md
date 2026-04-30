@@ -33,7 +33,7 @@ La analogía con el sistema digestivo/entérico se usa como arquitectura funcion
 |---|---|---|---|---|
 | Ruta 1: regiones y motivos | BED + FASTA | Conversión BED → FASTA, eco_core, análisis de motivos | JSON/Markdown | Demostrar digestión de secuencias y extracción de señales simples. |
 | Ruta 2: variantes públicas | TSV estilo ClinVar | Normalización, categorización E.C.O., evidencia, resumen por gen/categoría | JSON/Markdown/HTML/SVG | Convertir registros públicos de variantes en informe bioinformático prudente. |
-| Ruta 3: baseline de clasificación | Secuencias etiquetadas | Features explicables, centroides, train/test, métricas por clase | JSON/Markdown/HTML | Establecer línea base medible antes de embeddings/DNABERT. |
+| Ruta 3: clasificación baseline | Secuencias etiquetadas | Baseline v1, baseline v2, comparación v1/v2 | JSON/Markdown/HTML | Establecer una línea base medible y comparable antes de embeddings/DNABERT. |
 | Ruta futura: embeddings | Secuencias + etiquetas reales | DNABERT/embeddings, clasificador, comparación contra baseline | Métricas comparativas | Evolucionar desde reglas/features simples hacia IA más avanzada. |
 
 ## 4. Ruta 1: BED/FASTA → motivos → reporte
@@ -135,14 +135,17 @@ Esta ruta convierte datos públicos complejos en una lectura de apoyo:
 
 No interpreta pacientes. Interpreta registros públicos.
 
-## 6. Ruta 3: clasificador baseline pre-embeddings
+## 6. Ruta 3: clasificación baseline pre-embeddings
 
 ### Comandos
 
 ```bash
 make classifier-baseline
+make classifier-baseline-v2
+make classifier-compare
 make classifier-html
-make open-classifier-html
+make classifier-html-v2
+make open-classifier-comparison
 ```
 
 ### Flujo
@@ -150,9 +153,9 @@ make open-classifier-html
 ```text
 examples/eco_labeled_sequences.tsv
 → split train/test
-→ extracción de features explicables
-→ centroide por clase
-→ predicción por distancia
+→ baseline v1: motivos + señales simples
+→ baseline v2: motivos + k-mers
+→ comparación v1/v2
 → métricas por clase
 → JSON/Markdown/HTML
 ```
@@ -163,9 +166,16 @@ examples/eco_labeled_sequences.tsv
 results/eco_classifier_baseline_report.json
 results/eco_classifier_baseline_report.md
 results/eco_classifier_baseline_report.html
+results/eco_classifier_baseline_v2_report.json
+results/eco_classifier_baseline_v2_report.md
+results/eco_classifier_baseline_v2_report.html
+results/eco_classifier_comparison_report.md
+results/eco_classifier_comparison_report.html
 ```
 
-### Features iniciales
+### Baseline v1
+
+Usa features simples:
 
 | Feature | Lectura |
 |---|---|
@@ -180,9 +190,17 @@ results/eco_classifier_baseline_report.html
 | has_polya | Presencia de señal polyA. |
 | has_homopolymer | Presencia de homopolímeros largos. |
 
+### Baseline v2
+
+Agrega frecuencias k-mer con `k=2`:
+
+```text
+AA, AC, AG, AT, CA, CC, CG, CT, GA, GC, GG, GT, TA, TC, TG, TT
+```
+
 ### Métricas actuales
 
-El baseline reporta:
+Ambos baselines reportan:
 
 - accuracy de entrenamiento;
 - accuracy de prueba;
@@ -197,13 +215,22 @@ El baseline reporta:
 - distancias a centroides;
 - confianza heurística.
 
+### Lectura actual
+
+```text
+v1 Test macro F1: 1.0
+v2 Test macro F1: 1.0
+```
+
+La comparación valida el flujo, pero no demuestra superioridad de v2 porque el dataset actual todavía es pequeño y demostrativo.
+
 ### Valor arquitectónico
 
 Esta ruta responde una pregunta clave antes de DNABERT:
 
 > ¿Cuál es la línea base simple y explicable que cualquier modelo avanzado debe superar?
 
-El baseline no debe venderse como modelo final. Su función es servir como punto de comparación.
+La comparación v1/v2 permite evaluar mejoras incrementales sin saltar directamente a modelos pesados.
 
 ## 7. Capa común: eco_core
 
@@ -246,6 +273,10 @@ results/eco_custom_demo_report.md
 results/eco_variant_demo_report.md
 results/eco_classifier_baseline_report.md
 results/eco_classifier_baseline_report.html
+results/eco_classifier_baseline_v2_report.md
+results/eco_classifier_baseline_v2_report.html
+results/eco_classifier_comparison_report.md
+results/eco_classifier_comparison_report.html
 results/eco_clinvar_sample_report.md
 results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
@@ -267,12 +298,14 @@ Actualmente valida:
 - reporte Markdown;
 - pipeline parametrizable;
 - demo local de variantes;
-- clasificador baseline.
+- baseline v1;
+- baseline v2;
+- comparación baseline v1/v2.
 
 Estado actual esperado:
 
 ```text
-28 passed
+34 passed
 ```
 
 ## 11. Límites responsables
@@ -292,7 +325,7 @@ E.C.O. mantiene límites explícitos:
 La evolución técnica más natural es:
 
 ```text
-baseline explicable
+baseline v1/v2
 → dataset más amplio
 → métricas por clase más robustas
 → embeddings tipo DNABERT
@@ -307,4 +340,4 @@ La pregunta guía será:
 
 ## 13. Frase corta para explicar la arquitectura
 
-> E.C.O. es un pipeline bioinformático bioinspirado que organiza tres rutas: análisis de secuencias, interpretación prudente de variantes públicas y clasificación baseline pre-embeddings, generando reportes JSON, Markdown, HTML y visualizaciones para transformar datos técnicos en lectura verificable.
+> E.C.O. es un pipeline bioinformático bioinspirado que organiza tres rutas: análisis de secuencias, interpretación prudente de variantes públicas y clasificación baseline pre-embeddings con comparación v1/v2, generando reportes JSON, Markdown, HTML y visualizaciones para transformar datos técnicos en lectura verificable.
