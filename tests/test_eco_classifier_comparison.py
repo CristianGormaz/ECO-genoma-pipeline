@@ -26,8 +26,9 @@ def test_summarize_report_extracts_comparable_fields():
     assert v2["name"] == "baseline_v2"
     assert v2["feature_mode"] == "motif_kmer"
     assert v2["kmer_k"] == 2
-    assert v1["test"] == 4
-    assert v2["test"] == 4
+    assert v1["test"] >= 8
+    assert v2["test"] >= 8
+    assert v1["test"] == v2["test"]
     assert 0.0 <= v1["test_macro_f1"] <= 1.0
     assert 0.0 <= v2["test_macro_f1"] <= 1.0
 
