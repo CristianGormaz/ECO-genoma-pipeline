@@ -8,7 +8,7 @@ El proyecto trabaja hoy con tres rutas principales:
 
 1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
 2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
-3. **Clasificación baseline:** secuencias etiquetadas → features explicables → clasificador por centroides → métricas JSON/Markdown/HTML.
+3. **Clasificación baseline:** secuencias etiquetadas → features explicables → baseline v1/v2 → comparación formal → métricas JSON/Markdown/HTML.
 
 > Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
 
@@ -35,12 +35,13 @@ make check
 Resultado esperado actual:
 
 ```text
-28 passed
+34 passed
 OK: metabolismo informacional mínimo funcionando.
 Estado: OK, intestino informacional demo funcionando.
 Estado: OK, pipeline parametrizable E.C.O. funcionando.
 Estado: OK, interpretación de variantes generada sin diagnóstico médico.
 Estado: OK, baseline explicable con métricas por clase ejecutado.
+Estado: OK, comparación baseline v1/v2 generada.
 ```
 
 ## Demo de portafolio
@@ -61,6 +62,10 @@ results/eco_custom_demo_report.md
 results/eco_variant_demo_report.md
 results/eco_classifier_baseline_report.md
 results/eco_classifier_baseline_report.html
+results/eco_classifier_baseline_v2_report.md
+results/eco_classifier_baseline_v2_report.html
+results/eco_classifier_comparison_report.md
+results/eco_classifier_comparison_report.html
 results/eco_clinvar_sample_report.md
 results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
@@ -69,10 +74,22 @@ docs/arquitectura-pipeline-eco.md
 docs/roadmap-tecnico-eco.md
 ```
 
-Abrir HTML del clasificador:
+Abrir HTML del clasificador v1:
 
 ```bash
 make open-classifier-html
+```
+
+Abrir HTML del clasificador v2:
+
+```bash
+make open-classifier-html-v2
+```
+
+Abrir comparación v1/v2:
+
+```bash
+make open-classifier-comparison
 ```
 
 Abrir HTML ClinVar:
@@ -110,7 +127,7 @@ Este documento ordena:
 ```text
 Ruta 1: BED/FASTA → motivos → reporte
 Ruta 2: ClinVar → interpretación → HTML/SVG
-Ruta 3: secuencias etiquetadas → baseline → métricas
+Ruta 3: secuencias etiquetadas → baseline v1/v2 → comparación formal
 Ruta futura: DNABERT/embeddings → clasificador avanzado
 ```
 
@@ -152,27 +169,32 @@ Reglas centrales:
 ## Comandos principales
 
 ```bash
-make test                  # Ejecuta pytest
-make validate              # Valida ingesta, filtro, absorción, descarte y feedback
-make demo                  # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
-make review                # Revisa el JSON integrado en formato humano
-make report                # Exporta el reporte integrado a Markdown
-make pipeline              # Ejecuta pipeline parametrizable con BED/FASTA
-make public-demo           # Descarga referencia pública pequeña y genera informe
-make variant-demo          # Demo educativa de variantes desde TSV local
-make classifier-baseline   # Entrena/evalúa baseline explicable de secuencias
-make classifier-html       # Convierte el JSON del baseline en HTML estático
-make clinvar-sample        # Muestra pública real desde ClinVar con reporte E.C.O.
-make clinvar-charts        # Genera visualizaciones SVG desde el JSON ClinVar
-make clinvar-html          # Convierte el reporte JSON de ClinVar en HTML estático integrado
-make preview-clinvar       # Vista rápida del Markdown ClinVar en terminal
-make inspect-clinvar-json  # Vista rápida del JSON ClinVar formateado
-make open-classifier-html  # Abre el HTML del clasificador en navegador
-make open-clinvar-html     # Abre el HTML principal en navegador
-make open-clinvar-charts   # Abre el índice visual de gráficos SVG
-make portfolio-demo        # Prepara demo completa para portafolio/entrevista
-make check                 # Pruebas + demos locales estables
-make clean                 # Limpieza de cachés/resultados temporales
+make test                       # Ejecuta pytest
+make validate                   # Valida ingesta, filtro, absorción, descarte y feedback
+make demo                       # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
+make review                     # Revisa el JSON integrado en formato humano
+make report                     # Exporta el reporte integrado a Markdown
+make pipeline                   # Ejecuta pipeline parametrizable con BED/FASTA
+make public-demo                # Descarga referencia pública pequeña y genera informe
+make variant-demo               # Demo educativa de variantes desde TSV local
+make classifier-baseline        # Entrena/evalúa baseline v1 con features de motivos
+make classifier-baseline-v2     # Entrena/evalúa baseline v2 con motivos + k-mers
+make classifier-html            # Convierte el JSON del baseline v1 en HTML estático
+make classifier-html-v2         # Convierte el JSON del baseline v2 en HTML estático
+make classifier-compare         # Compara baseline v1 vs v2 en Markdown/HTML
+make clinvar-sample             # Muestra pública real desde ClinVar con reporte E.C.O.
+make clinvar-charts             # Genera visualizaciones SVG desde el JSON ClinVar
+make clinvar-html               # Convierte el reporte JSON de ClinVar en HTML estático integrado
+make preview-clinvar            # Vista rápida del Markdown ClinVar en terminal
+make inspect-clinvar-json       # Vista rápida del JSON ClinVar formateado
+make open-classifier-html       # Abre el HTML del clasificador v1 en navegador
+make open-classifier-html-v2    # Abre el HTML del clasificador v2 en navegador
+make open-classifier-comparison # Abre el HTML comparativo v1/v2 en navegador
+make open-clinvar-html          # Abre el HTML principal en navegador
+make open-clinvar-charts        # Abre el índice visual de gráficos SVG
+make portfolio-demo             # Prepara demo completa para portafolio/entrevista
+make check                      # Pruebas + demos locales estables
+make clean                      # Limpieza de cachés/resultados temporales
 ```
 
 `make clinvar-sample` y `make portfolio-demo` quedan fuera de `make check` porque dependen de red externa/cache y de un archivo público cambiante.
@@ -321,23 +343,40 @@ Guía completa:
 docs/guia-interpretacion-variantes-eco.md
 ```
 
-## Ruta 3: clasificador baseline de secuencias
+## Ruta 3: clasificación baseline de secuencias
 
-Antes de incorporar embeddings tipo DNABERT, E.C.O. incluye una línea base simple y medible:
+Antes de incorporar embeddings tipo DNABERT, E.C.O. incluye una línea base simple y medible.
+
+### Baseline v1: motivos
 
 ```bash
 make classifier-baseline
+make classifier-html
 ```
 
-Flujo:
+Usa:
 
 ```text
-examples/eco_labeled_sequences.tsv
-→ split train/test
-→ extracción de features explicables
-→ clasificador por centroides
-→ evaluación por clase
-→ JSON/Markdown/HTML
+motivos + longitud + GC + N + señales simples
+```
+
+### Baseline v2: motivos + k-mers
+
+```bash
+make classifier-baseline-v2
+make classifier-html-v2
+```
+
+Usa:
+
+```text
+motivos + longitud + GC + N + frecuencias k-mer de k=2
+```
+
+### Comparación formal v1/v2
+
+```bash
+make classifier-compare
 ```
 
 Salidas:
@@ -346,41 +385,14 @@ Salidas:
 results/eco_classifier_baseline_report.json
 results/eco_classifier_baseline_report.md
 results/eco_classifier_baseline_report.html
+results/eco_classifier_baseline_v2_report.json
+results/eco_classifier_baseline_v2_report.md
+results/eco_classifier_baseline_v2_report.html
+results/eco_classifier_comparison_report.md
+results/eco_classifier_comparison_report.html
 ```
 
-Para generar el HTML del baseline:
-
-```bash
-make classifier-html
-```
-
-Abrir en navegador:
-
-```bash
-make open-classifier-html
-```
-
-Features iniciales:
-
-- longitud;
-- porcentaje GC;
-- porcentaje de N;
-- cantidad de motivos;
-- densidad de motivos;
-- presencia de TATA, CAAT, GC box, polyA y homopolímeros.
-
-El baseline entrega:
-
-- accuracy de entrenamiento y prueba;
-- precision, recall, F1 y support por clase;
-- macro average;
-- weighted average;
-- matriz de confusión;
-- predicciones por secuencia;
-- distancias a centroides;
-- confianza heurística.
-
-Es una referencia demostrativa pre-embeddings, no un benchmark científico general.
+La comparación actual valida el flujo, pero no demuestra superioridad de v2 porque el dataset sigue siendo pequeño y ambos modelos empatan en la muestra demostrativa.
 
 ## Demo pública con descarga real de secuencia
 
@@ -472,6 +484,7 @@ scripts/run_eco_public_chrM_report.py
 scripts/run_eco_variant_demo.py
 scripts/run_eco_clinvar_sample_report.py
 scripts/run_eco_classifier_baseline.py
+scripts/compare_eco_classifier_baselines.py
 scripts/export_eco_classifier_html.py
 scripts/export_eco_clinvar_charts.py
 scripts/export_eco_variant_html.py
@@ -518,11 +531,11 @@ Además, `make check` valida localmente las piezas principales del MVP.
 
 ## Próximos pasos
 
+- Ampliar el dataset etiquetado para que la comparación v1/v2 tenga más valor empírico.
 - Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas.
-- Incorporar embeddings tipo DNABERT.
+- Incorporar embeddings tipo DNABERT cuando exista una línea base más robusta.
 - Comparar el baseline explicable contra un modelo con embeddings.
-- Entrenar un clasificador inicial con dataset más grande y separación train/test real.
-- Agregar visualizaciones y reportes comparativos.
+- Agregar visualizaciones y reportes comparativos adicionales.
 - Expandir la normalización de variantes y fuentes externas.
 
 ## Firma conceptual
