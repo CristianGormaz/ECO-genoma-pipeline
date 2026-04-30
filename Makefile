@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts classifier-baseline classifier-html open-classifier-html portfolio-demo check clean
+.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts classifier-baseline classifier-baseline-v2 classifier-html classifier-html-v2 open-classifier-html open-classifier-html-v2 portfolio-demo check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -44,10 +44,16 @@ clinvar-html:
 	$(PY) scripts/export_eco_variant_html.py
 
 classifier-baseline:
-	$(PY) scripts/run_eco_classifier_baseline.py
+	$(PY) scripts/run_eco_classifier_baseline.py --feature-mode motif --output-json results/eco_classifier_baseline_report.json --output-md results/eco_classifier_baseline_report.md
+
+classifier-baseline-v2:
+	$(PY) scripts/run_eco_classifier_baseline.py --feature-mode motif_kmer --kmer-k 2 --output-json results/eco_classifier_baseline_v2_report.json --output-md results/eco_classifier_baseline_v2_report.md
 
 classifier-html:
-	$(PY) scripts/export_eco_classifier_html.py
+	$(PY) scripts/export_eco_classifier_html.py --input-json results/eco_classifier_baseline_report.json --output-html results/eco_classifier_baseline_report.html
+
+classifier-html-v2:
+	$(PY) scripts/export_eco_classifier_html.py --input-json results/eco_classifier_baseline_v2_report.json --output-html results/eco_classifier_baseline_v2_report.html
 
 preview-clinvar:
 	@sed -n '1,180p' results/eco_clinvar_sample_report.md
@@ -64,7 +70,10 @@ open-clinvar-charts:
 open-classifier-html:
 	@xdg-open results/eco_classifier_baseline_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_classifier_baseline_report.html"
 
-portfolio-demo: check classifier-baseline classifier-html clinvar-sample clinvar-charts clinvar-html
+open-classifier-html-v2:
+	@xdg-open results/eco_classifier_baseline_v2_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_classifier_baseline_v2_report.html"
+
+portfolio-demo: check classifier-baseline classifier-html classifier-baseline-v2 classifier-html-v2 clinvar-sample clinvar-charts clinvar-html
 	@echo ""
 	@echo "E.C.O. PORTFOLIO DEMO READY"
 	@echo "==========================="
@@ -74,6 +83,8 @@ portfolio-demo: check classifier-baseline classifier-html clinvar-sample clinvar
 	@echo "- results/eco_variant_demo_report.md"
 	@echo "- results/eco_classifier_baseline_report.md"
 	@echo "- results/eco_classifier_baseline_report.html"
+	@echo "- results/eco_classifier_baseline_v2_report.md"
+	@echo "- results/eco_classifier_baseline_v2_report.html"
 	@echo "- results/eco_clinvar_sample_report.md"
 	@echo "- results/eco_clinvar_sample_report.html"
 	@echo "- results/eco_clinvar_sample_charts/index.html"
@@ -88,9 +99,10 @@ portfolio-demo: check classifier-baseline classifier-html clinvar-sample clinvar
 	@echo "Inspección JSON: make inspect-clinvar-json"
 	@echo "Abrir HTML ClinVar: make open-clinvar-html"
 	@echo "Abrir gráficos ClinVar: make open-clinvar-charts"
-	@echo "Abrir HTML clasificador: make open-classifier-html"
+	@echo "Abrir HTML clasificador v1: make open-classifier-html"
+	@echo "Abrir HTML clasificador v2: make open-classifier-html-v2"
 
-check: test validate demo review report pipeline variant-demo classifier-baseline
+check: test validate demo review report pipeline variant-demo classifier-baseline classifier-baseline-v2
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
@@ -101,5 +113,6 @@ clean:
 	rm -f results/eco_public_chrM.fa results/eco_public_chrM_report.json results/eco_public_chrM_interpretive_report.md
 	rm -f results/eco_variant_demo_report.json results/eco_variant_demo_report.md
 	rm -f results/eco_classifier_baseline_report.json results/eco_classifier_baseline_report.md results/eco_classifier_baseline_report.html
+	rm -f results/eco_classifier_baseline_v2_report.json results/eco_classifier_baseline_v2_report.md results/eco_classifier_baseline_v2_report.html
 	rm -f results/eco_clinvar_sample.tsv results/eco_clinvar_sample_report.json results/eco_clinvar_sample_report.md results/eco_clinvar_sample_report.html
 	rm -rf results/eco_clinvar_sample_charts
