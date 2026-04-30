@@ -35,12 +35,10 @@ def table(headers: List[str], rows: List[List[object]]) -> List[str]:
     return lines
 
 
-def build_markdown(report: Dict[str, object], input_path: Path) -> str:
-    evaluation = report["evaluation"]
+def evaluation_tables(evaluation: Dict[str, object], title: str) -> List[str]:
     predictions = evaluation["predictions"]
     labels = evaluation["labels"]
     matrix = evaluation["confusion_matrix"]
-
     prediction_rows = [
         [
             item["sequence_id"],
@@ -53,20 +51,8 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         for item in predictions
     ]
     matrix_rows = [[true_label, *[matrix[true_label][pred] for pred in labels]] for true_label in labels]
-
-    lines = [
-        "# E.C.O. - Clasificador baseline de secuencias",
-        "",
-        "## Propósito",
-        "",
-        "Este reporte entrena y evalúa un clasificador baseline transparente usando features simples de secuencia. "
-        "Su objetivo es crear una línea base medible antes de incorporar embeddings tipo DNABERT u otros modelos más complejos.",
-        "",
-        "## Entrada",
-        "",
-        *table(["Campo", "Valor"], [["Dataset", input_path], ["Modelo", report["model_type"]]]),
-        "",
-        "## Métricas",
+    return [
+        f"## {title}",
         "",
         *table(
             ["Métrica", "Valor"],
@@ -77,14 +63,41 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
             ],
         ),
         "",
-        "## Matriz de confusión",
+        "### Matriz de confusión",
         "",
         *table(["Real / Predicho", *labels], matrix_rows),
         "",
-        "## Predicciones",
+        "### Predicciones",
         "",
         *table(["ID", "Real", "Predicho", "Confianza", "Motivos", "GC %"], prediction_rows),
         "",
+    ]
+
+
+def build_markdown(report: Dict[str, object], input_path: Path) -> str:
+    split = report["data_split"]
+    lines = [
+        "# E.C.O. - Clasificador baseline de secuencias",
+        "",
+        "## Propósito",
+        "",
+        "Este reporte entrena y evalúa un clasificador baseline transparente usando features simples de secuencia. "
+        "Su objetivo es crear una línea base medible antes de incorporar embeddings tipo DNABERT u otros modelos más complejos.",
+        "",
+        "## Entrada",
+        "",
+        *table(
+            ["Campo", "Valor"],
+            [
+                ["Dataset", input_path],
+                ["Modelo", report["model_type"]],
+                ["Train", split["train"]],
+                ["Test", split["test"]],
+            ],
+        ),
+        "",
+        *evaluation_tables(report["train_evaluation"], "Métricas de entrenamiento"),
+        *evaluation_tables(report["test_evaluation"], "Métricas de prueba"),
         "## Límites",
         "",
         *[f"- {limit}" for limit in report["limits"]],
@@ -92,7 +105,7 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         "## Lectura E.C.O.",
         "",
         "Esta etapa convierte la digestión de motivos en una primera decisión algorítmica. "
-        "No pretende ser un modelo final; funciona como control base para medir mejoras futuras.",
+        "La métrica relevante para mostrar avance es la de prueba, porque evalúa secuencias separadas del entrenamiento.",
         "",
     ]
     return "\n".join(lines)
@@ -114,16 +127,18 @@ def main() -> int:
     args.output_md.parent.mkdir(parents=True, exist_ok=True)
     args.output_md.write_text(build_markdown(report, args.input), encoding="utf-8")
 
-    evaluation = report["evaluation"]
+    train = report["train_evaluation"]
+    test = report["test_evaluation"]
+    split = report["data_split"]
     print("E.C.O. CLASSIFIER BASELINE REPORT")
     print("=================================")
     print(f"Dataset: {args.input}")
-    print(f"Total: {evaluation['total']}")
-    print(f"Correctas: {evaluation['correct']}")
-    print(f"Accuracy: {evaluation['accuracy']}")
+    print(f"Train: {split['train']} | Test: {split['test']}")
+    print(f"Train accuracy: {train['accuracy']}")
+    print(f"Test accuracy: {test['accuracy']}")
     print(f"Reporte JSON: {args.output_json}")
     print(f"Reporte Markdown: {args.output_md}")
-    print("Estado: OK, baseline explicable ejecutado.")
+    print("Estado: OK, baseline explicable con split train/test ejecutado.")
     return 0
 
 
