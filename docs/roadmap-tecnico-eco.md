@@ -2,7 +2,7 @@
 
 ## 1. Propósito
 
-Este roadmap ordena la evolución de **E.C.O. — Entérico Codificador Orgánico**. El objetivo es avanzar por capas: primero funcional, luego medible, luego comparable, luego escalable y finalmente publicable.
+Este roadmap ordena la evolución de **E.C.O. — Entérico Codificador Orgánico**. El objetivo es avanzar por capas: primero funcional, luego medible, luego comparable, luego repetible, luego escalable y finalmente publicable.
 
 ## 2. Estado actual
 
@@ -12,7 +12,7 @@ E.C.O. ya cuenta con tres rutas funcionales:
 |---|---|---|
 | Regiones y motivos | Funcional | BED/FASTA → motivos → JSON/Markdown. |
 | Variantes públicas | Funcional | Registros públicos → categorías E.C.O. → Markdown/HTML/SVG. |
-| Clasificación baseline | Funcional + comparativa + evaluación repetida | Dataset auditado → baseline v1/v2 → comparación fija → evaluación repetida Markdown/HTML. |
+| Clasificación baseline | Funcional + comparativa + evaluación repetida | Dataset auditado → baseline v1/v2/v3 → comparación fija → sensibilidad → evaluación repetida Markdown/HTML. |
 
 Estado operativo actual:
 
@@ -71,13 +71,13 @@ Primera ampliación implementada y auditada.
 El dataset etiquetado pasó a una muestra demostrativa más exigente:
 
 ```text
-Total: 26
-Train: 16
-Test: 10
-Clases: non_regulatory 12 | regulatory 14
+Total: 60
+Train: 36
+Test: 24
+Clases: non_regulatory 30 | regulatory 30
 ```
 
-Incluye casos fáciles y casos ambiguos para que la evaluación no dependa de una muestra demasiado perfecta.
+Incluye casos fáciles, ambiguos y difíciles para que la evaluación no dependa de una muestra demasiado perfecta.
 
 ### Auditoría implementada
 
@@ -100,38 +100,29 @@ Sin alertas críticas de composición.
 
 ### Tareas pendientes
 
-- Añadir más secuencias etiquetadas.
-- Incluir ejemplos ambiguos adicionales.
+- Añadir más secuencias etiquetadas cuando exista una fuente o criterio más fuerte.
+- Incluir negativos duros y regulatorios difíciles adicionales.
 - Mantener separación train/test.
-- Documentar criterios de selección.
-- Evitar vender `accuracy: 1.0` como resultado general.
-
-### Criterio de salida
-
-```text
-más ejemplos etiquetados
-métricas por clase actualizadas
-evaluación repetida más estable
-comparación v1/v2 más informativa
-```
+- Evitar duplicados exactos o casi idénticos entre train y test.
+- Evitar vender `accuracy` o `macro F1` como resultado general.
 
 ## 6. Fase 3: Baseline robusto y comparación interna
 
 ### Estado
 
-Implementado en primera versión funcional.
+Implementado en versión funcional con tres configuraciones.
 
 ### Implementado
 
-- Baseline v1 con `feature_mode=motif`.
+- Baseline v1 con `feature_mode=motif` y `feature_scaling=none`.
 - Baseline v2 con `feature_mode=motif_kmer`, `k=2` y `feature_scaling=minmax_train`.
+- Baseline v3 con `feature_mode=motif_kmer`, `k=3` y `feature_scaling=minmax_train`.
 - Normalización min-max ajustada solo con train para evitar fuga de información desde test.
 - Auditoría de dataset etiquetado.
-- Reportes JSON/Markdown/HTML para v1.
-- Reportes JSON/Markdown/HTML para v2.
-- Comparación Markdown/HTML v1 vs v2.
-- Evaluación repetida v1/v2 con splits estratificados.
-- Tests para k-mers, modo v2, normalización y comparación.
+- Reportes JSON/Markdown/HTML para v1, v2 y v3.
+- Comparación Markdown/HTML v1/v2/v3.
+- Evaluación repetida v1/v2/v3 con splits estratificados.
+- Sensibilidad de configuraciones para revisar k-mers, normalización y tamaño de k.
 - Integración en `make check` y `make portfolio-demo`.
 
 ### Comandos
@@ -140,35 +131,47 @@ Implementado en primera versión funcional.
 make dataset-audit
 make classifier-baseline
 make classifier-baseline-v2
+make classifier-baseline-v3
 make classifier-compare
 make classifier-repeated-eval
+make classifier-sensitivity
 make open-classifier-repeated-eval
+make open-classifier-sensitivity
+make open-classifier-comparison
 ```
 
 ### Lectura con split fijo
 
 ```text
-baseline_v1 | motif | scaling none | Test macro F1 0.7917
-baseline_v2 | motif_kmer | scaling minmax_train | Test macro F1 1.0
+baseline_v1 | motif      | none       | Test macro F1 0.8333
+baseline_v2 | motif_kmer | k=2 minmax | Test macro F1 0.7333
+baseline_v3 | motif_kmer | k=3 minmax | Test macro F1 0.9161
 ```
 
 ### Lectura con evaluación repetida
 
 ```text
 Repeticiones: 10
-v1 macro F1 promedio: 0.8134
-v2 macro F1 promedio: 0.9087
-Delta macro F1 promedio: +0.0952
-v2 gana: 7/10
-v2 empata: 3/10
-v2 pierde: 0/10
+v1 macro F1 promedio: 0.7126
+v2 macro F1 promedio: 0.6872
+v3 macro F1 promedio: 0.7880
+Delta v3 vs v1 promedio: +0.0755
+Mejor promedio: v3
 ```
 
 Interpretación prudente:
 
-> v2 muestra una ventaja promedio y no pierde en la evaluación repetida actual. Esto fortalece la señal inicial, pero todavía corresponde a un dataset demostrativo pequeño.
+> v3 aparece como el candidato pre-embeddings más fuerte en la evaluación repetida. v1 debe mantenerse como control explicable y v2 como variante exploratoria no principal.
 
-## 7. Fase 4: Embeddings / DNABERT
+## 7. Decisión técnica actual
+
+| Modelo | Rol operativo | Motivo |
+|---|---|---|
+| v1 | Control explicable | Simple, transparente y útil como referencia mínima. |
+| v2 | Variante exploratoria | k=2 no mejora de forma consistente en el dataset actual. |
+| v3 | Candidato principal pre-embeddings | k=3 + minmax_train mejora el split fijo y lidera el promedio repetido. |
+
+## 8. Fase 4: Embeddings / DNABERT
 
 ### Estado
 
@@ -176,17 +179,18 @@ Pendiente.
 
 ### Objetivo
 
-Agregar una ruta experimental con embeddings solo después de tener una línea base más robusta.
+Agregar una ruta experimental con embeddings solo después de mantener v1/v3 como línea base comparativa.
 
 ### Tareas
 
-- Definir dataset estable.
-- Generar embeddings.
+- Definir dataset estable y congelar una versión demostrativa.
+- Generar embeddings o features vectoriales externas.
 - Entrenar clasificador simple sobre embeddings.
-- Comparar contra baseline v1/v2.
-- Mantener la evaluación repetida como control previo.
+- Comparar contra v1 y v3.
+- Mantener evaluación repetida como control previo.
+- Documentar costo, límites y reproducibilidad.
 
-## 8. Fase 5: Comparación formal ampliada
+## 9. Fase 5: Comparación formal ampliada
 
 ### Estado
 
@@ -199,17 +203,19 @@ results/eco_classifier_comparison_report.md
 results/eco_classifier_comparison_report.html
 results/eco_classifier_repeated_eval_report.md
 results/eco_classifier_repeated_eval_report.html
+results/eco_classifier_sensitivity_report.md
+results/eco_classifier_sensitivity_report.html
 ```
 
 La versión completa debería comparar:
 
-| Modelo | Features | Scaling | Evaluación | Accuracy | Macro F1 | Comentario |
-|---|---|---|---|---:|---:|---|
-| Baseline v1 | motivos + GC | none | split fijo + repetida | x | x | Explicable. |
-| Baseline v2 | motivos + k-mers | minmax_train | split fijo + repetida | x | x | Más granular. |
-| Embeddings | DNABERT/otro | por definir | split fijo + repetida | x | x | Más complejo. |
+| Modelo | Features | Scaling | Evaluación | Macro F1 | Comentario |
+|---|---|---|---|---:|---|
+| Baseline v1 | motivos + GC | none | split fijo + repetida | x | Control explicable. |
+| Baseline v3 | motivos + k-mers k=3 | minmax_train | split fijo + repetida | x | Candidato principal pre-embeddings. |
+| Embeddings | DNABERT/otro | por definir | split fijo + repetida | x | Más complejo, solo si aporta valor medible. |
 
-## 9. Fase 6: Presentación pública controlada
+## 10. Fase 6: Presentación pública controlada
 
 ### Estado
 
@@ -217,33 +223,22 @@ Apta para portafolio y conversaciones laborales. Todavía conviene esperar antes
 
 Antes de publicar en espacios más técnicos, E.C.O. debería tener:
 
-- dataset más amplio;
-- comparación v1/v2 repetida con más datos;
+- dataset más amplio o fuente externa reducida y documentada;
+- comparación v1/v3 repetida con más datos;
 - limitaciones explícitas;
 - reproducibilidad con comandos simples;
-- idealmente una fuente externa o dataset reducido documentado.
-
-## 10. Prioridad recomendada
-
-| Prioridad | Acción | Motivo |
-|---|---|---|
-| Alta | Ampliar dataset etiquetado a 50-80 secuencias | Verifica si la mejora de v2 se mantiene. |
-| Alta | Agregar casos ambiguos controlados | Evita una evaluación demasiado fácil. |
-| Alta | Documentar criterios de construcción del dataset | Mejora defendibilidad técnica. |
-| Media | Mejorar visualización comparativa repetida | Mejora la lectura UX. |
-| Media | Preparar embeddings | Abre camino a DNABERT. |
-| Baja por ahora | Publicación técnica exigente | Falta dataset más fuerte. |
+- validación externa o benchmark pequeño controlado.
 
 ## 11. Próximo sprint recomendado
 
 ```text
-Sprint: dataset v3 + criterios de selección
+Sprint: preparación pre-embeddings controlada
 
-1. Ampliar examples/eco_labeled_sequences.tsv a 50-80 secuencias.
-2. Separar casos fáciles, ambiguos y negativos duros.
-3. Crear docs/criterios-dataset-clasificador-eco.md.
-4. Repetir dataset-audit, classifier-compare y classifier-repeated-eval.
-5. Actualizar resultados de portafolio solo si la señal se mantiene.
+1. Congelar v3 como candidato principal pre-embeddings.
+2. Actualizar README para que refleje v1/v2/v3 y no solo v1/v2.
+3. Crear una nota técnica breve: por qué v3 supera a v2 en esta muestra.
+4. Preparar un esqueleto de ruta embeddings sin descargar modelos pesados todavía.
+5. Mantener make check estable antes de sumar dependencias nuevas.
 ```
 
 ## 12. Frase guía
