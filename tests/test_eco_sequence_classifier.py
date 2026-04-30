@@ -39,3 +39,25 @@ def test_classifier_baseline_demo_dataset_runs_with_explicit_split():
     assert report["train_evaluation"]["total"] == 6
     assert report["test_evaluation"]["total"] == 4
     assert report["test_evaluation"]["accuracy"] >= 0.75
+
+
+def test_classifier_baseline_reports_per_class_metrics():
+    records = parse_labeled_sequences_tsv(Path("examples/eco_labeled_sequences.tsv"))
+    report = build_classifier_report(records)
+    test_metrics = report["test_evaluation"]["classification_metrics"]
+
+    assert set(test_metrics) == {"per_class", "macro_avg", "weighted_avg"}
+    assert set(test_metrics["per_class"]) == {"non_regulatory", "regulatory"}
+
+    for label in ("non_regulatory", "regulatory"):
+        values = test_metrics["per_class"][label]
+        assert set(values) == {"precision", "recall", "f1", "support"}
+        assert 0.0 <= values["precision"] <= 1.0
+        assert 0.0 <= values["recall"] <= 1.0
+        assert 0.0 <= values["f1"] <= 1.0
+        assert values["support"] >= 1
+
+    assert test_metrics["macro_avg"]["support"] == 4
+    assert 0.0 <= test_metrics["macro_avg"]["f1"] <= 1.0
+    assert test_metrics["weighted_avg"]["support"] == 4
+    assert 0.0 <= test_metrics["weighted_avg"]["f1"] <= 1.0
