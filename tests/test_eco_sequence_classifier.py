@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 
 from src.eco_sequence_classifier import (
     build_classifier_report,
@@ -6,6 +7,7 @@ from src.eco_sequence_classifier import (
     parse_labeled_sequences_tsv,
     split_train_test,
     train_centroid_classifier,
+    write_json_report,
 )
 
 
@@ -61,3 +63,15 @@ def test_classifier_baseline_reports_per_class_metrics():
     assert 0.0 <= test_metrics["macro_avg"]["f1"] <= 1.0
     assert test_metrics["weighted_avg"]["support"] == 4
     assert 0.0 <= test_metrics["weighted_avg"]["f1"] <= 1.0
+
+
+def test_write_json_report_allows_existing_output_directory(tmp_path):
+    output_dir = tmp_path / "results"
+    output_dir.mkdir()
+    output_path = output_dir / "classifier_report.json"
+    payload = {"status": "ok", "stage": "classifier-baseline"}
+
+    write_json_report(payload, output_path)
+
+    assert output_path.exists()
+    assert json.loads(output_path.read_text(encoding="utf-8")) == payload
