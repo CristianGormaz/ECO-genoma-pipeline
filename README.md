@@ -8,7 +8,7 @@ El proyecto trabaja hoy con tres rutas principales:
 
 1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
 2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
-3. **Clasificación baseline:** secuencias etiquetadas → auditoría de dataset → baseline v1/v2 → comparación formal → evaluación repetida → métricas JSON/Markdown/HTML.
+3. **Clasificación baseline:** secuencias etiquetadas → auditoría de dataset → baseline v1/v2/v3 → comparación formal → sensibilidad → evaluación repetida → métricas JSON/Markdown/HTML.
 
 > Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
 
@@ -42,7 +42,7 @@ Estado: OK, pipeline parametrizable E.C.O. funcionando.
 Estado: OK, interpretación de variantes generada sin diagnóstico médico.
 Estado: OK, auditoría del dataset generada.
 Estado: OK, baseline explicable con métricas por clase ejecutado.
-Estado: OK, comparación baseline v1/v2 generada.
+Estado: OK, comparación baseline v1/v2/v3 generada.
 ```
 
 ## Demo de portafolio
@@ -53,7 +53,7 @@ Para preparar una demo completa de presentación:
 make portfolio-demo
 ```
 
-Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG, exporta informes HTML y agrega evaluación repetida del clasificador.
+Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG, exporta informes HTML y agrega evaluación repetida/sensibilidad del clasificador.
 
 Al finalizar, deja rutas listas para revisar:
 
@@ -66,55 +66,24 @@ results/eco_classifier_baseline_report.md
 results/eco_classifier_baseline_report.html
 results/eco_classifier_baseline_v2_report.md
 results/eco_classifier_baseline_v2_report.html
+results/eco_classifier_baseline_v3_report.md
+results/eco_classifier_baseline_v3_report.html
 results/eco_classifier_comparison_report.md
 results/eco_classifier_comparison_report.html
 results/eco_classifier_repeated_eval_report.md
 results/eco_classifier_repeated_eval_report.html
+results/eco_classifier_sensitivity_report.md
+results/eco_classifier_sensitivity_report.html
 results/eco_clinvar_sample_report.md
 results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
 docs/resumen-ejecutivo-eco.md
 docs/ficha-tecnica-clasificador-eco.md
 docs/criterios-dataset-clasificador-eco.md
+docs/nota-tecnica-v3-vs-v2.md
 docs/caso-estudio-portafolio-eco.md
 docs/arquitectura-pipeline-eco.md
 docs/roadmap-tecnico-eco.md
-```
-
-Abrir HTML del clasificador v1:
-
-```bash
-make open-classifier-html
-```
-
-Abrir HTML del clasificador v2:
-
-```bash
-make open-classifier-html-v2
-```
-
-Abrir comparación v1/v2:
-
-```bash
-make open-classifier-comparison
-```
-
-Abrir evaluación repetida:
-
-```bash
-make open-classifier-repeated-eval
-```
-
-Abrir HTML ClinVar:
-
-```bash
-make open-clinvar-html
-```
-
-Abrir gráficos ClinVar:
-
-```bash
-make open-clinvar-charts
 ```
 
 ## Documentos principales
@@ -130,6 +99,7 @@ Para revisión técnica del clasificador:
 
 ```text
 docs/ficha-tecnica-clasificador-eco.md
+docs/nota-tecnica-v3-vs-v2.md
 ```
 
 Para ampliar el dataset etiquetado sin inflar métricas ni perder trazabilidad:
@@ -179,11 +149,14 @@ make public-demo                    # Descarga referencia pública pequeña y ge
 make variant-demo                   # Demo educativa de variantes desde TSV local
 make dataset-audit                  # Audita composición del dataset etiquetado
 make classifier-baseline            # Entrena/evalúa baseline v1 con features de motivos
-make classifier-baseline-v2         # Entrena/evalúa baseline v2 con motivos + k-mers + minmax_train
+make classifier-baseline-v2         # Entrena/evalúa baseline v2 con motivos + k-mers k=2 + minmax_train
+make classifier-baseline-v3         # Entrena/evalúa baseline v3 con motivos + k-mers k=3 + minmax_train
 make classifier-html                # Convierte el JSON del baseline v1 en HTML estático
 make classifier-html-v2             # Convierte el JSON del baseline v2 en HTML estático
-make classifier-compare             # Compara baseline v1 vs v2 en Markdown/HTML
-make classifier-repeated-eval       # Repite evaluación v1/v2 con splits estratificados
+make classifier-html-v3             # Convierte el JSON del baseline v3 en HTML estático
+make classifier-compare             # Compara baseline v1/v2/v3 en Markdown/HTML
+make classifier-repeated-eval       # Repite evaluación v1/v2/v3 con splits estratificados
+make classifier-sensitivity         # Diagnostica feature modes, k-mers y normalización
 make clinvar-sample                 # Muestra pública real desde ClinVar con reporte E.C.O.
 make clinvar-charts                 # Genera visualizaciones SVG desde el JSON ClinVar
 make clinvar-html                   # Convierte el reporte JSON de ClinVar en HTML estático integrado
@@ -191,8 +164,10 @@ make preview-clinvar                # Vista rápida del Markdown ClinVar en term
 make inspect-clinvar-json           # Vista rápida del JSON ClinVar formateado
 make open-classifier-html           # Abre el HTML del clasificador v1 en navegador
 make open-classifier-html-v2        # Abre el HTML del clasificador v2 en navegador
-make open-classifier-comparison     # Abre el HTML comparativo v1/v2 en navegador
+make open-classifier-html-v3        # Abre el HTML del clasificador v3 en navegador
+make open-classifier-comparison     # Abre el HTML comparativo v1/v2/v3 en navegador
 make open-classifier-repeated-eval  # Abre HTML de evaluación repetida
+make open-classifier-sensitivity    # Abre HTML de sensibilidad del clasificador
 make open-clinvar-html              # Abre el HTML principal en navegador
 make open-clinvar-charts            # Abre el índice visual de gráficos SVG
 make portfolio-demo                 # Prepara demo completa para portafolio/entrevista
@@ -287,17 +262,18 @@ results/eco_dataset_audit_report.md
 
 La auditoría revisa tamaño, clases, splits, longitud promedio, GC promedio y motivos detectados.
 
-### Criterios para ampliar el dataset
-
-Antes de agregar nuevas secuencias, revisar:
+### Dataset actual
 
 ```text
-docs/criterios-dataset-clasificador-eco.md
+Total: 60 secuencias
+Train: 36
+Test: 24
+Clases: regulatory y non_regulatory
 ```
 
-Ese documento define cómo crear casos fáciles, ambiguos y difíciles, evitando duplicados entre train/test y reduciendo el riesgo de métricas infladas.
+El dataset actual es demostrativo, balanceado y contiene casos fáciles, ambiguos y difíciles. No representa un benchmark científico general.
 
-### Baseline v1: motivos
+### Baseline v1: control explicable
 
 ```bash
 make classifier-baseline
@@ -309,9 +285,10 @@ Usa:
 ```text
 motivos + longitud + GC + N + señales simples
 feature_scaling = none
+Test macro F1 = 0.8333
 ```
 
-### Baseline v2: motivos + k-mers + normalización
+### Baseline v2: variante exploratoria
 
 ```bash
 make classifier-baseline-v2
@@ -323,27 +300,52 @@ Usa:
 ```text
 motivos + longitud + GC + N + frecuencias k-mer de k=2
 feature_scaling = minmax_train
+Test macro F1 = 0.7333
+```
+
+En el dataset actual, v2 queda bajo v1 y no se mantiene como configuración principal.
+
+### Baseline v3: candidato principal pre-embeddings
+
+```bash
+make classifier-baseline-v3
+make classifier-html-v3
+```
+
+Usa:
+
+```text
+motivos + longitud + GC + N + frecuencias k-mer de k=3
+feature_scaling = minmax_train
+Test macro F1 = 0.9161
 ```
 
 La normalización min-max se ajusta solo con el split de entrenamiento para evitar fuga de información desde prueba.
 
-### Comparación formal v1/v2
+### Comparación formal v1/v2/v3
 
 ```bash
 make classifier-compare
+make open-classifier-comparison
 ```
 
 Resultado actual sobre el dataset demostrativo ampliado:
 
 ```text
-baseline_v1 | motif | scaling none | Test macro F1 0.7917
-baseline_v2 | motif_kmer | scaling minmax_train | Test macro F1 1.0
+baseline_v1 | motif      | none       | Test macro F1 0.8333
+baseline_v2 | motif_kmer | k=2 minmax | Test macro F1 0.7333
+baseline_v3 | motif_kmer | k=3 minmax | Test macro F1 0.9161
 ```
+
+Lectura prudente:
+
+> v3 obtiene el mejor resultado en el split fijo, pero debe contrastarse con evaluación repetida, sensibilidad y futuros datos externos antes de tratarlo como desempeño general.
 
 ### Evaluación repetida
 
 ```bash
 make classifier-repeated-eval
+make open-classifier-repeated-eval
 ```
 
 Salidas:
@@ -354,15 +356,44 @@ results/eco_classifier_repeated_eval_report.md
 results/eco_classifier_repeated_eval_report.html
 ```
 
+Resultado actual:
+
+```text
+v1 macro F1 promedio: 0.7126
+v2 macro F1 promedio: 0.6872
+v3 macro F1 promedio: 0.7880
+Mejor promedio: v3
+Delta v3 vs v1: +0.0755
+```
+
+### Sensibilidad del clasificador
+
+```bash
+make classifier-sensitivity
+make open-classifier-sensitivity
+```
+
 Objetivo:
 
 ```text
-revisar si v2 mejora de forma estable o solo en un split puntual
+diagnosticar si el rendimiento cambia por feature mode, k-mer, normalización o tamaño de k
 ```
 
-Lectura prudente:
+Resultado actual:
 
-> En la muestra actual, v2 mejora a v1. Esta mejora es una señal inicial útil, pero debe validarse con un dataset más grande y más variado antes de tratarla como evidencia general.
+```text
+Mejor configuración: kmer3_minmax
+Delta mejor vs v1: +0.0754
+Delta v2 actual vs v1: -0.0254
+```
+
+## Decisión técnica actual
+
+```text
+v1 = control mínimo explicable
+v2 = variante exploratoria no principal
+v3 = candidato principal pre-embeddings
+```
 
 ## Demo pública con descarga real de secuencia
 
@@ -424,6 +455,7 @@ src/eco_sequence_classifier.py
 src/eco_core/
 scripts/audit_eco_labeled_dataset.py
 scripts/run_eco_classifier_repeated_eval.py
+scripts/run_eco_classifier_sensitivity.py
 scripts/run_eco_classifier_baseline.py
 scripts/compare_eco_classifier_baselines.py
 scripts/run_eco_validation.py
@@ -443,6 +475,7 @@ data/README.md
 docs/resumen-ejecutivo-eco.md
 docs/ficha-tecnica-clasificador-eco.md
 docs/criterios-dataset-clasificador-eco.md
+docs/nota-tecnica-v3-vs-v2.md
 docs/modulo-sne-eco-digestion-bioinspirada.md
 docs/arquitectura-pipeline-eco.md
 docs/roadmap-tecnico-eco.md
@@ -463,7 +496,7 @@ requirements-dev.txt
 - Proyecto en fase MVP/prototipo.
 - El análisis de motivos usa expresiones regulares simples.
 - El clasificador baseline usa un dataset demostrativo y no representa desempeño general.
-- La mejora actual de v2 sobre v1 es exploratoria y debe validarse con más datos.
+- v3 es candidato pre-embeddings, no modelo final.
 - La evaluación repetida reduce dependencia de un split, pero no reemplaza validación externa.
 - La conversión BED → FASTA requiere que BED y FASTA usen el mismo sistema de referencia.
 - La analogía con el Sistema Nervioso Entérico es arquitectónica, no biológica literal.
@@ -471,11 +504,10 @@ requirements-dev.txt
 
 ## Próximos pasos
 
-- Ampliar el dataset etiquetado siguiendo `docs/criterios-dataset-clasificador-eco.md`.
-- Validar si la mejora v2 sobre v1 se mantiene con más ejemplos.
-- Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas.
-- Incorporar embeddings tipo DNABERT cuando exista una línea base más robusta.
-- Comparar el baseline explicable contra un modelo con embeddings.
+- Mantener v1 como control explicable y v3 como candidato principal pre-embeddings.
+- Crear una ruta experimental de embeddings sin sumar dependencias pesadas al flujo estable.
+- Comparar cualquier modelo avanzado contra v1 y v3.
+- Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas cuando exista una fuente adecuada.
 - Agregar visualizaciones y reportes comparativos adicionales.
 - Expandir la normalización de variantes y fuentes externas.
 
