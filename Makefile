@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts classifier-baseline portfolio-demo check clean
+.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts classifier-baseline classifier-html open-classifier-html portfolio-demo check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -46,6 +46,9 @@ clinvar-html:
 classifier-baseline:
 	$(PY) scripts/run_eco_classifier_baseline.py
 
+classifier-html:
+	$(PY) scripts/export_eco_classifier_html.py
+
 preview-clinvar:
 	@sed -n '1,180p' results/eco_clinvar_sample_report.md
 
@@ -58,7 +61,10 @@ open-clinvar-html:
 open-clinvar-charts:
 	@xdg-open results/eco_clinvar_sample_charts/index.html >/dev/null 2>&1 || echo "No se pudo abrir el índice. Revisa: results/eco_clinvar_sample_charts/index.html"
 
-portfolio-demo: check classifier-baseline clinvar-sample clinvar-charts clinvar-html
+open-classifier-html:
+	@xdg-open results/eco_classifier_baseline_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_classifier_baseline_report.html"
+
+portfolio-demo: check classifier-baseline classifier-html clinvar-sample clinvar-charts clinvar-html
 	@echo ""
 	@echo "E.C.O. PORTFOLIO DEMO READY"
 	@echo "==========================="
@@ -67,6 +73,7 @@ portfolio-demo: check classifier-baseline clinvar-sample clinvar-charts clinvar-
 	@echo "- results/eco_custom_demo_report.md"
 	@echo "- results/eco_variant_demo_report.md"
 	@echo "- results/eco_classifier_baseline_report.md"
+	@echo "- results/eco_classifier_baseline_report.html"
 	@echo "- results/eco_clinvar_sample_report.md"
 	@echo "- results/eco_clinvar_sample_report.html"
 	@echo "- results/eco_clinvar_sample_charts/index.html"
@@ -79,8 +86,9 @@ portfolio-demo: check classifier-baseline clinvar-sample clinvar-charts clinvar-
 	@echo ""
 	@echo "Vista rápida Markdown: make preview-clinvar"
 	@echo "Inspección JSON: make inspect-clinvar-json"
-	@echo "Abrir HTML: make open-clinvar-html"
-	@echo "Abrir gráficos: make open-clinvar-charts"
+	@echo "Abrir HTML ClinVar: make open-clinvar-html"
+	@echo "Abrir gráficos ClinVar: make open-clinvar-charts"
+	@echo "Abrir HTML clasificador: make open-classifier-html"
 
 check: test validate demo review report pipeline variant-demo classifier-baseline
 
@@ -92,6 +100,6 @@ clean:
 	rm -f results/eco_custom_demo.fa results/eco_custom_demo_report.json results/eco_custom_demo_report.md
 	rm -f results/eco_public_chrM.fa results/eco_public_chrM_report.json results/eco_public_chrM_interpretive_report.md
 	rm -f results/eco_variant_demo_report.json results/eco_variant_demo_report.md
-	rm -f results/eco_classifier_baseline_report.json results/eco_classifier_baseline_report.md
+	rm -f results/eco_classifier_baseline_report.json results/eco_classifier_baseline_report.md results/eco_classifier_baseline_report.html
 	rm -f results/eco_clinvar_sample.tsv results/eco_clinvar_sample_report.json results/eco_clinvar_sample_report.md results/eco_clinvar_sample_report.html
 	rm -rf results/eco_clinvar_sample_charts
