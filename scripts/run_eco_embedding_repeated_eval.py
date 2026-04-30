@@ -34,6 +34,7 @@ MODEL_ROLES = {
     "baseline_v3": "candidato_pre_embeddings",
     "embedding_placeholder": "contrato_vectorial_experimental",
 }
+PRACTICAL_DELTA_THRESHOLD = 0.01
 
 
 def e(value: object) -> str:
@@ -100,12 +101,35 @@ def summarize_runs(runs: Sequence[Dict[str, object]]) -> Dict[str, object]:
     return summary
 
 
-def interpretation(summary: Dict[str, object]) -> str:
-    best = summary["best_average_model"]
+def decision(summary: Dict[str, object]) -> str:
     delta_vs_v3 = summary["embedding_vs_v3"]["delta_macro_f1"]["mean"]
-    if best == "embedding_placeholder" and delta_vs_v3 > 0:
-        return "El placeholder supera a v3 en promedio, pero debe leerse solo como señal arquitectónica; aún no es embedding profundo real."
-    if best == "baseline_v3" and delta_vs_v3 < 0:
+    outcomes = summary["embedding_vs_v3"]["outcomes"]
+    if abs(delta_vs_v3) < PRACTICAL_DELTA_THRESHOLD:
+        return "empate_tecnico_con_v3"
+    if delta_vs_v3 > 0 and outcomes["wins"] >= outcomes["losses"]:
+        return "placeholder_prometedor"
+    if delta_vs_v3 < 0:
+        return "v3_sigue_como_referencia"
+    return "senal_mixta"
+
+
+def interpretation(summary: Dict[str, object]) -> str:
+    status = decision(summary)
+    outcomes = summary["embedding_vs_v3"]["outcomes"]
+    delta_vs_v3 = summary["embedding_vs_v3"]["delta_macro_f1"]["mean"]
+    if status == "empate_tecnico_con_v3":
+        return (
+            "El embedding placeholder queda en empate técnico frente a baseline_v3. "
+            f"El delta promedio es {delta_vs_v3}, bajo el umbral práctico de {PRACTICAL_DELTA_THRESHOLD}, "
+            f"y frente a v3 gana {outcomes['wins']} veces pero pierde {outcomes['losses']}. "
+            "Por eso no conviene declararlo superior: valida el contrato vectorial y mantiene a v3 como referencia prudente pre-embeddings."
+        )
+    if status == "placeholder_prometedor":
+        return (
+            "El placeholder muestra una señal positiva frente a v3, pero debe leerse solo como validación arquitectónica; "
+            "todavía no es DNABERT ni embedding profundo real."
+        )
+    if status == "v3_sigue_como_referencia":
         return "baseline_v3 sigue siendo la referencia más fuerte; el placeholder valida contrato vectorial, no superioridad de modelo."
     return "La comparación deja una señal mixta; conviene mantener v1/v3 como controles y usar el placeholder solo como puente hacia embeddings reales."
 
@@ -130,12 +154,15 @@ def build_payload(records: Sequence[LabeledSequence], repeats: int, test_ratio: 
         },
         "models": MODEL_ROLES,
         "summary": summary,
+        "practical_delta_threshold": PRACTICAL_DELTA_THRESHOLD,
+        "operational_decision": decision(summary),
         "runs": runs,
         "interpretation": interpretation(summary),
         "limits": [
             "Evaluación repetida sobre dataset demostrativo pequeño.",
             "El embedding placeholder usa frecuencias k-mer; no es DNABERT ni embedding profundo real.",
             "Sirve para probar estabilidad del contrato vectorial antes de integrar modelos pesados.",
+            "Un delta promedio menor a 0.01 se trata como empate técnico, no como superioridad real.",
             "No representa benchmark científico ni desempeño clínico.",
         ],
     }
@@ -205,7 +232,9 @@ def build_markdown(payload: Dict[str, object], input_path: Path) -> str:
                 ["Embedding", payload["embedding"]["type"]],
                 ["k", payload["embedding"]["k"]],
                 ["Dimensiones", payload["embedding"]["dimensions"]],
+                ["Umbral delta práctico", payload["practical_delta_threshold"]],
                 ["Mejor promedio", summary["best_average_model"]],
+                ["Decisión operativa", payload["operational_decision"]],
             ],
         ),
         "",
@@ -241,8 +270,26 @@ def build_html(payload: Dict[str, object]) -> str:
         for model in MODEL_ORDER
     )
     rows = [
-        [model, payload["models"][model], summary[model]["test_accuracy"]["mean"], summary[model]["test_macro_f1"]["mean"], summary[model]["test_macro_f1"]["std"]]
+        [model, payload["models"][model], summary[model]["test_accuracy"]["mean"], summary[model]["test_macro_f1"]["mean"], summary[model]["test_macro_f1"]["std"], summary["best_counts"][model]]
         for model in MODEL_ORDER
+    ]
+    outcome_rows = [
+        [
+            "embedding vs baseline_v3",
+            summary["embedding_vs_v3"]["delta_macro_f1"]["mean"],
+            summary["embedding_vs_v3"]["delta_macro_f1"]["std"],
+            summary["embedding_vs_v3"]["outcomes"]["wins"],
+            summary["embedding_vs_v3"]["outcomes"]["ties"],
+            summary["embedding_vs_v3"]["outcomes"]["losses"],
+        ],
+        [
+            "embedding vs baseline_v1",
+            summary["embedding_vs_v1"]["delta_macro_f1"]["mean"],
+            summary["embedding_vs_v1"]["delta_macro_f1"]["std"],
+            summary["embedding_vs_v1"]["outcomes"]["wins"],
+            summary["embedding_vs_v1"]["outcomes"]["ties"],
+            summary["embedding_vs_v1"]["outcomes"]["losses"],
+        ],
     ]
     limits = "".join(f"<li>{e(limit)}</li>" for limit in payload["limits"])
     return f"""<!doctype html>
@@ -252,26 +299,39 @@ def build_html(payload: Dict[str, object]) -> str:
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <title>E.C.O. Embedding repeated eval</title>
   <style>
+    :root {{ color-scheme: light; }}
+    * {{ box-sizing: border-box; }}
     body {{ font-family: system-ui, sans-serif; margin: 0; background: #f6f7fb; color: #172033; }}
     header {{ background: #172033; color: white; padding: 2rem; }}
-    main {{ max-width: 1080px; margin: auto; padding: 1.5rem; }}
+    main {{ max-width: 1120px; margin: auto; padding: 1.5rem; }}
     .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem; }}
-    .card, .section {{ background: white; border-radius: 16px; padding: 1rem; box-shadow: 0 8px 24px rgba(23,32,51,.08); margin-bottom: 1rem; }}
-    strong {{ display: block; font-size: 1.8rem; }}
-    small {{ display: block; margin-top: .35rem; color: #667085; }}
-    table {{ width: 100%; border-collapse: collapse; }}
-    th, td {{ text-align: left; padding: .7rem; border-bottom: 1px solid #e6e8f0; }}
+    .card, .section {{ background: white; border-radius: 16px; padding: 1rem; box-shadow: 0 8px 24px rgba(23,32,51,.08); margin-bottom: 1rem; break-inside: avoid; }}
+    strong {{ display: block; font-size: 1.8rem; line-height: 1.15; }}
+    small {{ display: block; margin-top: .35rem; color: #667085; overflow-wrap: anywhere; }}
+    table {{ width: 100%; border-collapse: collapse; table-layout: auto; }}
+    th, td {{ text-align: left; padding: .7rem; border-bottom: 1px solid #e6e8f0; vertical-align: top; overflow-wrap: anywhere; }}
     th {{ background: #eef1f8; }}
     .table-scroll {{ overflow-x: auto; }}
     .warning {{ border-left: 6px solid #9b6b00; }}
+    .decision {{ border-left: 6px solid #3657ff; }}
+    @media print {{
+      body {{ background: white; }}
+      header {{ padding: 1.2rem 1.5rem; }}
+      main {{ max-width: none; padding: 1rem; }}
+      .card, .section {{ box-shadow: none; border: 1px solid #e6e8f0; }}
+      .table-scroll {{ overflow: visible; }}
+      table {{ font-size: 11px; table-layout: fixed; }}
+      th, td {{ padding: .45rem; }}
+    }}
   </style>
 </head>
 <body>
   <header><h1>E.C.O. - Evaluación repetida de embeddings placeholder</h1><p>Contrato vectorial repetido contra v1 y v3.</p></header>
   <main>
-    <section class='grid'>{cards}<div class='card'><strong>{e(summary['best_average_model'])}</strong><span>Mejor promedio</span></div></section>
-    <section class='section'><h2>Resumen promedio</h2>{html_table(['Modelo', 'Rol', 'Test acc promedio', 'Macro F1 prom.', 'Macro F1 std'], rows)}</section>
-    <section class='section'><h2>Lectura E.C.O.</h2><p>{e(payload['interpretation'])}</p></section>
+    <section class='grid'>{cards}<div class='card'><strong>{e(summary['best_average_model'])}</strong><span>Mejor promedio</span></div><div class='card'><strong>{e(summary['embedding_vs_v3']['delta_macro_f1']['mean'])}</strong><span>Delta embedding vs v3</span><small>umbral práctico: {e(payload['practical_delta_threshold'])}</small></div></section>
+    <section class='section'><h2>Resumen promedio</h2>{html_table(['Modelo', 'Rol', 'Test acc prom.', 'Macro F1 prom.', 'Macro F1 std', 'Mejor en reps.'], rows)}</section>
+    <section class='section'><h2>Resultado del placeholder</h2>{html_table(['Comparación', 'Delta prom.', 'Delta std', 'Gana', 'Empata', 'Pierde'], outcome_rows)}</section>
+    <section class='section decision'><h2>Lectura E.C.O.</h2><p>{e(payload['interpretation'])}</p><p><strong>Decisión operativa:</strong> {e(payload['operational_decision'])}</p></section>
     <section class='section warning'><h2>Límites</h2><ul>{limits}</ul></section>
   </main>
 </body>
@@ -319,6 +379,7 @@ def main() -> int:
         print(f"{model} macro F1 promedio: {summary[model]['test_macro_f1']['mean']}")
     print(f"Mejor promedio: {summary['best_average_model']}")
     print(f"Delta embedding vs v3 macro F1 promedio: {summary['embedding_vs_v3']['delta_macro_f1']['mean']}")
+    print(f"Decisión operativa: {payload['operational_decision']}")
     print(f"Reporte JSON: {args.output_json}")
     print(f"Reporte Markdown: {args.output_md}")
     print(f"Reporte HTML: {args.output_html}")
