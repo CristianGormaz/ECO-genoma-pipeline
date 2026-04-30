@@ -15,6 +15,7 @@ if str(PROJECT_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from src.eco_sequence_classifier import (  # noqa: E402
+    VALID_FEATURE_MODES,
     build_classifier_report,
     parse_labeled_sequences_tsv,
     write_json_report,
@@ -57,8 +58,8 @@ def evaluation_tables(evaluation: Dict[str, object], title: str) -> List[str]:
             item["true_label"],
             item["predicted_label"],
             item["confidence"],
-            item["features"]["motif_count"],
-            item["features"]["gc_percent"],
+            item["features"].get("motif_count", ""),
+            item["features"].get("gc_percent", ""),
         ]
         for item in predictions
     ]
@@ -92,6 +93,14 @@ def evaluation_tables(evaluation: Dict[str, object], title: str) -> List[str]:
 
 def build_markdown(report: Dict[str, object], input_path: Path) -> str:
     split = report["data_split"]
+    rows = [
+        ["Dataset", input_path],
+        ["Modelo", report["model_type"]],
+        ["Feature mode", report.get("feature_mode", "motif")],
+        ["k-mer k", report.get("kmer_k") or "no_aplica"],
+        ["Train", split["train"]],
+        ["Test", split["test"]],
+    ]
     lines = [
         "# E.C.O. - Clasificador baseline de secuencias",
         "",
@@ -102,15 +111,7 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         "",
         "## Entrada",
         "",
-        *table(
-            ["Campo", "Valor"],
-            [
-                ["Dataset", input_path],
-                ["Modelo", report["model_type"]],
-                ["Train", split["train"]],
-                ["Test", split["test"]],
-            ],
-        ),
+        *table(["Campo", "Valor"], rows),
         "",
         *evaluation_tables(report["train_evaluation"], "Métricas de entrenamiento"),
         *evaluation_tables(report["test_evaluation"], "Métricas de prueba"),
@@ -133,13 +134,15 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--input", type=Path, default=DEFAULT_INPUT)
     parser.add_argument("--output-json", type=Path, default=DEFAULT_JSON)
     parser.add_argument("--output-md", type=Path, default=DEFAULT_MD)
+    parser.add_argument("--feature-mode", choices=sorted(VALID_FEATURE_MODES), default="motif")
+    parser.add_argument("--kmer-k", type=int, default=2)
     return parser
 
 
 def main() -> int:
     args = build_parser().parse_args()
     records = parse_labeled_sequences_tsv(args.input)
-    report = build_classifier_report(records)
+    report = build_classifier_report(records, feature_mode=args.feature_mode, kmer_k=args.kmer_k)
     write_json_report(report, args.output_json)
     args.output_md.parent.mkdir(parents=True, exist_ok=True)
     args.output_md.write_text(build_markdown(report, args.input), encoding="utf-8")
@@ -151,6 +154,8 @@ def main() -> int:
     print("E.C.O. CLASSIFIER BASELINE REPORT")
     print("=================================")
     print(f"Dataset: {args.input}")
+    print(f"Feature mode: {report['feature_mode']}")
+    print(f"k-mer k: {report['kmer_k'] or 'no_aplica'}")
     print(f"Train: {split['train']} | Test: {split['test']}")
     print(f"Train accuracy: {train['accuracy']}")
     print(f"Test accuracy: {test['accuracy']}")
