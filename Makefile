@@ -195,3 +195,45 @@ clean:
 	rm -f results/eco_model_decision_report.md results/eco_model_decision_report.html
 	rm -f results/eco_clinvar_sample.tsv results/eco_clinvar_sample_report.json results/eco_clinvar_sample_report.md results/eco_clinvar_sample_report.html
 	rm -rf results/eco_clinvar_sample_charts
+
+embedding-semireal:
+	$(PY) scripts/run_eco_embedding_semireal.py --embedding-k 4 --dimensions 128 --output-json results/eco_embedding_semireal_report.json --output-md results/eco_embedding_semireal_report.md --output-html results/eco_embedding_semireal_report.html
+
+open-embedding-semireal:
+	@xdg-open results/eco_embedding_semireal_report.html >/dev/null 2>&1 || echo "No se pudo abrir: results/eco_embedding_semireal_report.html"
+
+embedding-semireal-repeated-eval:
+	$(PY) scripts/run_eco_embedding_semireal_repeated_eval.py --embedding-k 4 --dimensions 128 --output-json results/eco_embedding_semireal_repeated_eval_report.json --output-md results/eco_embedding_semireal_repeated_eval_report.md --output-html results/eco_embedding_semireal_repeated_eval_report.html
+
+open-embedding-semireal-repeated-eval:
+	@xdg-open results/eco_embedding_semireal_repeated_eval_report.html >/dev/null 2>&1 || echo "No se pudo abrir: results/eco_embedding_semireal_repeated_eval_report.html"
+
+difficulty-eval:
+	.venv/bin/python scripts/run_eco_difficulty_eval.py --repeats 50 --embedding-k 4 --dimensions 128 --output-json results/eco_difficulty_eval_report.json --output-md results/eco_difficulty_eval_report.md --output-html results/eco_difficulty_eval_report.html
+
+open-difficulty-eval:
+	xdg-open results/eco_difficulty_eval_report.html >/dev/null 2>&1 || true
+
+hybrid-router-eval:
+	.venv/bin/python scripts/run_eco_hybrid_router_eval.py --repeats 50 --embedding-k 4 --dimensions 128 --output-json results/eco_hybrid_router_eval_report.json --output-md results/eco_hybrid_router_eval_report.md --output-html results/eco_hybrid_router_eval_report.html
+
+open-hybrid-router-eval:
+	xdg-open results/eco_hybrid_router_eval_report.html >/dev/null 2>&1 || true
+
+confidence-router-eval:
+	.venv/bin/python scripts/run_eco_confidence_router_eval.py --repeats 50 --embedding-k 4 --dimensions 128 --output-json results/eco_confidence_router_eval_report.json --output-md results/eco_confidence_router_eval_report.md --output-html results/eco_confidence_router_eval_report.html
+
+open-confidence-router-eval:
+	xdg-open results/eco_confidence_router_eval_report.html >/dev/null 2>&1 || true
+
+confidence-router-calibrated-eval:
+	.venv/bin/python scripts/run_eco_confidence_router_calibrated_eval.py --repeats 50 --embedding-k 4 --dimensions 128 --output-json results/eco_confidence_router_calibrated_eval_report.json --output-md results/eco_confidence_router_calibrated_eval_report.md --output-html results/eco_confidence_router_calibrated_eval_report.html
+
+open-confidence-router-calibrated-eval:
+	xdg-open results/eco_confidence_router_calibrated_eval_report.html >/dev/null 2>&1 || true
+
+adaptive-router-predict-demo:
+	.venv/bin/python scripts/run_eco_adaptive_router_predict.py --sequence ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTAC --sequence-id demo_adaptive_router --threshold 0.20 --embedding-k 4 --dimensions 128 --output-json results/eco_adaptive_router_prediction_demo.json --output-md results/eco_adaptive_router_prediction_demo.md --output-html results/eco_adaptive_router_prediction_demo.html
+
+open-adaptive-router-predict-demo:
+	xdg-open results/eco_adaptive_router_prediction_demo.html >/dev/null 2>&1 || true
