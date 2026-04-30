@@ -98,6 +98,7 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         ["Modelo", report["model_type"]],
         ["Feature mode", report.get("feature_mode", "motif")],
         ["k-mer k", report.get("kmer_k") or "no_aplica"],
+        ["Normalización", report.get("feature_scaling", "none")],
         ["Train", split["train"]],
         ["Test", split["test"]],
     ]
@@ -136,13 +137,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-md", type=Path, default=DEFAULT_MD)
     parser.add_argument("--feature-mode", choices=sorted(VALID_FEATURE_MODES), default="motif")
     parser.add_argument("--kmer-k", type=int, default=2)
+    parser.add_argument("--normalize-features", action="store_true")
     return parser
 
 
 def main() -> int:
     args = build_parser().parse_args()
     records = parse_labeled_sequences_tsv(args.input)
-    report = build_classifier_report(records, feature_mode=args.feature_mode, kmer_k=args.kmer_k)
+    report = build_classifier_report(
+        records,
+        feature_mode=args.feature_mode,
+        kmer_k=args.kmer_k,
+        normalize_features=args.normalize_features,
+    )
     write_json_report(report, args.output_json)
     args.output_md.parent.mkdir(parents=True, exist_ok=True)
     args.output_md.write_text(build_markdown(report, args.input), encoding="utf-8")
@@ -156,6 +163,7 @@ def main() -> int:
     print(f"Dataset: {args.input}")
     print(f"Feature mode: {report['feature_mode']}")
     print(f"k-mer k: {report['kmer_k'] or 'no_aplica'}")
+    print(f"Feature scaling: {report['feature_scaling']}")
     print(f"Train: {split['train']} | Test: {split['test']}")
     print(f"Train accuracy: {train['accuracy']}")
     print(f"Test accuracy: {test['accuracy']}")
