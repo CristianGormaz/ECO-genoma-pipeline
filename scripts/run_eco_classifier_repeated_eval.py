@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluación repetida v1/v2 para clasificador E.C.O."""
+"""Evaluación repetida v1/v2/v3 para clasificador E.C.O."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import random
 from collections import defaultdict
 from pathlib import Path
 import sys
-from typing import Dict, List, Sequence, Tuple
+from typing import Dict, List, Sequence
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -28,6 +28,30 @@ DEFAULT_INPUT = PROJECT_ROOT / "examples" / "eco_labeled_sequences.tsv"
 DEFAULT_JSON = PROJECT_ROOT / "results" / "eco_classifier_repeated_eval_report.json"
 DEFAULT_MD = PROJECT_ROOT / "results" / "eco_classifier_repeated_eval_report.md"
 DEFAULT_HTML = PROJECT_ROOT / "results" / "eco_classifier_repeated_eval_report.html"
+
+MODEL_CONFIGS = {
+    "v1": {
+        "label": "baseline_v1",
+        "description": "motif + scaling none",
+        "feature_mode": "motif",
+        "kmer_k": None,
+        "normalize_features": False,
+    },
+    "v2": {
+        "label": "baseline_v2",
+        "description": "motif_kmer k=2 + scaling minmax_train",
+        "feature_mode": "motif_kmer",
+        "kmer_k": 2,
+        "normalize_features": True,
+    },
+    "v3": {
+        "label": "baseline_v3",
+        "description": "motif_kmer k=3 + scaling minmax_train",
+        "feature_mode": "motif_kmer",
+        "kmer_k": 3,
+        "normalize_features": True,
+    },
+}
 
 
 def mean(values: Sequence[float]) -> float:
@@ -82,47 +106,85 @@ def extract_scores(report: Dict[str, object]) -> Dict[str, float]:
     }
 
 
+def build_model_report(records: Sequence[LabeledSequence], model_key: str) -> Dict[str, object]:
+    config = MODEL_CONFIGS[model_key]
+    kwargs = {"feature_mode": config["feature_mode"]}
+    if config["kmer_k"] is not None:
+        kwargs["kmer_k"] = config["kmer_k"]
+    if config["normalize_features"]:
+        kwargs["normalize_features"] = True
+    return build_classifier_report(records, **kwargs)
+
+
 def run_once(records: Sequence[LabeledSequence], seed: int, test_ratio: float) -> Dict[str, object]:
     split_records = stratified_resplit(records, test_ratio=test_ratio, seed=seed)
-    v1 = build_classifier_report(split_records, feature_mode="motif")
-    v2 = build_classifier_report(split_records, feature_mode="motif_kmer", kmer_k=2, normalize_features=True)
-    v1_scores = extract_scores(v1)
-    v2_scores = extract_scores(v2)
+    reports = {model: build_model_report(split_records, model) for model in MODEL_CONFIGS}
+    scores = {model: extract_scores(report) for model, report in reports.items()}
+    best_model = max(scores, key=lambda model: scores[model]["test_macro_f1"])
     return {
         "seed": seed,
-        "train": v1["data_split"]["train"],
-        "test": v1["data_split"]["test"],
-        "v1": v1_scores,
-        "v2": v2_scores,
-        "delta_macro_f1": round(v2_scores["test_macro_f1"] - v1_scores["test_macro_f1"], 4),
-        "delta_accuracy": round(v2_scores["test_accuracy"] - v1_scores["test_accuracy"], 4),
+        "train": reports["v1"]["data_split"]["train"],
+        "test": reports["v1"]["data_split"]["test"],
+        "models": scores,
+        "best_model": best_model,
+        "delta_macro_f1_vs_v1": {
+            model: round(scores[model]["test_macro_f1"] - scores["v1"]["test_macro_f1"], 4)
+            for model in scores
+            if model != "v1"
+        },
+        "delta_accuracy_vs_v1": {
+            model: round(scores[model]["test_accuracy"] - scores["v1"]["test_accuracy"], 4)
+            for model in scores
+            if model != "v1"
+        },
     }
 
 
 def summarize_runs(runs: Sequence[Dict[str, object]]) -> Dict[str, object]:
-    summary = {}
-    for model in ["v1", "v2"]:
+    summary: Dict[str, object] = {}
+    for model in MODEL_CONFIGS:
         summary[model] = {}
         for metric in ["train_accuracy", "test_accuracy", "test_macro_f1", "test_weighted_f1"]:
-            values = [run[model][metric] for run in runs]
+            values = [run["models"][model][metric] for run in runs]
             summary[model][metric] = {"mean": mean(values), "std": stddev(values), "values": values}
-    deltas = [run["delta_macro_f1"] for run in runs]
-    summary["delta_macro_f1"] = {"mean": mean(deltas), "std": stddev(deltas), "values": deltas}
-    wins = sum(1 for value in deltas if value > 0)
-    ties = sum(1 for value in deltas if value == 0)
-    losses = sum(1 for value in deltas if value < 0)
-    summary["v2_outcomes"] = {"wins": wins, "ties": ties, "losses": losses}
+
+    for model in ["v2", "v3"]:
+        deltas = [run["delta_macro_f1_vs_v1"][model] for run in runs]
+        wins = sum(1 for value in deltas if value > 0)
+        ties = sum(1 for value in deltas if value == 0)
+        losses = sum(1 for value in deltas if value < 0)
+        summary[f"{model}_vs_v1"] = {
+            "delta_macro_f1": {"mean": mean(deltas), "std": stddev(deltas), "values": deltas},
+            "outcomes": {"wins": wins, "ties": ties, "losses": losses},
+        }
+
+    best_counts = {model: sum(1 for run in runs if run["best_model"] == model) for model in MODEL_CONFIGS}
+    best_average_model = max(MODEL_CONFIGS, key=lambda model: summary[model]["test_macro_f1"]["mean"])
+    summary["best_counts"] = best_counts
+    summary["best_average_model"] = best_average_model
     return summary
 
 
 def interpretation(summary: Dict[str, object]) -> str:
-    outcomes = summary["v2_outcomes"]
-    delta = summary["delta_macro_f1"]["mean"]
-    if outcomes["wins"] > outcomes["losses"] and delta > 0:
-        return "v2 muestra ventaja promedio frente a v1 en esta evaluación repetida. Aun así, sigue siendo una muestra demostrativa."
-    if outcomes["losses"] > outcomes["wins"] and delta < 0:
-        return "v2 no mejora de forma consistente frente a v1 en esta evaluación repetida. Conviene revisar features y dataset."
-    return "v1 y v2 muestran rendimiento comparable en esta evaluación repetida. Se requiere más dataset para diferenciar modelos."
+    best = summary["best_average_model"]
+    v3_delta = summary["v3_vs_v1"]["delta_macro_f1"]["mean"]
+    v3_outcomes = summary["v3_vs_v1"]["outcomes"]
+    v2_delta = summary["v2_vs_v1"]["delta_macro_f1"]["mean"]
+
+    if best == "v3" and v3_delta > 0 and v3_outcomes["wins"] >= v3_outcomes["losses"]:
+        return (
+            "v3 aparece como el candidato pre-embeddings más fuerte en la evaluación repetida. "
+            "Conviene mantener v1 como control explicable y dejar v2 como variante exploratoria."
+        )
+    if best == "v1" and v2_delta < 0 and v3_delta <= 0:
+        return (
+            "v1 sigue siendo el control más estable en esta evaluación repetida. "
+            "Los k-mers agregan complejidad, pero todavía no aportan mejora promedio suficiente."
+        )
+    return (
+        "Las configuraciones muestran diferencias internas, pero la muestra sigue siendo demostrativa. "
+        "Conviene ampliar datos y mantener comparación repetida antes de avanzar a embeddings."
+    )
 
 
 def build_payload(records: Sequence[LabeledSequence], repeats: int, test_ratio: float, base_seed: int) -> Dict[str, object]:
@@ -133,10 +195,7 @@ def build_payload(records: Sequence[LabeledSequence], repeats: int, test_ratio: 
         "repeats": repeats,
         "test_ratio": test_ratio,
         "base_seed": base_seed,
-        "models": {
-            "v1": "motif + scaling none",
-            "v2": "motif_kmer k=2 + scaling minmax_train",
-        },
+        "models": {model: config["description"] for model, config in MODEL_CONFIGS.items()},
         "summary": summary,
         "runs": runs,
         "interpretation": interpretation(summary),
@@ -144,6 +203,7 @@ def build_payload(records: Sequence[LabeledSequence], repeats: int, test_ratio: 
             "Evaluación repetida sobre un dataset demostrativo pequeño.",
             "Los splits repetidos reducen dependencia de una sola partición, pero no reemplazan validación externa.",
             "No debe interpretarse como benchmark científico general.",
+            "v3 es candidato pre-embeddings, no modelo final ni diagnóstico.",
         ],
     }
 
@@ -151,17 +211,45 @@ def build_payload(records: Sequence[LabeledSequence], repeats: int, test_ratio: 
 def build_markdown(payload: Dict[str, object], input_path: Path) -> str:
     summary = payload["summary"]
     rows = [
-        ["v1", payload["models"]["v1"], summary["v1"]["test_accuracy"]["mean"], summary["v1"]["test_macro_f1"]["mean"], summary["v1"]["test_macro_f1"]["std"]],
-        ["v2", payload["models"]["v2"], summary["v2"]["test_accuracy"]["mean"], summary["v2"]["test_macro_f1"]["mean"], summary["v2"]["test_macro_f1"]["std"]],
+        [
+            model,
+            payload["models"][model],
+            summary[model]["test_accuracy"]["mean"],
+            summary[model]["test_macro_f1"]["mean"],
+            summary[model]["test_macro_f1"]["std"],
+            summary["best_counts"][model],
+        ]
+        for model in MODEL_CONFIGS
+    ]
+    outcome_rows = [
+        [
+            "v2 vs v1",
+            summary["v2_vs_v1"]["delta_macro_f1"]["mean"],
+            summary["v2_vs_v1"]["delta_macro_f1"]["std"],
+            summary["v2_vs_v1"]["outcomes"]["wins"],
+            summary["v2_vs_v1"]["outcomes"]["ties"],
+            summary["v2_vs_v1"]["outcomes"]["losses"],
+        ],
+        [
+            "v3 vs v1",
+            summary["v3_vs_v1"]["delta_macro_f1"]["mean"],
+            summary["v3_vs_v1"]["delta_macro_f1"]["std"],
+            summary["v3_vs_v1"]["outcomes"]["wins"],
+            summary["v3_vs_v1"]["outcomes"]["ties"],
+            summary["v3_vs_v1"]["outcomes"]["losses"],
+        ],
     ]
     run_rows = [
         [
             run["seed"],
             run["train"],
             run["test"],
-            run["v1"]["test_macro_f1"],
-            run["v2"]["test_macro_f1"],
-            run["delta_macro_f1"],
+            run["models"]["v1"]["test_macro_f1"],
+            run["models"]["v2"]["test_macro_f1"],
+            run["models"]["v3"]["test_macro_f1"],
+            run["delta_macro_f1_vs_v1"]["v2"],
+            run["delta_macro_f1_vs_v1"]["v3"],
+            run["best_model"],
         ]
         for run in payload["runs"]
     ]
@@ -170,7 +258,7 @@ def build_markdown(payload: Dict[str, object], input_path: Path) -> str:
         "",
         "## Propósito",
         "",
-        "Este informe repite la comparación entre v1 y v2 con distintos splits estratificados. "
+        "Este informe repite la comparación entre v1, v2 y v3 con distintos splits estratificados. "
         "Su objetivo es revisar si la mejora observada depende de una sola partición o aparece de forma más estable.",
         "",
         "## Configuración",
@@ -183,29 +271,21 @@ def build_markdown(payload: Dict[str, object], input_path: Path) -> str:
                 ["Repeticiones", payload["repeats"]],
                 ["Test ratio", payload["test_ratio"]],
                 ["Seed base", payload["base_seed"]],
+                ["Mejor promedio", summary["best_average_model"]],
             ],
         ),
         "",
         "## Resumen promedio",
         "",
-        *table(["Modelo", "Configuración", "Test acc promedio", "Test macro F1 prom.", "Test macro F1 std"], rows),
+        *table(["Modelo", "Configuración", "Test acc promedio", "Test macro F1 prom.", "Test macro F1 std", "Mejor en repeticiones"], rows),
         "",
-        "## Resultado v2",
+        "## Resultado contra v1",
         "",
-        *table(
-            ["Indicador", "Valor"],
-            [
-                ["Delta macro F1 promedio", summary["delta_macro_f1"]["mean"]],
-                ["Delta macro F1 std", summary["delta_macro_f1"]["std"]],
-                ["Veces v2 gana", summary["v2_outcomes"]["wins"]],
-                ["Empates", summary["v2_outcomes"]["ties"]],
-                ["Veces v2 pierde", summary["v2_outcomes"]["losses"]],
-            ],
-        ),
+        *table(["Comparación", "Delta macro F1 prom.", "Delta std", "Gana", "Empata", "Pierde"], outcome_rows),
         "",
         "## Detalle por repetición",
         "",
-        *table(["Seed", "Train", "Test", "v1 macro F1", "v2 macro F1", "Delta"], run_rows),
+        *table(["Seed", "Train", "Test", "v1 macro F1", "v2 macro F1", "v3 macro F1", "Delta v2-v1", "Delta v3-v1", "Mejor"], run_rows),
         "",
         "## Lectura E.C.O.",
         "",
@@ -221,6 +301,11 @@ def build_markdown(payload: Dict[str, object], input_path: Path) -> str:
 
 def build_html(payload: Dict[str, object]) -> str:
     summary = payload["summary"]
+    cards = "\n".join(
+        f"<div class='card'><strong>{summary[model]['test_macro_f1']['mean']}</strong>"
+        f"<span>{model} macro F1 promedio</span><small>{payload['models'][model]}</small></div>"
+        for model in MODEL_CONFIGS
+    )
     return f"""<!doctype html>
 <html lang='es'>
 <head>
@@ -234,16 +319,16 @@ def build_html(payload: Dict[str, object]) -> str:
     .grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }}
     .card {{ background: white; border-radius: 16px; padding: 1rem; box-shadow: 0 8px 24px rgba(23,32,51,.08); }}
     strong {{ display: block; font-size: 1.8rem; }}
+    small {{ display: block; margin-top: .35rem; color: #667085; }}
   </style>
 </head>
 <body>
-  <header><h1>E.C.O. - Evaluación repetida</h1><p>Comparación v1/v2 con splits estratificados repetidos.</p></header>
+  <header><h1>E.C.O. - Evaluación repetida</h1><p>Comparación v1/v2/v3 con splits estratificados repetidos.</p></header>
   <main>
     <section class='grid'>
-      <div class='card'><strong>{summary['v1']['test_macro_f1']['mean']}</strong><span>v1 macro F1 promedio</span></div>
-      <div class='card'><strong>{summary['v2']['test_macro_f1']['mean']}</strong><span>v2 macro F1 promedio</span></div>
-      <div class='card'><strong>{summary['delta_macro_f1']['mean']}</strong><span>Delta macro F1 promedio</span></div>
-      <div class='card'><strong>{summary['v2_outcomes']['wins']}/{payload['repeats']}</strong><span>Veces que gana v2</span></div>
+      {cards}
+      <div class='card'><strong>{summary['best_average_model']}</strong><span>Mejor promedio</span></div>
+      <div class='card'><strong>{summary['v3_vs_v1']['delta_macro_f1']['mean']}</strong><span>Delta v3 vs v1</span></div>
     </section>
     <section class='card' style='margin-top:1rem'>
       <h2>Lectura E.C.O.</h2>
@@ -282,13 +367,14 @@ def main() -> int:
     print("=====================================")
     print(f"Dataset: {args.input}")
     print(f"Repeticiones: {payload['repeats']}")
-    print(f"v1 macro F1 promedio: {summary['v1']['test_macro_f1']['mean']}")
-    print(f"v2 macro F1 promedio: {summary['v2']['test_macro_f1']['mean']}")
-    print(f"Delta macro F1 promedio: {summary['delta_macro_f1']['mean']}")
+    for model in MODEL_CONFIGS:
+        print(f"{model} macro F1 promedio: {summary[model]['test_macro_f1']['mean']}")
+    print(f"Mejor promedio: {summary['best_average_model']}")
+    print(f"Delta v3 vs v1 macro F1 promedio: {summary['v3_vs_v1']['delta_macro_f1']['mean']}")
     print(f"Reporte JSON: {args.output_json}")
     print(f"Reporte Markdown: {args.output_md}")
     print(f"Reporte HTML: {args.output_html}")
-    print("Estado: OK, evaluación repetida generada.")
+    print("Estado: OK, evaluación repetida v1/v2/v3 generada.")
     return 0
 
 
