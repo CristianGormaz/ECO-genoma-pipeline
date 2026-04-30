@@ -75,6 +75,7 @@ results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
 docs/resumen-ejecutivo-eco.md
 docs/ficha-tecnica-clasificador-eco.md
+docs/criterios-dataset-clasificador-eco.md
 docs/caso-estudio-portafolio-eco.md
 docs/arquitectura-pipeline-eco.md
 docs/roadmap-tecnico-eco.md
@@ -129,6 +130,12 @@ Para revisión técnica del clasificador:
 
 ```text
 docs/ficha-tecnica-clasificador-eco.md
+```
+
+Para ampliar el dataset etiquetado sin inflar métricas ni perder trazabilidad:
+
+```text
+docs/criterios-dataset-clasificador-eco.md
 ```
 
 Para entender E.C.O. como sistema de rutas:
@@ -280,6 +287,16 @@ results/eco_dataset_audit_report.md
 
 La auditoría revisa tamaño, clases, splits, longitud promedio, GC promedio y motivos detectados.
 
+### Criterios para ampliar el dataset
+
+Antes de agregar nuevas secuencias, revisar:
+
+```text
+docs/criterios-dataset-clasificador-eco.md
+```
+
+Ese documento define cómo crear casos fáciles, ambiguos y difíciles, evitando duplicados entre train/test y reduciendo el riesgo de métricas infladas.
+
 ### Baseline v1: motivos
 
 ```bash
@@ -425,6 +442,7 @@ tests/
 data/README.md
 docs/resumen-ejecutivo-eco.md
 docs/ficha-tecnica-clasificador-eco.md
+docs/criterios-dataset-clasificador-eco.md
 docs/modulo-sne-eco-digestion-bioinspirada.md
 docs/arquitectura-pipeline-eco.md
 docs/roadmap-tecnico-eco.md
@@ -453,7 +471,8 @@ requirements-dev.txt
 
 ## Próximos pasos
 
-- Ampliar el dataset etiquetado para validar si la mejora v2 sobre v1 se mantiene.
+- Ampliar el dataset etiquetado siguiendo `docs/criterios-dataset-clasificador-eco.md`.
+- Validar si la mejora v2 sobre v1 se mantiene con más ejemplos.
 - Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas.
 - Incorporar embeddings tipo DNABERT cuando exista una línea base más robusta.
 - Comparar el baseline explicable contra un modelo con embeddings.
