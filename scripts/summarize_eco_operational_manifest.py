@@ -53,12 +53,12 @@ def format_missing(missing: Sequence[str]) -> str:
     return f"{len(missing)} piezas esperadas pendientes"
 
 
-def metric_value(metrics: Dict[str, Any], *keys: str) -> Any:
+def metric_value(metrics: Dict[str, Any], *keys: str, default: Any = None) -> Any:
     """Devuelve el primer valor disponible dentro de un set de claves."""
     for key in keys:
         if key in metrics:
             return metrics[key]
-    return None
+    return default
 
 
 def find_report(manifest: Dict[str, Any], report_name: str) -> Dict[str, Any]:
@@ -77,8 +77,8 @@ def build_highlights(manifest: Dict[str, Any]) -> List[str]:
     if v3:
         highlights.append(
             "baseline_v3 sigue como referencia fuerte: "
-            f"macro F1={metric_value(v3, 'test_macro_f1', default := 'no_disponible')} "
-            f"con feature_mode={metric_value(v3, 'feature_mode')}."
+            f"macro F1={metric_value(v3, 'test_macro_f1', default='no_disponible')} "
+            f"con feature_mode={metric_value(v3, 'feature_mode', default='no_disponible')}."
         )
 
     embedding = find_report(manifest, "eco_embedding_repeated_eval_report.json")
