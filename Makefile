@@ -47,7 +47,7 @@ classifier-baseline:
 	$(PY) scripts/run_eco_classifier_baseline.py --feature-mode motif --output-json results/eco_classifier_baseline_report.json --output-md results/eco_classifier_baseline_report.md
 
 classifier-baseline-v2:
-	$(PY) scripts/run_eco_classifier_baseline.py --feature-mode motif_kmer --kmer-k 2 --output-json results/eco_classifier_baseline_v2_report.json --output-md results/eco_classifier_baseline_v2_report.md
+	$(PY) scripts/run_eco_classifier_baseline.py --feature-mode motif_kmer --kmer-k 2 --normalize-features --output-json results/eco_classifier_baseline_v2_report.json --output-md results/eco_classifier_baseline_v2_report.md
 
 classifier-html:
 	$(PY) scripts/export_eco_classifier_html.py --input-json results/eco_classifier_baseline_report.json --output-html results/eco_classifier_baseline_report.html
