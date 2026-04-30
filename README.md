@@ -66,6 +66,7 @@ results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
 docs/caso-estudio-portafolio-eco.md
 docs/arquitectura-pipeline-eco.md
+docs/roadmap-tecnico-eco.md
 ```
 
 Abrir HTML del clasificador:
@@ -111,6 +112,25 @@ Ruta 1: BED/FASTA → motivos → reporte
 Ruta 2: ClinVar → interpretación → HTML/SVG
 Ruta 3: secuencias etiquetadas → baseline → métricas
 Ruta futura: DNABERT/embeddings → clasificador avanzado
+```
+
+## Roadmap técnico
+
+Para ver la evolución recomendada del proyecto, revisa:
+
+```text
+docs/roadmap-tecnico-eco.md
+```
+
+Este documento organiza las próximas fases:
+
+```text
+MVP funcional actual
+→ dataset más amplio
+→ baseline robusto
+→ embeddings/DNABERT
+→ comparación formal
+→ presentación pública controlada
 ```
 
 ## Uso responsable de datos públicos
@@ -462,6 +482,7 @@ tests/
 data/README.md
 docs/modulo-sne-eco-digestion-bioinspirada.md
 docs/arquitectura-pipeline-eco.md
+docs/roadmap-tecnico-eco.md
 docs/resultado-demostrativo-eco.md
 docs/guia-uso-archivos-propios.md
 docs/guia-interpretacion-variantes-eco.md
