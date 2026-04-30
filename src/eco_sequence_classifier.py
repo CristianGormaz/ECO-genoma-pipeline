@@ -17,6 +17,7 @@ import math
 from src.eco_motif_analysis import scan_sequence
 
 FeatureVector = Dict[str, float]
+FeatureScaler = Dict[str, Dict[str, float]]
 VALID_FEATURE_MODES = {"motif", "motif_kmer"}
 DNA_ALPHABET = "ACGT"
 
@@ -121,20 +122,61 @@ def extract_features(sequence: str, feature_mode: str = "motif", kmer_k: int = 2
     return features
 
 
+def extract_feature_map(
+    records: Sequence[LabeledSequence], feature_mode: str = "motif", kmer_k: int = 2
+) -> Dict[str, FeatureVector]:
+    return {record.sequence_id: extract_features(record.sequence, feature_mode, kmer_k) for record in records}
+
+
+def fit_minmax_scaler(vectors: Sequence[FeatureVector]) -> FeatureScaler:
+    if not vectors:
+        raise ValueError("No hay vectores para ajustar normalización.")
+    keys = sorted(set().union(*(vector.keys() for vector in vectors)))
+    scaler: FeatureScaler = {}
+    for key in keys:
+        values = [vector.get(key, 0.0) for vector in vectors]
+        scaler[key] = {"min": min(values), "max": max(values)}
+    return scaler
+
+
+def scale_vector(vector: FeatureVector, scaler: FeatureScaler) -> FeatureVector:
+    scaled: FeatureVector = {}
+    for key, limits in scaler.items():
+        minimum = limits["min"]
+        maximum = limits["max"]
+        value = vector.get(key, 0.0)
+        if maximum == minimum:
+            scaled[key] = 0.0
+        else:
+            scaled[key] = round((value - minimum) / (maximum - minimum), 6)
+    return scaled
+
+
+def scale_feature_map(feature_map: Dict[str, FeatureVector], scaler: FeatureScaler) -> Dict[str, FeatureVector]:
+    return {sequence_id: scale_vector(vector, scaler) for sequence_id, vector in feature_map.items()}
+
+
 def average_vectors(vectors: Sequence[FeatureVector]) -> FeatureVector:
     keys = sorted(vectors[0].keys())
     return {key: sum(vector[key] for vector in vectors) / len(vectors) for key in keys}
 
 
-def train_centroid_classifier(
-    records: Sequence[LabeledSequence], feature_mode: str = "motif", kmer_k: int = 2
+def train_centroid_classifier_from_features(
+    records: Sequence[LabeledSequence], feature_map: Dict[str, FeatureVector]
 ) -> Dict[str, FeatureVector]:
     grouped: Dict[str, List[FeatureVector]] = {}
     for record in records:
-        grouped.setdefault(record.label, []).append(extract_features(record.sequence, feature_mode, kmer_k))
+        grouped.setdefault(record.label, []).append(feature_map[record.sequence_id])
     if len(grouped) < 2:
         raise ValueError("Se requieren al menos dos clases.")
     return {label: average_vectors(vectors) for label, vectors in sorted(grouped.items())}
+
+
+def train_centroid_classifier(
+    records: Sequence[LabeledSequence], feature_mode: str = "motif", kmer_k: int = 2
+) -> Dict[str, FeatureVector]:
+    feature_map = extract_feature_map(records, feature_mode, kmer_k)
+    return train_centroid_classifier_from_features(records, feature_map)
 
 
 def euclidean_distance(left: FeatureVector, right: FeatureVector) -> float:
@@ -152,10 +194,7 @@ def confidence_from_distances(distances: Dict[str, float]) -> float:
     return round(min(max((second - best) / second, 0.0), 1.0), 4)
 
 
-def predict(
-    record: LabeledSequence, centroids: Dict[str, FeatureVector], feature_mode: str = "motif", kmer_k: int = 2
-) -> Prediction:
-    features = extract_features(record.sequence, feature_mode, kmer_k)
+def prediction_from_features(record: LabeledSequence, features: FeatureVector, centroids: Dict[str, FeatureVector]) -> Prediction:
     distances = {label: round(euclidean_distance(features, centroid), 4) for label, centroid in centroids.items()}
     predicted_label = min(distances, key=distances.get)
     return Prediction(
@@ -166,6 +205,13 @@ def predict(
         distances=distances,
         features=features,
     )
+
+
+def predict(
+    record: LabeledSequence, centroids: Dict[str, FeatureVector], feature_mode: str = "motif", kmer_k: int = 2
+) -> Prediction:
+    features = extract_features(record.sequence, feature_mode, kmer_k)
+    return prediction_from_features(record, features, centroids)
 
 
 def safe_divide(numerator: float, denominator: float) -> float:
@@ -223,10 +269,10 @@ def build_classification_metrics(labels: Sequence[str], matrix: Dict[str, Dict[s
     }
 
 
-def evaluate(
-    records: Sequence[LabeledSequence], centroids: Dict[str, FeatureVector], feature_mode: str = "motif", kmer_k: int = 2
+def evaluate_with_feature_map(
+    records: Sequence[LabeledSequence], centroids: Dict[str, FeatureVector], feature_map: Dict[str, FeatureVector]
 ) -> Dict[str, object]:
-    predictions = [predict(record, centroids, feature_mode, kmer_k) for record in records]
+    predictions = [prediction_from_features(record, feature_map[record.sequence_id], centroids) for record in records]
     labels = sorted({record.label for record in records} | set(centroids))
     matrix: Dict[str, Dict[str, int]] = {true: {pred: 0 for pred in labels} for true in labels}
     correct = 0
@@ -245,18 +291,44 @@ def evaluate(
     }
 
 
+def evaluate(
+    records: Sequence[LabeledSequence], centroids: Dict[str, FeatureVector], feature_mode: str = "motif", kmer_k: int = 2
+) -> Dict[str, object]:
+    feature_map = extract_feature_map(records, feature_mode, kmer_k)
+    return evaluate_with_feature_map(records, centroids, feature_map)
+
+
 def build_classifier_report(
-    records: Sequence[LabeledSequence], feature_mode: str = "motif", kmer_k: int = 2
+    records: Sequence[LabeledSequence], feature_mode: str = "motif", kmer_k: int = 2, normalize_features: bool = False
 ) -> Dict[str, object]:
     train_records, test_records = split_train_test(records)
-    centroids = train_centroid_classifier(train_records, feature_mode, kmer_k)
-    train_evaluation = evaluate(train_records, centroids, feature_mode, kmer_k)
-    test_evaluation = evaluate(test_records, centroids, feature_mode, kmer_k)
-    model_label = "centroid_baseline_motif_kmer" if feature_mode == "motif_kmer" else "centroid_baseline_explicable"
+    train_features = extract_feature_map(train_records, feature_mode, kmer_k)
+    test_features = extract_feature_map(test_records, feature_mode, kmer_k)
+    scaler = None
+
+    if normalize_features:
+        scaler = fit_minmax_scaler(list(train_features.values()))
+        train_features = scale_feature_map(train_features, scaler)
+        test_features = scale_feature_map(test_features, scaler)
+
+    centroids = train_centroid_classifier_from_features(train_records, train_features)
+    train_evaluation = evaluate_with_feature_map(train_records, centroids, train_features)
+    test_evaluation = evaluate_with_feature_map(test_records, centroids, test_features)
+
+    if feature_mode == "motif_kmer" and normalize_features:
+        model_label = "centroid_baseline_motif_kmer_minmax"
+    elif feature_mode == "motif_kmer":
+        model_label = "centroid_baseline_motif_kmer"
+    else:
+        model_label = "centroid_baseline_explicable"
+
     return {
         "model_type": model_label,
         "feature_mode": feature_mode,
         "kmer_k": kmer_k if feature_mode == "motif_kmer" else None,
+        "normalize_features": normalize_features,
+        "feature_scaling": "minmax_train" if normalize_features else "none",
+        "feature_scaler": scaler,
         "purpose": "baseline_pre_embeddings_para_clasificacion_de_secuencias",
         "data_split": {
             "train": len(train_records),
@@ -271,6 +343,7 @@ def build_classifier_report(
             "La separación train/test evita reportar solo desempeño de entrenamiento.",
             "No representa desempeño general sobre datasets reales grandes.",
             "Las features dependen de motivos simples del MVP y, opcionalmente, frecuencias k-mer.",
+            "La normalización, si está activa, se ajusta solo con train para evitar fuga de información desde test.",
         ],
     }
 
