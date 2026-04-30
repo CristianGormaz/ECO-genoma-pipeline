@@ -4,11 +4,12 @@
 
 **E.C.O. — Entérico Codificador Orgánico** es un pipeline bioinspirado para procesar datos genómicos como un metabolismo de información: ingesta, filtrado, transformación, absorción, feedback y descarte.
 
-El proyecto trabaja hoy con tres rutas principales:
+El proyecto trabaja hoy con cuatro rutas principales:
 
 1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
 2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
 3. **Clasificación baseline:** secuencias etiquetadas → auditoría de dataset → baseline v1/v2/v3 → comparación formal → sensibilidad → evaluación repetida → métricas JSON/Markdown/HTML.
+4. **Embeddings experimentales:** secuencias etiquetadas → embedding placeholder → centroides → comparación contra v1/v3 → reporte JSON/Markdown/HTML.
 
 > Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
 
@@ -21,6 +22,7 @@ entrada de datos
 → digestión computacional
 → señales útiles
 → reporte interpretable
+→ comparación responsable
 ```
 
 ## Quickstart
@@ -43,6 +45,7 @@ Estado: OK, interpretación de variantes generada sin diagnóstico médico.
 Estado: OK, auditoría del dataset generada.
 Estado: OK, baseline explicable con métricas por clase ejecutado.
 Estado: OK, comparación baseline v1/v2/v3 generada.
+Estado: OK, ruta experimental de embeddings placeholder generada.
 ```
 
 ## Demo de portafolio
@@ -53,7 +56,7 @@ Para preparar una demo completa de presentación:
 make portfolio-demo
 ```
 
-Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG, exporta informes HTML y agrega evaluación repetida/sensibilidad del clasificador.
+Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG, exporta informes HTML y agrega evaluación repetida/sensibilidad del clasificador junto a la ruta experimental de embeddings placeholder.
 
 Al finalizar, deja rutas listas para revisar:
 
@@ -74,6 +77,8 @@ results/eco_classifier_repeated_eval_report.md
 results/eco_classifier_repeated_eval_report.html
 results/eco_classifier_sensitivity_report.md
 results/eco_classifier_sensitivity_report.html
+results/eco_embedding_placeholder_report.md
+results/eco_embedding_placeholder_report.html
 results/eco_clinvar_sample_report.md
 results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
@@ -81,6 +86,7 @@ docs/resumen-ejecutivo-eco.md
 docs/ficha-tecnica-clasificador-eco.md
 docs/criterios-dataset-clasificador-eco.md
 docs/nota-tecnica-v3-vs-v2.md
+docs/nota-tecnica-embedding-placeholder.md
 docs/caso-estudio-portafolio-eco.md
 docs/arquitectura-pipeline-eco.md
 docs/roadmap-tecnico-eco.md
@@ -100,6 +106,12 @@ Para revisión técnica del clasificador:
 ```text
 docs/ficha-tecnica-clasificador-eco.md
 docs/nota-tecnica-v3-vs-v2.md
+```
+
+Para la ruta experimental pre-embeddings:
+
+```text
+docs/nota-tecnica-embedding-placeholder.md
 ```
 
 Para ampliar el dataset etiquetado sin inflar métricas ni perder trazabilidad:
@@ -157,6 +169,7 @@ make classifier-html-v3             # Convierte el JSON del baseline v3 en HTML 
 make classifier-compare             # Compara baseline v1/v2/v3 en Markdown/HTML
 make classifier-repeated-eval       # Repite evaluación v1/v2/v3 con splits estratificados
 make classifier-sensitivity         # Diagnostica feature modes, k-mers y normalización
+make embedding-placeholder          # Ejecuta ruta experimental de embeddings placeholder
 make clinvar-sample                 # Muestra pública real desde ClinVar con reporte E.C.O.
 make clinvar-charts                 # Genera visualizaciones SVG desde el JSON ClinVar
 make clinvar-html                   # Convierte el reporte JSON de ClinVar en HTML estático integrado
@@ -168,6 +181,7 @@ make open-classifier-html-v3        # Abre el HTML del clasificador v3 en navega
 make open-classifier-comparison     # Abre el HTML comparativo v1/v2/v3 en navegador
 make open-classifier-repeated-eval  # Abre HTML de evaluación repetida
 make open-classifier-sensitivity    # Abre HTML de sensibilidad del clasificador
+make open-embedding-placeholder     # Abre HTML de embeddings placeholder
 make open-clinvar-html              # Abre el HTML principal en navegador
 make open-clinvar-charts            # Abre el índice visual de gráficos SVG
 make portfolio-demo                 # Prepara demo completa para portafolio/entrevista
@@ -387,12 +401,45 @@ Delta mejor vs v1: +0.0754
 Delta v2 actual vs v1: -0.0254
 ```
 
+## Ruta 4: embeddings experimentales placeholder
+
+Esta ruta prepara el contrato vectorial antes de incorporar DNABERT u otro modelo real. No descarga modelos pesados ni suma dependencias nuevas al flujo estable.
+
+```bash
+make embedding-placeholder
+make open-embedding-placeholder
+```
+
+Flujo:
+
+```text
+examples/eco_labeled_sequences.tsv
+→ embedding placeholder determinista
+→ normalización minmax_train
+→ centroides por clase
+→ comparación contra baseline_v1 y baseline_v3
+→ JSON/Markdown/HTML
+```
+
+Salidas:
+
+```text
+results/eco_embedding_placeholder_report.json
+results/eco_embedding_placeholder_report.md
+results/eco_embedding_placeholder_report.html
+```
+
+Lectura prudente:
+
+> La ruta placeholder no busca reemplazar a v3. Su objetivo es dejar lista la arquitectura para que un embedding real pueda compararse de forma honesta contra v1 y v3.
+
 ## Decisión técnica actual
 
 ```text
 v1 = control mínimo explicable
 v2 = variante exploratoria no principal
 v3 = candidato principal pre-embeddings
+embedding-placeholder = contrato experimental para futura ruta DNABERT/embeddings
 ```
 
 ## Demo pública con descarga real de secuencia
@@ -458,6 +505,7 @@ scripts/run_eco_classifier_repeated_eval.py
 scripts/run_eco_classifier_sensitivity.py
 scripts/run_eco_classifier_baseline.py
 scripts/compare_eco_classifier_baselines.py
+scripts/run_eco_embedding_placeholder.py
 scripts/run_eco_validation.py
 scripts/run_eco_demo_pipeline.py
 scripts/run_eco_pipeline.py
@@ -476,6 +524,7 @@ docs/resumen-ejecutivo-eco.md
 docs/ficha-tecnica-clasificador-eco.md
 docs/criterios-dataset-clasificador-eco.md
 docs/nota-tecnica-v3-vs-v2.md
+docs/nota-tecnica-embedding-placeholder.md
 docs/modulo-sne-eco-digestion-bioinspirada.md
 docs/arquitectura-pipeline-eco.md
 docs/roadmap-tecnico-eco.md
@@ -497,6 +546,7 @@ requirements-dev.txt
 - El análisis de motivos usa expresiones regulares simples.
 - El clasificador baseline usa un dataset demostrativo y no representa desempeño general.
 - v3 es candidato pre-embeddings, no modelo final.
+- La ruta de embeddings actual es placeholder; no es DNABERT ni embedding profundo real.
 - La evaluación repetida reduce dependencia de un split, pero no reemplaza validación externa.
 - La conversión BED → FASTA requiere que BED y FASTA usen el mismo sistema de referencia.
 - La analogía con el Sistema Nervioso Entérico es arquitectónica, no biológica literal.
@@ -505,7 +555,7 @@ requirements-dev.txt
 ## Próximos pasos
 
 - Mantener v1 como control explicable y v3 como candidato principal pre-embeddings.
-- Crear una ruta experimental de embeddings sin sumar dependencias pesadas al flujo estable.
+- Usar `embedding-placeholder` como contrato técnico antes de integrar modelos reales.
 - Comparar cualquier modelo avanzado contra v1 y v3.
 - Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas cuando exista una fuente adecuada.
 - Agregar visualizaciones y reportes comparativos adicionales.
