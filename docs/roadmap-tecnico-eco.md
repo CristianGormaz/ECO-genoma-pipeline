@@ -2,39 +2,29 @@
 
 ## 1. Propósito
 
-Este roadmap define una ruta de evolución para **E.C.O. — Entérico Codificador Orgánico**. Su objetivo es ordenar los próximos avances técnicos sin perder el enfoque responsable del proyecto.
-
-E.C.O. ya cuenta con un MVP funcional. Este documento ayuda a responder:
-
-- qué está listo hoy;
-- qué falta para fortalecerlo;
-- cuándo conviene mostrarlo en portafolio;
-- cuándo conviene discutirlo en comunidades técnicas;
-- qué tendría que existir antes de hablar de DNABERT o modelos más avanzados.
+Este roadmap ordena la evolución de **E.C.O. — Entérico Codificador Orgánico**. El objetivo es avanzar por capas: primero funcional, luego medible, luego comparable, luego escalable y finalmente publicable.
 
 ## 2. Estado actual
 
-E.C.O. ya tiene tres rutas funcionales:
+E.C.O. ya cuenta con tres rutas funcionales:
 
 | Ruta | Estado | Evidencia |
 |---|---|---|
 | Regiones y motivos | Funcional | BED/FASTA → motivos → JSON/Markdown. |
-| Variantes públicas | Funcional | ClinVar → categorías E.C.O. → Markdown/HTML/SVG. |
-| Clasificador baseline | Funcional | Features simples → centroides → train/test → métricas por clase. |
+| Variantes públicas | Funcional | Registros públicos → categorías E.C.O. → Markdown/HTML/SVG. |
+| Clasificación baseline | Funcional + comparativa | Baseline v1 y v2 → comparación Markdown/HTML. |
 
 Estado operativo actual:
 
 ```text
 make check
-→ 28 passed
+→ 34 passed
 
 make portfolio-demo
 → genera reportes Markdown, JSON, HTML y SVG
 ```
 
 ## 3. Principio guía
-
-El avance de E.C.O. debe ser incremental:
 
 ```text
 primero funcional
@@ -44,9 +34,9 @@ primero funcional
 → luego publicable
 ```
 
-No conviene saltar directo a modelos complejos sin mantener una línea base explicable.
+E.C.O. no debería saltar a modelos complejos sin mantener una línea base simple, explicable y comparable.
 
-## 4. Fase 1: MVP funcional actual
+## 4. Fase 1: MVP funcional
 
 ### Estado
 
@@ -57,185 +47,144 @@ Completado.
 - `eco_core` con ingesta, filtrado, absorción, descarte y feedback.
 - Conversión BED/FASTA.
 - Análisis de motivos simples.
-- Interpretación segura de variantes públicas.
+- Interpretación segura de registros públicos.
 - Reportes JSON/Markdown/HTML.
 - Visualizaciones SVG.
-- Clasificador baseline con split train/test.
-- Métricas por clase: precision, recall, F1, support.
-- Demo de portafolio con `make portfolio-demo`.
+- Demo de portafolio.
 
-### Criterio de salida
+### Comandos de validación
 
-```text
+```bash
 make check
 make portfolio-demo
 ```
 
-Ambos deben ejecutarse sin errores.
+## 5. Fase 2: Dataset más amplio
 
-## 5. Fase 2: Dataset más amplio y menos artificial
+### Estado
+
+Siguiente foco técnico.
 
 ### Objetivo
 
-Reemplazar o complementar el dataset pequeño de demostración por uno más representativo.
+Ampliar el dataset etiquetado para que la evaluación no dependa de una muestra demasiado pequeña o fácil.
 
-### Tareas sugeridas
+### Tareas
 
 - Añadir más secuencias etiquetadas.
-- Incluir ejemplos difíciles o ambiguos.
-- Separar claramente train/test desde el origen.
-- Evitar que el dataset sea demasiado fácil.
-- Documentar fuente, licencia y criterios de selección.
-
-### Riesgo a evitar
-
-No presentar `accuracy: 1.0` como logro científico si el dataset sigue siendo pequeño y controlado.
+- Incluir ejemplos ambiguos o difíciles.
+- Mantener separación train/test.
+- Documentar criterios de selección.
+- Evitar vender `accuracy: 1.0` como resultado general.
 
 ### Criterio de salida
 
 ```text
-baseline ejecutado sobre más ejemplos
-métricas por clase generadas
-limitaciones explícitas actualizadas
+más ejemplos etiquetados
+métricas por clase actualizadas
+comparación v1/v2 más informativa
 ```
 
 ## 6. Fase 3: Baseline robusto y comparación interna
 
-### Objetivo
+### Estado
 
-Fortalecer el clasificador explicable antes de incorporar embeddings.
+Primera versión implementada.
 
-### Tareas sugeridas
+### Implementado
 
-- Agregar k-mers simples como features.
-- Agregar validación con múltiples splits o holdout fijo documentado.
-- Reportar matriz de confusión más informativa.
-- Comparar centroides contra reglas simples.
-- Crear informe comparativo baseline v1 vs baseline v2.
+- Baseline v1 con `feature_mode=motif`.
+- Baseline v2 con `feature_mode=motif_kmer` y `k=2`.
+- Reportes JSON/Markdown/HTML para v1.
+- Reportes JSON/Markdown/HTML para v2.
+- Comparación Markdown/HTML v1 vs v2.
+- Tests para k-mers, modo v2 y comparación.
+- Integración en `make check` y `make portfolio-demo`.
 
-### Métricas mínimas
+### Comandos
 
-- accuracy;
-- precision;
-- recall;
-- F1;
-- macro F1;
-- weighted F1;
-- support por clase.
-
-### Criterio de salida
-
-```text
-baseline mejorado supera o iguala al baseline inicial
-comparación documentada
-HTML/Markdown actualizados
+```bash
+make classifier-baseline
+make classifier-baseline-v2
+make classifier-compare
+make open-classifier-comparison
 ```
 
-## 7. Fase 4: Embeddings tipo DNABERT
-
-### Objetivo
-
-Incorporar una ruta experimental con embeddings de secuencias.
-
-### Tareas sugeridas
-
-- Definir dataset de entrada estable.
-- Generar embeddings de secuencias.
-- Guardar embeddings como artefactos derivados, no como fuente principal.
-- Entrenar un clasificador simple sobre embeddings.
-- Comparar contra baseline explicable.
-
-### Riesgo a evitar
-
-No introducir DNABERT solo como etiqueta llamativa. Debe mejorar o complementar algo medible.
-
-### Criterio de salida
+### Lectura actual
 
 ```text
-embeddings generados
-clasificador con embeddings ejecutado
-comparación baseline vs embeddings disponible
+v1 Test macro F1: 1.0
+v2 Test macro F1: 1.0
 ```
 
-## 8. Fase 5: Comparación formal
+Ambos modelos empatan en la muestra actual. Eso valida el flujo, pero todavía no demuestra superioridad de v2.
+
+## 7. Fase 4: Embeddings / DNABERT
+
+### Estado
+
+Pendiente.
 
 ### Objetivo
 
-Convertir el proyecto en una evaluación incremental.
+Agregar una ruta experimental con embeddings solo después de tener una línea base más robusta.
 
-### Tabla esperada
+### Tareas
+
+- Definir dataset estable.
+- Generar embeddings.
+- Entrenar clasificador simple sobre embeddings.
+- Comparar contra baseline v1/v2.
+
+## 8. Fase 5: Comparación formal ampliada
+
+### Estado
+
+Parcialmente implementada.
+
+Ya existe:
+
+```text
+results/eco_classifier_comparison_report.md
+results/eco_classifier_comparison_report.html
+```
+
+La versión completa debería comparar:
 
 | Modelo | Features | Train | Test | Accuracy | Macro F1 | Comentario |
 |---|---|---:|---:|---:|---:|---|
-| Baseline centroides | motivos + GC | n | n | x | x | Explicable. |
-| Baseline k-mers | k-mers + motivos | n | n | x | x | Más granular. |
+| Baseline v1 | motivos + GC | n | n | x | x | Explicable. |
+| Baseline v2 | motivos + k-mers | n | n | x | x | Más granular. |
 | Embeddings | DNABERT/otro | n | n | x | x | Más complejo. |
-
-### Criterio de salida
-
-```text
-informe comparativo reproducible
-comando Makefile dedicado
-lectura prudente de resultados
-```
 
 ## 9. Fase 6: Presentación pública controlada
 
-### Objetivo
+### Estado
 
-Publicar o presentar E.C.O. sin sobredimensionar sus conclusiones.
+Apta para portafolio y conversaciones laborales. Todavía conviene esperar antes de presentarla como evaluación técnica fuerte en comunidades exigentes.
 
-### Lugares adecuados primero
-
-- LinkedIn personal.
-- Portafolio profesional.
-- GitHub README.
-- Conversaciones de postulación laboral.
-- Comunidades de proyectos personales de Python/bioinformática educativa.
-
-### Lugares para después
-
-- r/MachineLearning.
-- Foros técnicos de benchmarking.
-- Comunidades académicas exigentes.
-
-### Criterio para publicar en espacios más técnicos
-
-Antes de publicar en comunidades exigentes, E.C.O. debería tener:
+Antes de publicar en espacios más técnicos, E.C.O. debería tener:
 
 - dataset más amplio;
-- comparación formal;
-- baseline claro;
-- modelo avanzado opcional;
+- comparación v1/v2 con resultados no triviales;
 - limitaciones explícitas;
 - reproducibilidad con comandos simples.
 
-## 10. Priorización recomendada
+## 10. Prioridad recomendada
 
 | Prioridad | Acción | Motivo |
 |---|---|---|
 | Alta | Ampliar dataset etiquetado | Hace más honesta la evaluación. |
-| Alta | Agregar comparación baseline v1/v2 | Da lenguaje técnico defendible. |
-| Media | Crear informe comparativo HTML | Mejora UX de revisión. |
-| Media | Preparar ruta de embeddings | Abre camino a DNABERT. |
-| Baja por ahora | Publicar en comunidades exigentes | Todavía falta comparación formal. |
+| Alta | Agregar casos ambiguos | Permite ver si v2 aporta. |
+| Media | Mejorar visualización comparativa | Mejora la lectura UX. |
+| Media | Preparar embeddings | Abre camino a DNABERT. |
+| Baja por ahora | Publicación técnica exigente | Falta dataset más fuerte. |
 
 ## 11. Próximo paso inmediato
 
-El siguiente avance más razonable es:
-
 ```text
-crear baseline v2 con features k-mer simples
+ampliar examples/eco_labeled_sequences.tsv con más secuencias etiquetadas y casos ambiguos
 ```
-
-Esto permitiría comparar:
-
-```text
-baseline v1: motivos + GC + señales simples
-baseline v2: motivos + GC + k-mers
-```
-
-Sin depender todavía de modelos pesados.
 
 ## 12. Frase guía
 
