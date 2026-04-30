@@ -65,6 +65,7 @@ results/eco_clinvar_sample_report.md
 results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
 docs/caso-estudio-portafolio-eco.md
+docs/arquitectura-pipeline-eco.md
 ```
 
 Abrir HTML del clasificador:
@@ -94,6 +95,23 @@ docs/caso-estudio-portafolio-eco.md
 ```
 
 Este documento resume el problema, la solución, la arquitectura, los resultados demostrables, las tecnologías usadas, los límites responsables y frases listas para CV, LinkedIn o entrevista.
+
+## Arquitectura del pipeline
+
+Para entender E.C.O. como sistema de rutas y no solo como colección de scripts, revisa:
+
+```text
+docs/arquitectura-pipeline-eco.md
+```
+
+Este documento ordena:
+
+```text
+Ruta 1: BED/FASTA → motivos → reporte
+Ruta 2: ClinVar → interpretación → HTML/SVG
+Ruta 3: secuencias etiquetadas → baseline → métricas
+Ruta futura: DNABERT/embeddings → clasificador avanzado
+```
 
 ## Uso responsable de datos públicos
 
@@ -443,6 +461,7 @@ tests/
 .github/workflows/eco-validation.yml
 data/README.md
 docs/modulo-sne-eco-digestion-bioinspirada.md
+docs/arquitectura-pipeline-eco.md
 docs/resultado-demostrativo-eco.md
 docs/guia-uso-archivos-propios.md
 docs/guia-interpretacion-variantes-eco.md
