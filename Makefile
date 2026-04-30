@@ -225,3 +225,9 @@ confidence-router-eval:
 
 open-confidence-router-eval:
 	xdg-open results/eco_confidence_router_eval_report.html >/dev/null 2>&1 || true
+
+confidence-router-calibrated-eval:
+	.venv/bin/python scripts/run_eco_confidence_router_calibrated_eval.py --repeats 50 --embedding-k 4 --dimensions 128 --output-json results/eco_confidence_router_calibrated_eval_report.json --output-md results/eco_confidence_router_calibrated_eval_report.md --output-html results/eco_confidence_router_calibrated_eval_report.html
+
+open-confidence-router-calibrated-eval:
+	xdg-open results/eco_confidence_router_calibrated_eval_report.html >/dev/null 2>&1 || true
