@@ -11,7 +11,7 @@ from src.eco_sequence_classifier import build_classifier_report, parse_labeled_s
 def _reports():
     records = parse_labeled_sequences_tsv("examples/eco_labeled_sequences.tsv")
     v1_report = build_classifier_report(records, feature_mode="motif")
-    v2_report = build_classifier_report(records, feature_mode="motif_kmer", kmer_k=2)
+    v2_report = build_classifier_report(records, feature_mode="motif_kmer", kmer_k=2, normalize_features=True)
     return v1_report, v2_report
 
 
@@ -22,9 +22,11 @@ def test_summarize_report_extracts_comparable_fields():
 
     assert v1["name"] == "baseline_v1"
     assert v1["feature_mode"] == "motif"
+    assert v1["feature_scaling"] == "none"
     assert v1["kmer_k"] == "no_aplica"
     assert v2["name"] == "baseline_v2"
     assert v2["feature_mode"] == "motif_kmer"
+    assert v2["feature_scaling"] == "minmax_train"
     assert v2["kmer_k"] == 2
     assert v1["test"] >= 8
     assert v2["test"] >= 8
@@ -44,6 +46,8 @@ def test_compare_rows_contains_v1_and_v2():
     assert rows[1][0] == "baseline_v2"
     assert rows[0][2] == "motif"
     assert rows[1][2] == "motif_kmer"
+    assert rows[0][3] == "none"
+    assert rows[1][3] == "minmax_train"
 
 
 def test_comparison_markdown_and_html_include_prudent_reading():
@@ -58,7 +62,10 @@ def test_comparison_markdown_and_html_include_prudent_reading():
     assert "Comparación de baselines" in markdown
     assert "baseline_v1" in markdown
     assert "baseline_v2" in markdown
+    assert "Scaling" in markdown
+    assert "minmax_train" in markdown
     assert reading in markdown
     assert "E.C.O. - Comparación de baselines" in html
     assert "baseline_v1" in html
     assert "baseline_v2" in html
+    assert "minmax_train" in html
