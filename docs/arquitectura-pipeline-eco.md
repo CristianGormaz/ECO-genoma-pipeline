@@ -33,7 +33,7 @@ La analogía con el sistema digestivo/entérico se usa como arquitectura funcion
 |---|---|---|---|---|
 | Ruta 1: regiones y motivos | BED + FASTA | Conversión BED → FASTA, eco_core, análisis de motivos | JSON/Markdown | Demostrar digestión de secuencias y extracción de señales simples. |
 | Ruta 2: variantes públicas | TSV estilo ClinVar | Normalización, categorización E.C.O., evidencia, resumen por gen/categoría | JSON/Markdown/HTML/SVG | Convertir registros públicos de variantes en informe bioinformático prudente. |
-| Ruta 3: clasificación baseline | Secuencias etiquetadas | Baseline v1, baseline v2, comparación v1/v2 | JSON/Markdown/HTML | Establecer una línea base medible y comparable antes de embeddings/DNABERT. |
+| Ruta 3: clasificación baseline | Secuencias etiquetadas | Baseline v1, baseline v2 con k-mers + minmax_train, comparación v1/v2 | JSON/Markdown/HTML | Establecer una línea base medible y comparable antes de embeddings/DNABERT. |
 | Ruta futura: embeddings | Secuencias + etiquetas reales | DNABERT/embeddings, clasificador, comparación contra baseline | Métricas comparativas | Evolucionar desde reglas/features simples hacia IA más avanzada. |
 
 ## 4. Ruta 1: BED/FASTA → motivos → reporte
@@ -153,8 +153,8 @@ make open-classifier-comparison
 ```text
 examples/eco_labeled_sequences.tsv
 → split train/test
-→ baseline v1: motivos + señales simples
-→ baseline v2: motivos + k-mers
+→ baseline v1: motivos + señales simples, sin normalización
+→ baseline v2: motivos + k-mers + normalización minmax_train
 → comparación v1/v2
 → métricas por clase
 → JSON/Markdown/HTML
@@ -175,7 +175,7 @@ results/eco_classifier_comparison_report.html
 
 ### Baseline v1
 
-Usa features simples:
+Usa features simples sin normalización:
 
 | Feature | Lectura |
 |---|---|
@@ -192,11 +192,17 @@ Usa features simples:
 
 ### Baseline v2
 
-Agrega frecuencias k-mer con `k=2`:
+Agrega frecuencias k-mer con `k=2` y normaliza features con min-max ajustado solo sobre train:
 
 ```text
 AA, AC, AG, AT, CA, CC, CG, CT, GA, GC, GG, GT, TA, TC, TG, TT
 ```
+
+```text
+feature_scaling = minmax_train
+```
+
+La normalización solo usa el split de entrenamiento para evitar fuga de información desde prueba.
 
 ### Métricas actuales
 
@@ -218,11 +224,11 @@ Ambos baselines reportan:
 ### Lectura actual
 
 ```text
-v1 Test macro F1: 1.0
-v2 Test macro F1: 1.0
+baseline_v1 | motif | scaling none | Test macro F1 0.7917
+baseline_v2 | motif_kmer | scaling minmax_train | Test macro F1 1.0
 ```
 
-La comparación valida el flujo, pero no demuestra superioridad de v2 porque el dataset actual todavía es pequeño y demostrativo.
+En la muestra actual, v2 mejora a v1. La lectura responsable es que la mejora es una señal inicial útil, pero debe validarse con más datos y casos más variados.
 
 ### Valor arquitectónico
 
@@ -230,7 +236,7 @@ Esta ruta responde una pregunta clave antes de DNABERT:
 
 > ¿Cuál es la línea base simple y explicable que cualquier modelo avanzado debe superar?
 
-La comparación v1/v2 permite evaluar mejoras incrementales sin saltar directamente a modelos pesados.
+La comparación v1/v2 permite evaluar mejoras incrementales sin saltar directamente a modelos pesados. Además, muestra por qué la escala de features importa cuando se usa distancia euclidiana.
 
 ## 7. Capa común: eco_core
 
@@ -299,7 +305,7 @@ Actualmente valida:
 - pipeline parametrizable;
 - demo local de variantes;
 - baseline v1;
-- baseline v2;
+- baseline v2 normalizado;
 - comparación baseline v1/v2.
 
 Estado actual esperado:
@@ -318,14 +324,15 @@ E.C.O. mantiene límites explícitos:
 - no reemplaza evaluación clínica;
 - no presenta el baseline como benchmark científico general;
 - no afirma que la analogía entérica sea biología literal;
-- no sube bases externas completas ni datos personales al repositorio.
+- no sube bases externas completas ni datos personales al repositorio;
+- no presenta la mejora actual de v2 como generalización definitiva.
 
 ## 12. Ruta futura recomendada
 
 La evolución técnica más natural es:
 
 ```text
-baseline v1/v2
+baseline v1/v2 normalizado
 → dataset más amplio
 → métricas por clase más robustas
 → embeddings tipo DNABERT
@@ -340,4 +347,4 @@ La pregunta guía será:
 
 ## 13. Frase corta para explicar la arquitectura
 
-> E.C.O. es un pipeline bioinformático bioinspirado que organiza tres rutas: análisis de secuencias, interpretación prudente de variantes públicas y clasificación baseline pre-embeddings con comparación v1/v2, generando reportes JSON, Markdown, HTML y visualizaciones para transformar datos técnicos en lectura verificable.
+> E.C.O. es un pipeline bioinformático bioinspirado que organiza tres rutas: análisis de secuencias, interpretación prudente de variantes públicas y clasificación baseline pre-embeddings con comparación v1/v2 normalizada, generando reportes JSON, Markdown, HTML y visualizaciones para transformar datos técnicos en lectura verificable.
