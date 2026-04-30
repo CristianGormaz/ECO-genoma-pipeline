@@ -8,7 +8,7 @@ El proyecto trabaja hoy con tres rutas principales:
 
 1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
 2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
-3. **Clasificación baseline:** secuencias etiquetadas → features explicables → clasificador por centroides → métricas JSON/Markdown.
+3. **Clasificación baseline:** secuencias etiquetadas → features explicables → clasificador por centroides → métricas JSON/Markdown/HTML.
 
 > Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
 
@@ -35,7 +35,7 @@ make check
 Resultado esperado actual:
 
 ```text
-26 passed
+28 passed
 OK: metabolismo informacional mínimo funcionando.
 Estado: OK, intestino informacional demo funcionando.
 Estado: OK, pipeline parametrizable E.C.O. funcionando.
@@ -51,7 +51,7 @@ Para preparar una demo completa de presentación:
 make portfolio-demo
 ```
 
-Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG y exporta el informe HTML integrado.
+Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG y exporta informes HTML.
 
 Al finalizar, deja rutas listas para revisar:
 
@@ -60,19 +60,26 @@ results/eco_demo_pipeline_report.md
 results/eco_custom_demo_report.md
 results/eco_variant_demo_report.md
 results/eco_classifier_baseline_report.md
+results/eco_classifier_baseline_report.html
 results/eco_clinvar_sample_report.md
 results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
 docs/caso-estudio-portafolio-eco.md
 ```
 
-Abrir HTML:
+Abrir HTML del clasificador:
+
+```bash
+make open-classifier-html
+```
+
+Abrir HTML ClinVar:
 
 ```bash
 make open-clinvar-html
 ```
 
-Abrir gráficos:
+Abrir gráficos ClinVar:
 
 ```bash
 make open-clinvar-charts
@@ -116,11 +123,13 @@ make pipeline              # Ejecuta pipeline parametrizable con BED/FASTA
 make public-demo           # Descarga referencia pública pequeña y genera informe
 make variant-demo          # Demo educativa de variantes desde TSV local
 make classifier-baseline   # Entrena/evalúa baseline explicable de secuencias
+make classifier-html       # Convierte el JSON del baseline en HTML estático
 make clinvar-sample        # Muestra pública real desde ClinVar con reporte E.C.O.
 make clinvar-charts        # Genera visualizaciones SVG desde el JSON ClinVar
 make clinvar-html          # Convierte el reporte JSON de ClinVar en HTML estático integrado
 make preview-clinvar       # Vista rápida del Markdown ClinVar en terminal
 make inspect-clinvar-json  # Vista rápida del JSON ClinVar formateado
+make open-classifier-html  # Abre el HTML del clasificador en navegador
 make open-clinvar-html     # Abre el HTML principal en navegador
 make open-clinvar-charts   # Abre el índice visual de gráficos SVG
 make portfolio-demo        # Prepara demo completa para portafolio/entrevista
@@ -290,7 +299,7 @@ examples/eco_labeled_sequences.tsv
 → extracción de features explicables
 → clasificador por centroides
 → evaluación por clase
-→ JSON/Markdown
+→ JSON/Markdown/HTML
 ```
 
 Salidas:
@@ -298,6 +307,19 @@ Salidas:
 ```text
 results/eco_classifier_baseline_report.json
 results/eco_classifier_baseline_report.md
+results/eco_classifier_baseline_report.html
+```
+
+Para generar el HTML del baseline:
+
+```bash
+make classifier-html
+```
+
+Abrir en navegador:
+
+```bash
+make open-classifier-html
 ```
 
 Features iniciales:
@@ -412,6 +434,7 @@ scripts/run_eco_public_chrM_report.py
 scripts/run_eco_variant_demo.py
 scripts/run_eco_clinvar_sample_report.py
 scripts/run_eco_classifier_baseline.py
+scripts/export_eco_classifier_html.py
 scripts/export_eco_clinvar_charts.py
 scripts/export_eco_variant_html.py
 scripts/review_eco_demo_report.py
