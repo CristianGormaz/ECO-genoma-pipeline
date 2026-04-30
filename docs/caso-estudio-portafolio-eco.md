@@ -9,7 +9,8 @@ El objetivo del MVP no es diagnosticar ni reemplazar herramientas clínicas, sin
 - procesar secuencias y coordenadas genómicas;
 - generar reportes trazables;
 - interpretar registros públicos de variantes;
-- entrenar/evaluar un clasificador baseline explicable;
+- entrenar/evaluar baselines explicables;
+- comparar baseline v1 vs baseline v2;
 - producir salidas JSON, Markdown, HTML y visualizaciones;
 - mantener límites científicos explícitos.
 
@@ -31,6 +32,7 @@ entrada
 → transformación
 → extracción de señales
 → clasificación
+→ comparación
 → reporte interpretable
 → límites de uso
 ```
@@ -53,10 +55,14 @@ registros estilo ClinVar → clasificación E.C.O. → evidencia → JSON/Markdo
 
 Permite descargar o procesar registros públicos de variantes, agruparlos por categorías interpretativas y generar una lectura prudente.
 
-### Ruta C: Clasificador baseline pre-embeddings
+### Ruta C: Clasificación baseline pre-embeddings
 
 ```text
-secuencias etiquetadas → features explicables → clasificador por centroides → train/test → métricas
+secuencias etiquetadas
+→ baseline v1 con motivos
+→ baseline v2 con motivos + k-mers
+→ comparación v1/v2
+→ métricas JSON/Markdown/HTML
 ```
 
 Esta ruta no pretende ser un modelo final. Funciona como línea base antes de incorporar embeddings tipo DNABERT u otros modelos más complejos.
@@ -81,7 +87,8 @@ A esta arquitectura se suman módulos especializados:
 | `eco_motif_analysis.py` | Detecta motivos simples y calcula features de secuencia. |
 | `eco_bed_to_fasta.py` | Convierte coordenadas BED en secuencias FASTA. |
 | `eco_variant_interpretation.py` | Organiza variantes en categorías E.C.O. y estima fuerza de evidencia. |
-| `eco_sequence_classifier.py` | Entrena/evalúa un baseline explicable con centroides de features. |
+| `eco_sequence_classifier.py` | Entrena/evalúa baselines explicables con centroides de features. |
+| `compare_eco_classifier_baselines.py` | Compara baseline v1 y baseline v2 en reportes Markdown/HTML. |
 
 Esta estructura permite explicar el sistema como un metabolismo de información, no solo como una colección de scripts.
 
@@ -98,10 +105,10 @@ make check
 Resultado actual esperado:
 
 ```text
-26 passed
+34 passed
 ```
 
-Además ejecuta validación del metabolismo mínimo, demo integrada, revisión de reporte, exportación Markdown, pipeline parametrizable, demo local de variantes y clasificador baseline.
+Además ejecuta validación del metabolismo mínimo, demo integrada, revisión de reporte, exportación Markdown, pipeline parametrizable, demo local de variantes, baseline v1, baseline v2 y comparación baseline v1/v2.
 
 ### Demo de regiones
 
@@ -147,39 +154,58 @@ El informe incluye:
 - detalle por variante;
 - límites de uso.
 
-Ejemplo de matriz balanceada:
+### Clasificación baseline explicable
 
-```text
-BRCA1 | 5 variantes
-BRCA2 | 5 variantes
-CFTR  | 5 variantes
-TP53  | 5 variantes
-```
-
-### Clasificador baseline explicable
+#### Baseline v1
 
 ```bash
 make classifier-baseline
+make classifier-html
+```
+
+Usa:
+
+```text
+motivos + longitud + GC + N + señales simples
+```
+
+#### Baseline v2
+
+```bash
+make classifier-baseline-v2
+make classifier-html-v2
+```
+
+Usa:
+
+```text
+motivos + longitud + GC + N + frecuencias k-mer de k=2
+```
+
+#### Comparación formal
+
+```bash
+make classifier-compare
+make open-classifier-comparison
 ```
 
 Genera:
 
 ```text
-results/eco_classifier_baseline_report.json
-results/eco_classifier_baseline_report.md
+results/eco_classifier_comparison_report.md
+results/eco_classifier_comparison_report.html
 ```
 
 Estado actual de la demo:
 
 ```text
-Train: 6 | Test: 4
-Train accuracy: 1.0
-Test accuracy: 1.0
+v1 Test macro F1: 1.0
+v2 Test macro F1: 1.0
 ```
 
 Lectura prudente:
 
-> Este resultado demuestra que el flujo técnico de entrenamiento/evaluación funciona sobre un dataset pequeño y controlado. No debe presentarse como desempeño científico general.
+> Este resultado demuestra que el flujo técnico de comparación funciona sobre un dataset pequeño y controlado. No debe presentarse como desempeño científico general ni como superioridad de v2.
 
 ## 6. Criterios de calidad aplicados
 
@@ -192,7 +218,9 @@ El proyecto incorpora prácticas técnicas útiles para un MVP serio:
 - cache local para datos públicos descargados;
 - deduplicación de variantes;
 - muestreo balanceado por gen y categoría;
-- separación explícita train/test para el baseline;
+- separación explícita train/test para clasificación;
+- baseline v1 y baseline v2;
+- comparación Markdown/HTML entre modelos;
 - matriz de confusión y métricas de prueba;
 - reportes Markdown para lectura humana;
 - HTML estático para demostración visual;
@@ -208,7 +236,7 @@ E.C.O. mantiene límites claros:
 - no calcula riesgo personal absoluto;
 - no reemplaza evaluación profesional;
 - no convierte una variante pública en conclusión médica individual;
-- no presenta el baseline como modelo científico final;
+- no presenta los baselines como modelos científicos finales;
 - usa ejemplos pequeños o muestras exploratorias para demostrar funcionamiento.
 
 Estos límites no debilitan el proyecto; lo hacen más responsable y defendible.
@@ -225,6 +253,7 @@ Este proyecto demuestra habilidades transferibles a roles de calidad, experienci
 - manejo prudente de información sensible;
 - traducción de datos complejos a lenguaje entendible;
 - creación de baseline medible antes de modelos avanzados;
+- comparación incremental entre modelos;
 - criterio para separar demostración técnica de conclusión clínica o científica.
 
 ## 9. Tecnologías y conceptos utilizados
@@ -240,26 +269,27 @@ Este proyecto demuestra habilidades transferibles a roles de calidad, experienci
 - Arquitectura modular.
 - Clasificador por centroides.
 - Features explicables.
+- K-mers.
 - Matriz de confusión.
 - Reportes interpretativos.
 - Bioinformática educativa.
 
 ## 10. Frase breve para CV o LinkedIn
 
-> Desarrollé E.C.O., un pipeline bioinformático bioinspirado que convierte secuencias, coordenadas genómicas y registros públicos de variantes en reportes JSON/Markdown/HTML interpretables, incorporando validación automatizada, trazabilidad, visualizaciones y un clasificador baseline con separación train/test.
+> Desarrollé E.C.O., un pipeline bioinformático bioinspirado que convierte secuencias, coordenadas genómicas y registros públicos de variantes en reportes JSON/Markdown/HTML interpretables, incorporando validación automatizada, trazabilidad, visualizaciones y comparación de baselines explicables antes de modelos avanzados.
 
 ## 11. Frase breve para entrevista
 
-> E.C.O. nació como una metáfora del sistema digestivo aplicada a datos. Lo convertí en un prototipo funcional que ingiere datos genómicos, los filtra, extrae señales, organiza evidencia, genera reportes entendibles y evalúa un baseline explicable antes de pasar a modelos más complejos como DNABERT.
+> E.C.O. nació como una metáfora del sistema digestivo aplicada a datos. Lo convertí en un prototipo funcional que ingiere datos genómicos, los filtra, extrae señales, organiza evidencia, genera reportes entendibles y compara baselines explicables antes de pasar a modelos más complejos como DNABERT.
 
 ## 12. Próximo avance sugerido
 
-El siguiente paso para fortalecer el proyecto técnicamente es aumentar la seriedad del baseline:
+El siguiente paso para fortalecer el proyecto técnicamente es aumentar la seriedad del dataset:
 
 - ampliar el dataset etiquetado;
 - agregar secuencias difíciles o ambiguas;
-- reportar métricas por clase;
-- comparar baseline explicable contra embeddings;
-- preparar una futura ruta DNABERT/MLP.
+- mantener train/test explícito;
+- repetir la comparación v1/v2;
+- preparar una futura ruta DNABERT/MLP cuando exista una línea base más robusta.
 
 Eso permitiría mostrar E.C.O. no solo como experiencia de lectura, sino como pipeline con evaluación incremental de modelos.
