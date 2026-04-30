@@ -99,6 +99,28 @@ def interpretation(v1: Dict[str, object], v2: Dict[str, object]) -> str:
     return "Ambos baselines obtienen el mismo macro F1 de prueba en esta muestra. La comparación valida el flujo, pero aún no demuestra superioridad del v2."
 
 
+def limitation_lines(v1: Dict[str, object], v2: Dict[str, object]) -> List[str]:
+    v1_f1 = float(v1["test_macro_f1"])
+    v2_f1 = float(v2["test_macro_f1"])
+    lines = [
+        "La muestra actual es demostrativa y todavía pequeña para conclusiones fuertes.",
+        "La comparación mide esta muestra específica; no representa desempeño general sobre datasets reales grandes.",
+        "La comparación se vuelve más útil al ampliar el dataset y agregar secuencias ambiguas adicionales.",
+        "El baseline v2 solo agrega k-mers simples; no reemplaza embeddings ni modelos profundos.",
+    ]
+    if v1_f1 == v2_f1:
+        lines.insert(1, "El empate actual indica rendimiento equivalente en esta muestra, no equivalencia general entre modelos.")
+    return lines
+
+
+def next_step(v1: Dict[str, object], v2: Dict[str, object]) -> str:
+    v1_f1 = float(v1["test_macro_f1"])
+    v2_f1 = float(v2["test_macro_f1"])
+    if v1_f1 == v2_f1:
+        return "Diseñar casos donde los motivos aislados confundan al baseline v1 y la composición k-mer pueda aportar una señal diferente."
+    return "Ampliar el dataset etiquetado y repetir esta comparación para observar si la diferencia se mantiene."
+
+
 def build_markdown(v1: Dict[str, object], v2: Dict[str, object]) -> str:
     headers = ["Modelo", "Tipo", "Feature mode", "k", "Train", "Test", "Train acc", "Test acc", "Test macro F1", "Test weighted F1"]
     summaries = [v1, v2]
@@ -120,14 +142,11 @@ def build_markdown(v1: Dict[str, object], v2: Dict[str, object]) -> str:
         "",
         "## Límites",
         "",
-        "- La muestra actual es pequeña y demostrativa.",
-        "- Un empate perfecto no demuestra que ambos modelos generalicen igual.",
-        "- La comparación se vuelve más útil al ampliar el dataset y agregar secuencias ambiguas.",
-        "- El baseline v2 solo agrega k-mers simples; no reemplaza embeddings ni modelos profundos.",
+        *[f"- {line}" for line in limitation_lines(v1, v2)],
         "",
         "## Próximo paso recomendado",
         "",
-        "Ampliar el dataset etiquetado y repetir esta comparación para observar si los k-mers aportan valor medible.",
+        next_step(v1, v2),
         "",
     ]
     return "\n".join(lines)
@@ -136,6 +155,7 @@ def build_markdown(v1: Dict[str, object], v2: Dict[str, object]) -> str:
 def build_html(v1: Dict[str, object], v2: Dict[str, object]) -> str:
     headers = ["Modelo", "Tipo", "Feature mode", "k", "Train", "Test", "Train acc", "Test acc", "Test macro F1", "Test weighted F1"]
     rows = compare_rows([v1, v2])
+    limits_html = "".join(f"<li>{e(line)}</li>" for line in limitation_lines(v1, v2))
     return f"""<!doctype html>
 <html lang='es'>
 <head>
@@ -179,12 +199,11 @@ def build_html(v1: Dict[str, object], v2: Dict[str, object]) -> str:
     </section>
     <section class='section warning'>
       <h2>Límites</h2>
-      <ul>
-        <li>La muestra actual es pequeña y demostrativa.</li>
-        <li>Un empate perfecto no demuestra que ambos modelos generalicen igual.</li>
-        <li>La comparación se vuelve más útil al ampliar el dataset y agregar secuencias ambiguas.</li>
-        <li>El baseline v2 solo agrega k-mers simples; no reemplaza embeddings ni modelos profundos.</li>
-      </ul>
+      <ul>{limits_html}</ul>
+    </section>
+    <section class='section'>
+      <h2>Próximo paso recomendado</h2>
+      <p>{e(next_step(v1, v2))}</p>
     </section>
   </main>
 </body>
