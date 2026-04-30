@@ -35,6 +35,18 @@ def table(headers: List[str], rows: List[List[object]]) -> List[str]:
     return lines
 
 
+def classification_metric_rows(evaluation: Dict[str, object]) -> List[List[object]]:
+    metrics = evaluation["classification_metrics"]
+    rows: List[List[object]] = []
+    for label, values in metrics["per_class"].items():
+        rows.append([label, values["precision"], values["recall"], values["f1"], values["support"]])
+    macro = metrics["macro_avg"]
+    weighted = metrics["weighted_avg"]
+    rows.append(["macro_avg", macro["precision"], macro["recall"], macro["f1"], macro["support"]])
+    rows.append(["weighted_avg", weighted["precision"], weighted["recall"], weighted["f1"], weighted["support"]])
+    return rows
+
+
 def evaluation_tables(evaluation: Dict[str, object], title: str) -> List[str]:
     predictions = evaluation["predictions"]
     labels = evaluation["labels"]
@@ -62,6 +74,10 @@ def evaluation_tables(evaluation: Dict[str, object], title: str) -> List[str]:
                 ["Accuracy", evaluation["accuracy"]],
             ],
         ),
+        "",
+        "### Métricas por clase",
+        "",
+        *table(["Clase", "Precision", "Recall", "F1", "Support"], classification_metric_rows(evaluation)),
         "",
         "### Matriz de confusión",
         "",
@@ -105,7 +121,8 @@ def build_markdown(report: Dict[str, object], input_path: Path) -> str:
         "## Lectura E.C.O.",
         "",
         "Esta etapa convierte la digestión de motivos en una primera decisión algorítmica. "
-        "La métrica relevante para mostrar avance es la de prueba, porque evalúa secuencias separadas del entrenamiento.",
+        "La métrica relevante para mostrar avance es la de prueba, porque evalúa secuencias separadas del entrenamiento. "
+        "Las métricas por clase permiten detectar si el baseline favorece una clase y falla en otra.",
         "",
     ]
     return "\n".join(lines)
@@ -130,15 +147,17 @@ def main() -> int:
     train = report["train_evaluation"]
     test = report["test_evaluation"]
     split = report["data_split"]
+    macro_f1 = test["classification_metrics"]["macro_avg"]["f1"]
     print("E.C.O. CLASSIFIER BASELINE REPORT")
     print("=================================")
     print(f"Dataset: {args.input}")
     print(f"Train: {split['train']} | Test: {split['test']}")
     print(f"Train accuracy: {train['accuracy']}")
     print(f"Test accuracy: {test['accuracy']}")
+    print(f"Test macro F1: {macro_f1}")
     print(f"Reporte JSON: {args.output_json}")
     print(f"Reporte Markdown: {args.output_md}")
-    print("Estado: OK, baseline explicable con split train/test ejecutado.")
+    print("Estado: OK, baseline explicable con métricas por clase ejecutado.")
     return 0
 
 
