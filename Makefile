@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate sne-validation enteric-report enteric-html open-enteric-html demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval open-model-decision portfolio-demo check clean embedding-semireal open-embedding-semireal embedding-semireal-repeated-eval open-embedding-semireal-repeated-eval difficulty-eval open-difficulty-eval hybrid-router-eval open-hybrid-router-eval confidence-router-eval open-confidence-router-eval confidence-router-calibrated-eval open-confidence-router-calibrated-eval adaptive-router-predict-demo open-adaptive-router-predict-demo adaptive-router-predict open-adaptive-router-predict adaptive-router-batch open-adaptive-router-batch
+.PHONY: install-dev test validate sne-validation sne-state-dataset enteric-report enteric-html open-enteric-html demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval open-model-decision portfolio-demo check clean embedding-semireal open-embedding-semireal embedding-semireal-repeated-eval open-embedding-semireal-repeated-eval difficulty-eval open-difficulty-eval hybrid-router-eval open-hybrid-router-eval confidence-router-eval open-confidence-router-eval confidence-router-calibrated-eval open-confidence-router-calibrated-eval adaptive-router-predict-demo open-adaptive-router-predict-demo adaptive-router-predict open-adaptive-router-predict adaptive-router-batch open-adaptive-router-batch
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -28,6 +28,9 @@ validate:
 
 sne-validation:
 	$(PY) scripts/run_sne_eco_validation.py --output-md results/sne_eco_validation_report.md --output-json results/sne_eco_validation_report.json
+
+sne-state-dataset:
+	$(PY) scripts/run_sne_eco_state_dataset.py --output-json results/sne_eco_state_dataset.json --output-tsv results/sne_eco_state_dataset.tsv
 
 enteric-report:
 	$(PY) scripts/run_eco_enteric_report.py
@@ -143,13 +146,15 @@ open-embedding-repeated-eval:
 open-model-decision:
 	@xdg-open results/eco_model_decision_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_model_decision_report.html"
 
-portfolio-demo: check sne-validation enteric-html adaptive-router-batch classifier-html classifier-html-v2 classifier-html-v3 classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision clinvar-sample clinvar-charts clinvar-html
+portfolio-demo: check sne-validation sne-state-dataset enteric-html adaptive-router-batch classifier-html classifier-html-v2 classifier-html-v3 classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision clinvar-sample clinvar-charts clinvar-html
 	@echo ""
 	@echo "E.C.O. PORTFOLIO DEMO READY"
 	@echo "==========================="
 	@echo "Reportes principales generados:"
 	@echo "- results/sne_eco_validation_report.md"
 	@echo "- results/sne_eco_validation_report.json"
+	@echo "- results/sne_eco_state_dataset.json"
+	@echo "- results/sne_eco_state_dataset.tsv"
 	@echo "- results/eco_enteric_system_report.md"
 	@echo "- results/eco_enteric_system_report.html"
 	@echo "- results/eco_adaptive_router_prediction_demo.md"
@@ -185,6 +190,7 @@ portfolio-demo: check sne-validation enteric-html adaptive-router-batch classifi
 	@echo "Documentos de apoyo:"
 	@echo "- docs/sne-eco-v1-indice-demo.md"
 	@echo "- docs/guia-validacion-sne-eco.md"
+	@echo "- docs/guia-dataset-adaptativo-eco.md"
 	@echo "- docs/caso-estudio-portafolio-eco.md"
 	@echo "- docs/guia-reporte-enterico-eco.md"
 	@echo "- docs/guia-router-adaptativo-eco.md"
@@ -195,6 +201,7 @@ portfolio-demo: check sne-validation enteric-html adaptive-router-batch classifi
 	@echo "- docs/nota-tecnica-v3-vs-v2.md"
 	@echo ""
 	@echo "Validar S.N.E.-E.C.O.: make sne-validation"
+	@echo "Generar dataset adaptativo: make sne-state-dataset"
 	@echo "Abrir HTML entérico: make open-enteric-html"
 	@echo "Abrir predicción adaptativa: make open-adaptive-router-predict-demo"
 	@echo "Abrir batch adaptativo: make open-adaptive-router-batch"
@@ -219,6 +226,7 @@ clean:
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	rm -f results/test_*.fa results/test_*.json results/test_*.csv
 	rm -f results/sne_eco_validation_report.json results/sne_eco_validation_report.md
+	rm -f results/sne_eco_state_dataset.json results/sne_eco_state_dataset.tsv
 	rm -f results/eco_enteric_system_report.json results/eco_enteric_system_report.md results/eco_enteric_system_report.html
 	rm -f results/eco_adaptive_router_prediction_demo.json results/eco_adaptive_router_prediction_demo.md results/eco_adaptive_router_prediction_demo.html
 	rm -f results/eco_adaptive_router_prediction_custom.json results/eco_adaptive_router_prediction_custom.md results/eco_adaptive_router_prediction_custom.html
