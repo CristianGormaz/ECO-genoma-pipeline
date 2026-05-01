@@ -37,6 +37,7 @@ def test_run_eco_adaptive_router_predict_exports_reports(tmp_path: Path):
 
     assert result.returncode == 0, result.stderr
     assert "Estado: OK, predicción adaptativa generada." in result.stdout
+    assert "Reflejo entérico:" in result.stdout
     assert output_json.exists()
     assert output_md.exists()
     assert output_html.exists()
@@ -47,8 +48,18 @@ def test_run_eco_adaptive_router_predict_exports_reports(tmp_path: Path):
     assert payload["final_prediction"] in {"regulatory", "non_regulatory"}
     assert "baseline_v3" in payload
     assert "embedding_semireal" in payload
+    assert "sensory_profile" in payload
+    assert payload["sensory_profile"]["length"] == 36
+    assert "enteric_reflex" in payload
+    assert payload["enteric_reflex"]["reflex_name"] in {
+        "reflejo_explicable_rapido",
+        "reflejo_vectorial_de_derivacion",
+    }
+    assert payload["enteric_reflex"]["caution_level"] in {"normal", "media", "alta"}
     assert "no diagnostico clinico" in payload["limits"]
 
     markdown = output_md.read_text(encoding="utf-8")
     assert "# E.C.O. - Predicción con router adaptativo" in markdown
+    assert "## Sensado entérico" in markdown
     assert "## Decisión adaptativa" in markdown
+    assert "## Reflejo entérico del router" in markdown
