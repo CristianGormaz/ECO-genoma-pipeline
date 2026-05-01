@@ -7,7 +7,7 @@ packet_trace + homeostasis_before + homeostasis_after.
 
 Uso:
     python scripts/run_sne_eco_state_dataset.py
-    python scripts/run_sne_eco_state_dataset.py --output-json results/sne_eco_state_dataset.json --output-tsv results/sne_eco_state_dataset.tsv
+    python scripts/run_sne_eco_state_dataset.py --extended --output-json results/sne_eco_state_dataset_extended.json --output-tsv results/sne_eco_state_dataset_extended.tsv
 """
 
 from __future__ import annotations
@@ -23,7 +23,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.eco_core import DEFAULT_TRANSITION_PACKETS, adaptive_rows_to_markdown, build_adaptive_state_rows, rows_to_dicts
+from src.eco_core import adaptive_rows_to_markdown, build_adaptive_state_rows, get_transition_packets, rows_to_dicts
 
 
 def write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -44,17 +44,20 @@ def write_tsv(path: Path, rows: list[dict[str, object]]) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Exporta dataset adaptativo de transiciones S.N.E.-E.C.O.")
+    parser.add_argument("--extended", action="store_true", help="Usa escenarios sintéticos extendidos.")
     parser.add_argument("--output-json", type=Path, default=None, help="Ruta opcional para guardar JSON.")
     parser.add_argument("--output-tsv", type=Path, default=None, help="Ruta opcional para guardar TSV.")
     return parser.parse_args()
 
 
-def build_payload() -> dict[str, Any]:
-    rows = build_adaptive_state_rows(DEFAULT_TRANSITION_PACKETS)
+def build_payload(*, extended: bool = False) -> dict[str, Any]:
+    packets = get_transition_packets(extended=extended)
+    rows = build_adaptive_state_rows(packets)
     row_dicts = rows_to_dicts(rows)
     return {
         "title": "S.N.E.-E.C.O. ADAPTIVE STATE DATASET",
         "status": "ok",
+        "scenario_set": "extended" if extended else "default",
         "row_count": len(row_dicts),
         "rows": row_dicts,
         "markdown": adaptive_rows_to_markdown(rows),
@@ -64,7 +67,7 @@ def build_payload() -> dict[str, Any]:
 
 def main() -> None:
     args = parse_args()
-    payload = build_payload()
+    payload = build_payload(extended=args.extended)
 
     print(payload["markdown"])
     print("")
