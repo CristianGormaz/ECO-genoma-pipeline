@@ -4,7 +4,8 @@ from dataclasses import asdict, dataclass
 from typing import Any, Dict, List
 
 from .absorption import absorb_dna_packet
-from .barrier import evaluate_barrier
+from .barrier import BarrierResult, evaluate_barrier
+from .defense import DefenseSignal, evaluate_defense
 from .discard import discard_packet
 from .filtering import filter_dna_packet, has_rejection
 from .flow import EcoPacket, route_packet
@@ -62,10 +63,10 @@ class EntericSystem:
         )
         return profile.to_dict()
 
-    def motility_reflex(self, sensory_profile: Dict[str, Any]) -> MotilityDecision:
-        """Decide movimiento operativo usando barrera + plexo mientérico digital."""
+    def barrier_reflex(self, sensory_profile: Dict[str, Any]) -> BarrierResult:
+        """Evalúa permeabilidad usando la barrera/mucosa informacional."""
         profile = self._sensory_profile_from_dict(sensory_profile)
-        barrier_result = evaluate_barrier(
+        return evaluate_barrier(
             is_text=profile.is_text,
             is_empty=profile.is_empty,
             invalid_characters=list(profile.invalid_characters),
@@ -74,7 +75,26 @@ class EntericSystem:
             n_percent=profile.n_percent,
             max_n_percent=self.max_n_percent,
         )
-        return decide_motility(profile, barrier_result)
+
+    def motility_reflex(
+        self,
+        sensory_profile: Dict[str, Any],
+        barrier_result: BarrierResult | None = None,
+    ) -> MotilityDecision:
+        """Decide movimiento operativo usando barrera + plexo mientérico digital."""
+        profile = self._sensory_profile_from_dict(sensory_profile)
+        barrier = barrier_result or self.barrier_reflex(sensory_profile)
+        return decide_motility(profile, barrier)
+
+    def defense_reflex(
+        self,
+        sensory_profile: Dict[str, Any],
+        barrier_result: BarrierResult,
+        motility_decision: MotilityDecision,
+    ) -> DefenseSignal:
+        """Evalúa la respuesta defensiva informacional del paquete."""
+        profile = self._sensory_profile_from_dict(sensory_profile)
+        return evaluate_defense(profile, barrier_result, motility_decision)
 
     def local_reflex(
         self,
@@ -100,13 +120,31 @@ class EntericSystem:
         packet.metadata["enteric_sensory_profile"] = sensory_profile
         route_packet(packet, stage="enteric_sensing", message="Perfil sensorial generado antes de la microdecisión local.")
 
-        motility_decision = self.motility_reflex(sensory_profile)
+        barrier_result = self.barrier_reflex(sensory_profile)
+        packet.metadata["enteric_barrier_result"] = asdict(barrier_result)
+        route_packet(
+            packet,
+            stage="enteric_barrier",
+            status=barrier_result.status,
+            message=barrier_result.reason,
+        )
+
+        motility_decision = self.motility_reflex(sensory_profile, barrier_result)
         packet.metadata["myenteric_motility_decision"] = asdict(motility_decision)
         route_packet(
             packet,
             stage="enteric_motility",
             status=motility_decision.status,
             message=motility_decision.reason,
+        )
+
+        defense_signal = self.defense_reflex(sensory_profile, barrier_result, motility_decision)
+        packet.metadata["enteric_defense_signal"] = asdict(defense_signal)
+        route_packet(
+            packet,
+            stage="enteric_defense",
+            status=defense_signal.severity,
+            message=defense_signal.reason,
         )
 
         decision = self.local_reflex(sensory_profile, motility_decision)
