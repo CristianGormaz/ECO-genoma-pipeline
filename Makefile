@@ -1,9 +1,17 @@
-.PHONY: install-dev test validate enteric-report enteric-html open-enteric-html demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval open-model-decision portfolio-demo check clean embedding-semireal open-embedding-semireal embedding-semireal-repeated-eval open-embedding-semireal-repeated-eval difficulty-eval open-difficulty-eval hybrid-router-eval open-hybrid-router-eval confidence-router-eval open-confidence-router-eval confidence-router-calibrated-eval open-confidence-router-calibrated-eval adaptive-router-predict-demo open-adaptive-router-predict-demo
+.PHONY: install-dev test validate enteric-report enteric-html open-enteric-html demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval open-model-decision portfolio-demo check clean embedding-semireal open-embedding-semireal embedding-semireal-repeated-eval open-embedding-semireal-repeated-eval difficulty-eval open-difficulty-eval hybrid-router-eval open-hybrid-router-eval confidence-router-eval open-confidence-router-eval confidence-router-calibrated-eval open-confidence-router-calibrated-eval adaptive-router-predict-demo open-adaptive-router-predict-demo adaptive-router-predict open-adaptive-router-predict
 
 PYTHON ?= python3
 VENV ?= .venv
 PIP := $(VENV)/bin/pip
 PY := $(VENV)/bin/python
+
+SEQUENCE ?=
+SEQUENCE_ID ?= custom_adaptive_router
+THRESHOLD ?= 0.20
+EMBEDDING_K ?= 4
+DIMENSIONS ?= 128
+INPUT ?= examples/eco_labeled_sequences.tsv
+ADAPTIVE_OUTPUT_PREFIX ?= eco_adaptive_router_prediction_custom
 
 install-dev:
 	$(PYTHON) -m venv $(VENV)
@@ -197,6 +205,7 @@ clean:
 	rm -f results/test_*.fa results/test_*.json results/test_*.csv
 	rm -f results/eco_enteric_system_report.json results/eco_enteric_system_report.md results/eco_enteric_system_report.html
 	rm -f results/eco_adaptive_router_prediction_demo.json results/eco_adaptive_router_prediction_demo.md results/eco_adaptive_router_prediction_demo.html
+	rm -f results/eco_adaptive_router_prediction_custom.json results/eco_adaptive_router_prediction_custom.md results/eco_adaptive_router_prediction_custom.html
 	rm -f results/eco_demo_pipeline.fa results/eco_demo_pipeline_report.json results/eco_demo_pipeline_report.md
 	rm -f results/eco_custom_demo.fa results/eco_custom_demo_report.json results/eco_custom_demo_report.md
 	rm -f results/eco_public_chrM.fa results/eco_public_chrM_report.json results/eco_public_chrM_interpretive_report.md
@@ -255,3 +264,15 @@ adaptive-router-predict-demo:
 
 open-adaptive-router-predict-demo:
 	@xdg-open results/eco_adaptive_router_prediction_demo.html >/dev/null 2>&1 || true
+
+adaptive-router-predict:
+	@if [ -z "$(SEQUENCE)" ]; then \
+		echo "Uso: make adaptive-router-predict SEQUENCE=ACGT..."; \
+		echo "Opcional: SEQUENCE_ID=mi_secuencia THRESHOLD=0.20 EMBEDDING_K=4 DIMENSIONS=128"; \
+		echo "Salida: results/$(ADAPTIVE_OUTPUT_PREFIX).json/.md/.html"; \
+		exit 1; \
+	fi
+	$(PY) scripts/run_eco_adaptive_router_predict.py --sequence "$(SEQUENCE)" --sequence-id "$(SEQUENCE_ID)" --input "$(INPUT)" --threshold "$(THRESHOLD)" --embedding-k "$(EMBEDDING_K)" --dimensions "$(DIMENSIONS)" --output-json results/$(ADAPTIVE_OUTPUT_PREFIX).json --output-md results/$(ADAPTIVE_OUTPUT_PREFIX).md --output-html results/$(ADAPTIVE_OUTPUT_PREFIX).html
+
+open-adaptive-router-predict:
+	@xdg-open results/$(ADAPTIVE_OUTPUT_PREFIX).html >/dev/null 2>&1 || echo "No se pudo abrir: results/$(ADAPTIVE_OUTPUT_PREFIX).html"
