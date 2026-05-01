@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval open-model-decision portfolio-demo check clean
+.PHONY: install-dev test validate enteric-report enteric-html open-enteric-html demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval open-model-decision portfolio-demo check clean
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -15,6 +15,15 @@ test:
 
 validate:
 	$(PY) scripts/run_eco_validation.py
+
+enteric-report:
+	$(PY) scripts/run_eco_enteric_report.py
+
+enteric-html: enteric-report
+	$(PY) scripts/export_eco_enteric_html.py
+
+open-enteric-html:
+	@xdg-open results/eco_enteric_system_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML entérico. Revisa: results/eco_enteric_system_report.html"
 
 demo:
 	$(PY) scripts/run_eco_demo_pipeline.py
@@ -121,11 +130,13 @@ open-embedding-repeated-eval:
 open-model-decision:
 	@xdg-open results/eco_model_decision_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_model_decision_report.html"
 
-portfolio-demo: check classifier-html classifier-html-v2 classifier-html-v3 classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision clinvar-sample clinvar-charts clinvar-html
+portfolio-demo: check enteric-html classifier-html classifier-html-v2 classifier-html-v3 classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision clinvar-sample clinvar-charts clinvar-html
 	@echo ""
 	@echo "E.C.O. PORTFOLIO DEMO READY"
 	@echo "==========================="
 	@echo "Reportes principales generados:"
+	@echo "- results/eco_enteric_system_report.md"
+	@echo "- results/eco_enteric_system_report.html"
 	@echo "- results/eco_demo_pipeline_report.md"
 	@echo "- results/eco_custom_demo_report.md"
 	@echo "- results/eco_variant_demo_report.md"
@@ -154,11 +165,13 @@ portfolio-demo: check classifier-html classifier-html-v2 classifier-html-v3 clas
 	@echo ""
 	@echo "Documentos de apoyo:"
 	@echo "- docs/caso-estudio-portafolio-eco.md"
+	@echo "- docs/guia-reporte-enterico-eco.md"
 	@echo "- docs/guia-interpretacion-variantes-eco.md"
 	@echo "- docs/uso-responsable-datos-eco.md"
 	@echo "- docs/modulo-sne-eco-digestion-bioinspirada.md"
 	@echo "- docs/nota-tecnica-v3-vs-v2.md"
 	@echo ""
+	@echo "Abrir HTML entérico: make open-enteric-html"
 	@echo "Vista rápida Markdown: make preview-clinvar"
 	@echo "Inspección JSON: make inspect-clinvar-json"
 	@echo "Abrir HTML ClinVar: make open-clinvar-html"
@@ -173,12 +186,13 @@ portfolio-demo: check classifier-html classifier-html-v2 classifier-html-v3 clas
 	@echo "Abrir evaluación repetida embedding: make open-embedding-repeated-eval"
 	@echo "Abrir decisión de modelos: make open-model-decision"
 
-check: test validate demo review report pipeline variant-demo dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-compare embedding-placeholder embedding-repeated-eval model-decision
+check: test validate enteric-report demo review report pipeline variant-demo dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-compare embedding-placeholder embedding-repeated-eval model-decision
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +
 	find . -type d -name ".pytest_cache" -exec rm -rf {} +
 	rm -f results/test_*.fa results/test_*.json results/test_*.csv
+	rm -f results/eco_enteric_system_report.json results/eco_enteric_system_report.md results/eco_enteric_system_report.html
 	rm -f results/eco_demo_pipeline.fa results/eco_demo_pipeline_report.json results/eco_demo_pipeline_report.md
 	rm -f results/eco_custom_demo.fa results/eco_custom_demo_report.json results/eco_custom_demo_report.md
 	rm -f results/eco_public_chrM.fa results/eco_public_chrM_report.json results/eco_public_chrM_interpretive_report.md
