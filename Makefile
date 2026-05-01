@@ -143,11 +143,13 @@ open-embedding-repeated-eval:
 open-model-decision:
 	@xdg-open results/eco_model_decision_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML. Revisa: results/eco_model_decision_report.html"
 
-portfolio-demo: check enteric-html adaptive-router-batch classifier-html classifier-html-v2 classifier-html-v3 classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision clinvar-sample clinvar-charts clinvar-html
+portfolio-demo: check sne-validation enteric-html adaptive-router-batch classifier-html classifier-html-v2 classifier-html-v3 classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision clinvar-sample clinvar-charts clinvar-html
 	@echo ""
 	@echo "E.C.O. PORTFOLIO DEMO READY"
 	@echo "==========================="
 	@echo "Reportes principales generados:"
+	@echo "- results/sne_eco_validation_report.md"
+	@echo "- results/sne_eco_validation_report.json"
 	@echo "- results/eco_enteric_system_report.md"
 	@echo "- results/eco_enteric_system_report.html"
 	@echo "- results/eco_adaptive_router_prediction_demo.md"
@@ -181,6 +183,8 @@ portfolio-demo: check enteric-html adaptive-router-batch classifier-html classif
 	@echo "- results/eco_clinvar_sample_charts/index.html"
 	@echo ""
 	@echo "Documentos de apoyo:"
+	@echo "- docs/sne-eco-v1-indice-demo.md"
+	@echo "- docs/guia-validacion-sne-eco.md"
 	@echo "- docs/caso-estudio-portafolio-eco.md"
 	@echo "- docs/guia-reporte-enterico-eco.md"
 	@echo "- docs/guia-router-adaptativo-eco.md"
@@ -190,6 +194,7 @@ portfolio-demo: check enteric-html adaptive-router-batch classifier-html classif
 	@echo "- docs/modulo-sne-eco-digestion-bioinspirada.md"
 	@echo "- docs/nota-tecnica-v3-vs-v2.md"
 	@echo ""
+	@echo "Validar S.N.E.-E.C.O.: make sne-validation"
 	@echo "Abrir HTML entérico: make open-enteric-html"
 	@echo "Abrir predicción adaptativa: make open-adaptive-router-predict-demo"
 	@echo "Abrir batch adaptativo: make open-adaptive-router-batch"
