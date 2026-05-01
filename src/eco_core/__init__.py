@@ -14,6 +14,7 @@ Esta carpeta representa la arquitectura entérica del proyecto:
 - discard: descarte controlado de datos no aprovechables.
 - enteric_system: orquestación integrada con sensado, reflejo local,
   motilidad, cuarentena, absorción y homeostasis.
+- sne_eco: contratos y métricas explícitas del Sistema Nervioso Entérico E.C.O.
 
 La intención es que esta capa crezca gradualmente sin romper los scripts
 funcionales actuales del repositorio.
@@ -26,6 +27,7 @@ from .absorption import absorb_sequence_features
 from .feedback import EcoFeedback, build_feedback_summary
 from .discard import EcoDiscardRecord, discard_packet
 from .enteric_system import EntericDecision, EntericHomeostasis, EntericSystem
+from .sne_eco import EntericLayer, SNEEcoMetrics, build_sne_metrics, describe_enteric_layers
 
 __all__ = [
     "EcoPacket",
@@ -42,4 +44,8 @@ __all__ = [
     "EntericDecision",
     "EntericHomeostasis",
     "EntericSystem",
+    "EntericLayer",
+    "SNEEcoMetrics",
+    "build_sne_metrics",
+    "describe_enteric_layers",
 ]
