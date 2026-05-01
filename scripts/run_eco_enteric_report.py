@@ -178,27 +178,50 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def resolve_output_path(path_value: str) -> Path:
+    """Resuelve salidas relativas al repo y respeta rutas absolutas externas."""
+    output_path = Path(path_value)
+    if output_path.is_absolute():
+        return output_path
+    return PROJECT_ROOT / output_path
+
+
+def display_path(path: Path) -> str:
+    """Muestra ruta relativa al repo cuando se puede; si no, usa ruta absoluta.
+
+    Esto evita que los tests fallen cuando pytest usa directorios temporales
+    fuera del proyecto, por ejemplo /tmp/pytest-.../reporte.json.
+    """
+    try:
+        return str(path.relative_to(PROJECT_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def main() -> int:
     args = parse_args()
     report = build_report()
 
-    output_json = PROJECT_ROOT / args.output_json
-    output_md = PROJECT_ROOT / args.output_md
+    output_json = resolve_output_path(args.output_json)
+    output_md = resolve_output_path(args.output_md)
     output_json.parent.mkdir(parents=True, exist_ok=True)
     output_md.parent.mkdir(parents=True, exist_ok=True)
 
     output_json.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     output_md.write_text(report_to_markdown(report), encoding="utf-8")
 
+    json_display = display_path(output_json)
+    md_display = display_path(output_md)
+
     if report["actual_actions"] != report["expected_actions"]:
         print("REVISAR: el reporte entérico no produjo las acciones esperadas.")
-        print(f"JSON: {output_json}")
-        print(f"Markdown: {output_md}")
+        print(f"JSON: {json_display}")
+        print(f"Markdown: {md_display}")
         return 1
 
     print("OK: reporte entérico exportable generado.")
-    print(f"JSON: {output_json.relative_to(PROJECT_ROOT)}")
-    print(f"Markdown: {output_md.relative_to(PROJECT_ROOT)}")
+    print(f"JSON: {json_display}")
+    print(f"Markdown: {md_display}")
     return 0
 
 
