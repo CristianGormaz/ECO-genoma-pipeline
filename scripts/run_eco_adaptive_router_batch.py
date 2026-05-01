@@ -116,6 +116,76 @@ def predict_one(row, *, eco, router, predict, model_v3, model_semireal, semireal
     return payload
 
 
+def safe_rate(count, total):
+    if total == 0:
+        return 0.0
+    return round(count / total, 4)
+
+
+def build_batch_homeostasis(total, rejected, contradiction_count, high_caution_count):
+    """Construye una lectura UX de estabilidad del lote completo.
+
+    La homeostasis no reemplaza las métricas; las traduce a una señal rápida
+    de estado para revisión humana: estable, atención o crítico.
+    """
+    if total == 0:
+        return {
+            "state": "idle",
+            "risk_score": 0.0,
+            "rejection_rate": 0.0,
+            "contradiction_rate": 0.0,
+            "high_caution_rate": 0.0,
+            "triggers": ["No hay secuencias para evaluar."],
+            "reading": "Sin flujo informacional para evaluar.",
+            "recommendation": "Agregar secuencias al TSV de entrada.",
+        }
+
+    rejection_rate = safe_rate(rejected, total)
+    contradiction_rate = safe_rate(contradiction_count, total)
+    high_caution_rate = safe_rate(high_caution_count, total)
+    risk_score = round(
+        min(
+            1.0,
+            rejection_rate * 0.35
+            + contradiction_rate * 0.35
+            + high_caution_rate * 0.30,
+        ),
+        4,
+    )
+
+    triggers = []
+    if rejected:
+        triggers.append("barrera_inmune_activa")
+    if contradiction_count:
+        triggers.append("contradiccion_entre_rutas")
+    if high_caution_count:
+        triggers.append("cautela_alta")
+
+    if rejection_rate > 0.5 or contradiction_rate > 0.5 or risk_score >= 0.7:
+        state = "critico"
+        reading = "El lote muestra inestabilidad alta: hay demasiado rechazo, contradicción o cautela acumulada."
+        recommendation = "Revisar calidad del TSV, separar casos inválidos y validar manualmente las secuencias conflictivas."
+    elif triggers:
+        state = "atencion"
+        reading = "El lote es procesable, pero requiere revisión: hay señales de rechazo, contradicción o baja separación entre rutas."
+        recommendation = "Revisar primero los casos rechazados, luego los casos con contradicción interna y cautela alta."
+    else:
+        state = "estable"
+        reading = "El lote mantiene homeostasis operativa: no hay rechazos, contradicciones ni cautela alta relevante."
+        recommendation = "Usar el reporte como salida demostrativa y continuar con validación externa si corresponde."
+
+    return {
+        "state": state,
+        "risk_score": risk_score,
+        "rejection_rate": rejection_rate,
+        "contradiction_rate": contradiction_rate,
+        "high_caution_rate": high_caution_rate,
+        "triggers": triggers or ["sin_alertas"],
+        "reading": reading,
+        "recommendation": recommendation,
+    }
+
+
 def summarize(results):
     total = len(results)
     processed = sum(1 for item in results if item["status"] == "processed")
@@ -130,6 +200,7 @@ def summarize(results):
         and item.get("baseline_v3", {}).get("prediction") != item.get("embedding_semireal", {}).get("prediction")
     )
     high_caution_count = caution_counts.get("alta", 0)
+    homeostasis = build_batch_homeostasis(total, rejected, contradiction_count, high_caution_count)
 
     notes = []
     if rejected:
@@ -140,6 +211,7 @@ def summarize(results):
         notes.append("Hay decisiones con cautela alta; tratarlas como empate operativo o baja separación de señales.")
     if not notes:
         notes.append("Lote procesado sin alertas críticas.")
+    notes.append(f"Homeostasis del lote: {homeostasis['state']}.")
 
     return {
         "total_sequences": total,
@@ -150,12 +222,14 @@ def summarize(results):
         "caution_counts": dict(caution_counts),
         "contradiction_count": contradiction_count,
         "high_caution_count": high_caution_count,
+        "homeostasis": homeostasis,
         "notes": notes,
     }
 
 
 def make_markdown(payload):
     summary = payload["summary"]
+    homeostasis = summary["homeostasis"]
     lines = []
     lines.append("# E.C.O. - Inferencia por lote con router adaptativo")
     lines.append("")
@@ -172,6 +246,21 @@ def make_markdown(payload):
     lines.append(f"| Rechazadas | {summary['rejected_sequences']} |")
     lines.append(f"| Contradicciones internas | {summary['contradiction_count']} |")
     lines.append(f"| Cautela alta | {summary['high_caution_count']} |")
+    lines.append("")
+    lines.append("## Homeostasis del lote")
+    lines.append("")
+    lines.append("| Señal | Valor |")
+    lines.append("| --- | --- |")
+    lines.append(f"| Estado | {homeostasis['state']} |")
+    lines.append(f"| Riesgo operativo | {homeostasis['risk_score']} |")
+    lines.append(f"| Tasa de rechazo | {homeostasis['rejection_rate']} |")
+    lines.append(f"| Tasa de contradicción | {homeostasis['contradiction_rate']} |")
+    lines.append(f"| Tasa de cautela alta | {homeostasis['high_caution_rate']} |")
+    lines.append(f"| Activadores | {', '.join(homeostasis['triggers'])} |")
+    lines.append("")
+    lines.append(f"> {homeostasis['reading']}")
+    lines.append("")
+    lines.append(f"**Recomendación:** {homeostasis['recommendation']}")
     lines.append("")
     lines.append("## Conteo de rutas")
     lines.append("")
@@ -209,6 +298,7 @@ def metric(label, value):
 
 def make_html(payload, md):
     summary = payload["summary"]
+    homeostasis = summary["homeostasis"]
     rows = []
     for item in payload["results"]:
         caution = item.get("enteric_reflex", {}).get("caution_level", "unknown")
@@ -224,6 +314,7 @@ def make_html(payload, md):
         )
 
     notes = "".join(f"<li>{escape(note)}</li>" for note in summary["notes"])
+    triggers = ", ".join(homeostasis["triggers"])
 
     return f"""<!doctype html>
 <html lang="es">
@@ -241,6 +332,8 @@ body {{ margin: 0; font-family: Arial, sans-serif; background: #f8fafc; color: #
 .metric {{ display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #e5e7eb; padding: 8px 0; }}
 .metric:last-child {{ border-bottom: 0; }}
 .metric span {{ color: #64748b; }}
+.homeostasis {{ border-left: 6px solid #334155; }}
+.homeostasis strong {{ font-size: 1.4rem; }}
 table {{ width: 100%; border-collapse: collapse; background: white; border-radius: 16px; overflow: hidden; }}
 th, td {{ border-bottom: 1px solid #e5e7eb; padding: 10px; text-align: left; vertical-align: top; }}
 th {{ background: #f1f5f9; }}
@@ -257,6 +350,7 @@ details {{ margin-top: 18px; }}
   <section class="grid">
     <article class="card">{metric('Total', summary['total_sequences'])}{metric('Procesadas', summary['processed_sequences'])}{metric('Rechazadas', summary['rejected_sequences'])}</article>
     <article class="card">{metric('Contradicciones internas', summary['contradiction_count'])}{metric('Cautela alta', summary['high_caution_count'])}</article>
+    <article class="card homeostasis"><h2>Homeostasis del lote</h2>{metric('Estado', homeostasis['state'])}{metric('Riesgo operativo', homeostasis['risk_score'])}{metric('Activadores', triggers)}<p>{escape(homeostasis['reading'])}</p><p><strong>Recomendación:</strong> {escape(homeostasis['recommendation'])}</p></article>
     <article class="card"><h2>Notas E.C.O.</h2><ul>{notes}</ul></article>
   </section>
   <section class="card" style="margin-top:18px;">
@@ -330,6 +424,7 @@ def main():
     Path(args.output_html).write_text(make_html(payload, md), encoding="utf-8")
 
     summary = payload["summary"]
+    homeostasis = summary["homeostasis"]
     print("E.C.O. ADAPTIVE ROUTER BATCH")
     print("============================")
     print(f"Entrada batch: {args.batch_input}")
@@ -338,6 +433,9 @@ def main():
     print(f"Rechazadas: {summary['rejected_sequences']}")
     print(f"Contradicciones internas: {summary['contradiction_count']}")
     print(f"Cautela alta: {summary['high_caution_count']}")
+    print(f"Homeostasis: {homeostasis['state']}")
+    print(f"Riesgo operativo: {homeostasis['risk_score']}")
+    print(f"Recomendación: {homeostasis['recommendation']}")
     print(f"Reporte Markdown: {args.output_md}")
     print(f"Reporte HTML: {args.output_html}")
     print("Estado: OK, inferencia por lote generada.")
