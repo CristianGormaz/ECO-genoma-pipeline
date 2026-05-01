@@ -9,6 +9,8 @@ from .defense import DefenseSignal, evaluate_defense
 from .discard import discard_packet
 from .filtering import filter_dna_packet, has_rejection
 from .flow import EcoPacket, route_packet
+from .gut_brain_axis import GutBrainReport, build_gut_brain_report
+from .homeostasis import HomeostasisSnapshot, build_homeostasis_snapshot
 from .ingestion import ingest_text
 from .motility import MotilityDecision, decide_motility
 from .sensor_local import SensoryProfile, analyze_packet, build_payload_key
@@ -189,6 +191,18 @@ class EntericSystem:
             "last_status": decision.get("status", "unknown"),
         }
         packet.metadata["microbiome_seen_count"] = seen_count
+
+    def homeostasis_snapshot(self) -> HomeostasisSnapshot:
+        """Entrega la lectura homeostática moderna del flujo procesado."""
+        return build_homeostasis_snapshot(self.processed_packets)
+
+    def gut_brain_report(self) -> GutBrainReport:
+        """Construye un reporte comunicable del eje intestino-cerebro E.C.O."""
+        return build_gut_brain_report(self.homeostasis_snapshot())
+
+    def gut_brain_markdown(self) -> str:
+        """Entrega el reporte del eje intestino-cerebro en Markdown."""
+        return self.gut_brain_report().to_markdown()
 
     def homeostasis_report(self) -> EntericHomeostasis:
         total = len(self.processed_packets)
