@@ -4,11 +4,13 @@ from dataclasses import asdict, dataclass
 from typing import Any, Dict, List
 
 from .absorption import absorb_dna_packet
+from .barrier import evaluate_barrier
 from .discard import discard_packet
 from .filtering import filter_dna_packet, has_rejection
 from .flow import EcoPacket, route_packet
 from .ingestion import ingest_text
-from .sensor_local import analyze_packet, build_payload_key
+from .motility import MotilityDecision, decide_motility
+from .sensor_local import SensoryProfile, analyze_packet, build_payload_key
 
 
 @dataclass(frozen=True)
@@ -60,30 +62,54 @@ class EntericSystem:
         )
         return profile.to_dict()
 
-    def local_reflex(self, sensory_profile: Dict[str, Any]) -> EntericDecision:
-        if not sensory_profile["is_text"]:
-            return EntericDecision("reject", "rejected", "Payload no textual: el epitelio informacional no puede validarlo como ADN.", 0.98, "immune_discard")
-        if sensory_profile["is_empty"]:
-            return EntericDecision("reject", "rejected", "Secuencia vacía: no contiene nutriente informacional.", 0.99, "immune_discard")
-        if sensory_profile["invalid_characters"]:
-            invalid = ", ".join(sensory_profile["invalid_characters"])
-            return EntericDecision("reject", "rejected", f"Secuencia con caracteres no válidos: {invalid}.", 0.97, "immune_discard")
-        if sensory_profile["is_duplicate"]:
-            return EntericDecision("discard_duplicate", "discarded", "Secuencia duplicada: se evita absorber redundancia como conocimiento nuevo.", 0.9, "controlled_discard")
-        if sensory_profile["length"] < self.min_length:
-            return EntericDecision("quarantine", "quarantined", "Secuencia demasiado corta: requiere revisión antes de absorberse.", 0.82, "quarantine")
-        if sensory_profile["n_percent"] > self.max_n_percent:
-            return EntericDecision("quarantine", "quarantined", "Secuencia con exceso de bases ambiguas N: se deriva a cuarentena.", 0.86, "quarantine")
-        if sensory_profile["is_heavy"]:
-            return EntericDecision("batch_absorb", "batched", "Secuencia grande: se absorbe con marca de procesamiento por lotes.", 0.78, "myenteric_batch_flow")
-        return EntericDecision("absorb", "ok", "Secuencia apta para absorción informacional.", 0.92, "submucosal_absorption")
+    def motility_reflex(self, sensory_profile: Dict[str, Any]) -> MotilityDecision:
+        """Decide movimiento operativo usando barrera + plexo mientérico digital."""
+        profile = self._sensory_profile_from_dict(sensory_profile)
+        barrier_result = evaluate_barrier(
+            is_text=profile.is_text,
+            is_empty=profile.is_empty,
+            invalid_characters=list(profile.invalid_characters),
+            length=profile.length,
+            min_length=self.min_length,
+            n_percent=profile.n_percent,
+            max_n_percent=self.max_n_percent,
+        )
+        return decide_motility(profile, barrier_result)
+
+    def local_reflex(
+        self,
+        sensory_profile: Dict[str, Any],
+        motility_decision: MotilityDecision | None = None,
+    ) -> EntericDecision:
+        """Convierte la motilidad mientérica en decisión compatible con el flujo histórico."""
+        motility = motility_decision or self.motility_reflex(sensory_profile)
+
+        if motility.action == "immune_discard":
+            return EntericDecision("reject", motility.status, motility.reason, 0.97, motility.route)
+        if motility.action == "discard_duplicate":
+            return EntericDecision("discard_duplicate", motility.status, motility.reason, 0.9, motility.route)
+        if motility.action == "quarantine":
+            return EntericDecision("quarantine", motility.status, motility.reason, 0.84, motility.route)
+        if motility.action == "batch_advance":
+            return EntericDecision("batch_absorb", motility.status, motility.reason, 0.78, motility.route)
+        return EntericDecision("absorb", motility.status, motility.reason, 0.92, motility.route)
 
     def process_packet(self, packet: EcoPacket) -> EcoPacket:
         route_packet(packet, stage="enteric_epithelium", message="El paquete entra a la barrera epitelial informacional.")
         sensory_profile = self.sense(packet)
         packet.metadata["enteric_sensory_profile"] = sensory_profile
         route_packet(packet, stage="enteric_sensing", message="Perfil sensorial generado antes de la microdecisión local.")
-        decision = self.local_reflex(sensory_profile)
+
+        motility_decision = self.motility_reflex(sensory_profile)
+        packet.metadata["myenteric_motility_decision"] = asdict(motility_decision)
+        route_packet(
+            packet,
+            stage="enteric_motility",
+            status=motility_decision.status,
+            message=motility_decision.reason,
+        )
+
+        decision = self.local_reflex(sensory_profile, motility_decision)
         packet.metadata["enteric_decision"] = asdict(decision)
         route_packet(packet, stage="enteric_reflex", status=decision.status, message=decision.reason)
 
@@ -101,7 +127,7 @@ class EntericSystem:
             else:
                 if decision.action == "batch_absorb":
                     packet.metadata["batch_recommended"] = True
-                    route_packet(packet, stage="enteric_motility", status="batched", message="Plexo mientérico digital marca el paquete para procesamiento por lotes.")
+                    route_packet(packet, stage="enteric_batch_flow", status="batched", message="Plexo mientérico digital marca el paquete para procesamiento por lotes.")
                 packet = absorb_dna_packet(packet)
 
         self.update_microbiome(packet)
@@ -154,3 +180,22 @@ class EntericSystem:
     @staticmethod
     def _payload_key(payload: Any) -> str:
         return build_payload_key(payload)
+
+    @staticmethod
+    def _sensory_profile_from_dict(data: Dict[str, Any]) -> SensoryProfile:
+        return SensoryProfile(
+            packet_id=data.get("packet_id"),
+            source=data.get("source", "manual_input"),
+            packet_type=data.get("packet_type", "unknown"),
+            payload_type=data.get("payload_type", "unknown"),
+            is_text=bool(data.get("is_text", False)),
+            is_empty=bool(data.get("is_empty", False)),
+            length=int(data.get("length", 0)),
+            gc_percent=float(data.get("gc_percent", 0.0)),
+            n_percent=float(data.get("n_percent", 0.0)),
+            invalid_characters=tuple(data.get("invalid_characters", [])),
+            filter_issues=tuple(data.get("filter_issues", [])),
+            is_duplicate=bool(data.get("is_duplicate", False)),
+            is_heavy=bool(data.get("is_heavy", False)),
+            payload_key=str(data.get("payload_key", "")),
+        )
