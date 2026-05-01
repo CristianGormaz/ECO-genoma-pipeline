@@ -22,6 +22,7 @@ Esta carpeta representa la arquitectura entérica del proyecto:
 - packet_trace: trazabilidad digestiva resumida por paquete.
 - adaptive_state_dataset: filas entrenables de transición de estado.
 - adaptive_state_baseline: baseline auditable para transición de estado.
+- adaptive_state_evaluation: evaluación holdout y matriz de confusión.
 - enteric_system: orquestación integrada con sensado, reflejo local,
   motilidad, cuarentena, absorción y homeostasis.
 - sne_eco: contratos y métricas explícitas del Sistema Nervioso Entérico E.C.O.
@@ -60,6 +61,13 @@ from .adaptive_state_baseline import (
     evaluate_state_transition_baseline,
     feature_key,
     train_state_transition_baseline,
+)
+from .adaptive_state_evaluation import (
+    HoldoutEvaluation,
+    build_confusion_matrix,
+    evaluate_state_transition_holdout,
+    holdout_report_to_markdown,
+    split_rows_holdout,
 )
 
 __all__ = [
@@ -112,4 +120,9 @@ __all__ = [
     "evaluate_state_transition_baseline",
     "feature_key",
     "train_state_transition_baseline",
+    "HoldoutEvaluation",
+    "build_confusion_matrix",
+    "evaluate_state_transition_holdout",
+    "holdout_report_to_markdown",
+    "split_rows_holdout",
 ]
