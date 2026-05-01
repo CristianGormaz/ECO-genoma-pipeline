@@ -63,3 +63,12 @@ def test_run_eco_adaptive_router_predict_exports_reports(tmp_path: Path):
     assert "## Sensado entérico" in markdown
     assert "## Decisión adaptativa" in markdown
     assert "## Reflejo entérico del router" in markdown
+
+    html = output_html.read_text(encoding="utf-8")
+    assert "data-section=\"input-card\"" in html
+    assert "data-section=\"sensory-card\"" in html
+    assert "data-section=\"route-card\"" in html
+    assert "data-section=\"decision-card\"" in html
+    assert "data-section=\"enteric-reflex-card\"" in html
+    assert "data-section=\"responsible-limit-card\"" in html
+    assert "Ver Markdown técnico completo" in html
