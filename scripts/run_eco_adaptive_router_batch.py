@@ -186,6 +186,64 @@ def build_batch_homeostasis(total, rejected, contradiction_count, high_caution_c
     }
 
 
+def has_internal_contradiction(item):
+    return (
+        item.get("status") == "processed"
+        and item.get("baseline_v3", {}).get("prediction") != item.get("embedding_semireal", {}).get("prediction")
+    )
+
+
+def caution_level(item):
+    return item.get("enteric_reflex", {}).get("caution_level", "unknown")
+
+
+def build_priority_cases(results):
+    """Ordena casos para revisión humana: rechazo, contradicción, cautela alta."""
+    priority_cases = []
+    for item in results:
+        if item.get("status") == "rejected":
+            priority_cases.append({
+                "priority": 1,
+                "category": "rechazo_inmune",
+                "sequence_id": item["sequence_id"],
+                "row_number": item["row_number"],
+                "status": item.get("status"),
+                "selected_route": item.get("selected_route", "none"),
+                "final_prediction": item.get("final_prediction", "not_available"),
+                "caution_level": caution_level(item),
+                "reason": item.get("reason", "dato rechazado"),
+                "review_action": "Corregir secuencia, revisar caracteres inválidos o excluir del lote.",
+            })
+        elif has_internal_contradiction(item):
+            priority_cases.append({
+                "priority": 2,
+                "category": "contradiccion_interna",
+                "sequence_id": item["sequence_id"],
+                "row_number": item["row_number"],
+                "status": item.get("status"),
+                "selected_route": item.get("selected_route", "none"),
+                "final_prediction": item.get("final_prediction", "not_available"),
+                "caution_level": caution_level(item),
+                "reason": "baseline_v3 y embedding_semireal entregan predicciones distintas.",
+                "review_action": "Revisar manualmente señales, confianza y posible empate operativo entre rutas.",
+            })
+        elif caution_level(item) == "alta":
+            priority_cases.append({
+                "priority": 3,
+                "category": "cautela_alta",
+                "sequence_id": item["sequence_id"],
+                "row_number": item["row_number"],
+                "status": item.get("status"),
+                "selected_route": item.get("selected_route", "none"),
+                "final_prediction": item.get("final_prediction", "not_available"),
+                "caution_level": caution_level(item),
+                "reason": "La decisión requiere cautela alta por baja separación de señales.",
+                "review_action": "Validar con más datos, más evaluación o una ruta externa antes de usar como conclusión.",
+            })
+
+    return sorted(priority_cases, key=lambda case: (case["priority"], case["row_number"]))
+
+
 def summarize(results):
     total = len(results)
     processed = sum(1 for item in results if item["status"] == "processed")
@@ -193,12 +251,7 @@ def summarize(results):
     route_counts = Counter(item.get("selected_route", "none") for item in results)
     prediction_counts = Counter(item.get("final_prediction", "not_available") for item in results)
     caution_counts = Counter(item.get("enteric_reflex", {}).get("caution_level", "unknown") for item in results)
-    contradiction_count = sum(
-        1
-        for item in results
-        if item.get("status") == "processed"
-        and item.get("baseline_v3", {}).get("prediction") != item.get("embedding_semireal", {}).get("prediction")
-    )
+    contradiction_count = sum(1 for item in results if has_internal_contradiction(item))
     high_caution_count = caution_counts.get("alta", 0)
     homeostasis = build_batch_homeostasis(total, rejected, contradiction_count, high_caution_count)
 
@@ -222,6 +275,7 @@ def summarize(results):
         "caution_counts": dict(caution_counts),
         "contradiction_count": contradiction_count,
         "high_caution_count": high_caution_count,
+        "priority_case_count": len(build_priority_cases(results)),
         "homeostasis": homeostasis,
         "notes": notes,
     }
@@ -230,6 +284,7 @@ def summarize(results):
 def make_markdown(payload):
     summary = payload["summary"]
     homeostasis = summary["homeostasis"]
+    priority_cases = payload.get("priority_cases", [])
     lines = []
     lines.append("# E.C.O. - Inferencia por lote con router adaptativo")
     lines.append("")
@@ -246,6 +301,7 @@ def make_markdown(payload):
     lines.append(f"| Rechazadas | {summary['rejected_sequences']} |")
     lines.append(f"| Contradicciones internas | {summary['contradiction_count']} |")
     lines.append(f"| Cautela alta | {summary['high_caution_count']} |")
+    lines.append(f"| Casos prioritarios | {summary['priority_case_count']} |")
     lines.append("")
     lines.append("## Homeostasis del lote")
     lines.append("")
@@ -262,6 +318,21 @@ def make_markdown(payload):
     lines.append("")
     lines.append(f"**Recomendación:** {homeostasis['recommendation']}")
     lines.append("")
+    lines.append("## Casos prioritarios")
+    lines.append("")
+    if priority_cases:
+        lines.append("E.C.O. ordena automáticamente la revisión: primero rechazos, luego contradicciones internas y finalmente cautela alta.")
+        lines.append("")
+        lines.append("| Prioridad | ID | Categoría | Ruta | Predicción | Cautela | Acción sugerida |")
+        lines.append("| ---: | --- | --- | --- | --- | --- | --- |")
+        for case in priority_cases:
+            lines.append(
+                f"| {case['priority']} | {case['sequence_id']} | {case['category']} | "
+                f"{case['selected_route']} | {case['final_prediction']} | {case['caution_level']} | {case['review_action']} |"
+            )
+    else:
+        lines.append("No hay casos prioritarios. El lote no activó rechazos, contradicciones ni cautela alta.")
+    lines.append("")
     lines.append("## Conteo de rutas")
     lines.append("")
     lines.append("| Ruta | Conteo |")
@@ -274,7 +345,7 @@ def make_markdown(payload):
     lines.append("| ID | Estado | Ruta | Predicción | Cautela | Motivo |")
     lines.append("| --- | --- | --- | --- | --- | --- |")
     for item in payload["results"]:
-        caution = item.get("enteric_reflex", {}).get("caution_level", "unknown")
+        caution = caution_level(item)
         lines.append(
             f"| {item['sequence_id']} | {item['status']} | {item.get('selected_route', 'none')} | "
             f"{item.get('final_prediction', 'not_available')} | {caution} | {item.get('reason', '')} |"
@@ -299,9 +370,10 @@ def metric(label, value):
 def make_html(payload, md):
     summary = payload["summary"]
     homeostasis = summary["homeostasis"]
+    priority_cases = payload.get("priority_cases", [])
     rows = []
     for item in payload["results"]:
-        caution = item.get("enteric_reflex", {}).get("caution_level", "unknown")
+        caution = caution_level(item)
         rows.append(
             "<tr>"
             f"<td>{escape(str(item['sequence_id']))}</td>"
@@ -312,6 +384,22 @@ def make_html(payload, md):
             f"<td>{escape(str(item.get('reason', '')))}</td>"
             "</tr>"
         )
+
+    priority_rows = []
+    for case in priority_cases:
+        priority_rows.append(
+            "<tr>"
+            f"<td>{escape(str(case['priority']))}</td>"
+            f"<td>{escape(str(case['sequence_id']))}</td>"
+            f"<td>{escape(str(case['category']))}</td>"
+            f"<td>{escape(str(case['selected_route']))}</td>"
+            f"<td>{escape(str(case['final_prediction']))}</td>"
+            f"<td>{escape(str(case['caution_level']))}</td>"
+            f"<td>{escape(str(case['review_action']))}</td>"
+            "</tr>"
+        )
+    if not priority_rows:
+        priority_rows.append("<tr><td colspan='7'>No hay casos prioritarios.</td></tr>")
 
     notes = "".join(f"<li>{escape(note)}</li>" for note in summary["notes"])
     triggers = ", ".join(homeostasis["triggers"])
@@ -334,6 +422,7 @@ body {{ margin: 0; font-family: Arial, sans-serif; background: #f8fafc; color: #
 .metric span {{ color: #64748b; }}
 .homeostasis {{ border-left: 6px solid #334155; }}
 .homeostasis strong {{ font-size: 1.4rem; }}
+.priority {{ border-left: 6px solid #7f1d1d; }}
 table {{ width: 100%; border-collapse: collapse; background: white; border-radius: 16px; overflow: hidden; }}
 th, td {{ border-bottom: 1px solid #e5e7eb; padding: 10px; text-align: left; vertical-align: top; }}
 th {{ background: #f1f5f9; }}
@@ -349,9 +438,17 @@ details {{ margin-top: 18px; }}
 <main class="wrap">
   <section class="grid">
     <article class="card">{metric('Total', summary['total_sequences'])}{metric('Procesadas', summary['processed_sequences'])}{metric('Rechazadas', summary['rejected_sequences'])}</article>
-    <article class="card">{metric('Contradicciones internas', summary['contradiction_count'])}{metric('Cautela alta', summary['high_caution_count'])}</article>
+    <article class="card">{metric('Contradicciones internas', summary['contradiction_count'])}{metric('Cautela alta', summary['high_caution_count'])}{metric('Casos prioritarios', summary['priority_case_count'])}</article>
     <article class="card homeostasis"><h2>Homeostasis del lote</h2>{metric('Estado', homeostasis['state'])}{metric('Riesgo operativo', homeostasis['risk_score'])}{metric('Activadores', triggers)}<p>{escape(homeostasis['reading'])}</p><p><strong>Recomendación:</strong> {escape(homeostasis['recommendation'])}</p></article>
     <article class="card"><h2>Notas E.C.O.</h2><ul>{notes}</ul></article>
+  </section>
+  <section class="card priority" style="margin-top:18px;">
+    <h2>Casos prioritarios</h2>
+    <p>Orden automático de revisión: rechazos, contradicciones internas y cautela alta.</p>
+    <table>
+      <thead><tr><th>Prioridad</th><th>ID</th><th>Categoría</th><th>Ruta</th><th>Predicción</th><th>Cautela</th><th>Acción sugerida</th></tr></thead>
+      <tbody>{''.join(priority_rows)}</tbody>
+    </table>
   </section>
   <section class="card" style="margin-top:18px;">
     <h2>Detalle del lote</h2>
@@ -405,6 +502,7 @@ def main():
         )
         for row in batch_rows
     ]
+    priority_cases = build_priority_cases(results)
 
     payload = {
         "batch_input": args.batch_input,
@@ -413,6 +511,7 @@ def main():
         "embedding_k": args.embedding_k,
         "dimensions": args.dimensions,
         "summary": summarize(results),
+        "priority_cases": priority_cases,
         "results": results,
         "limits": ["dataset demostrativo", "no diagnostico clinico", "no benchmark cientifico"],
     }
@@ -433,6 +532,7 @@ def main():
     print(f"Rechazadas: {summary['rejected_sequences']}")
     print(f"Contradicciones internas: {summary['contradiction_count']}")
     print(f"Cautela alta: {summary['high_caution_count']}")
+    print(f"Casos prioritarios: {summary['priority_case_count']}")
     print(f"Homeostasis: {homeostasis['state']}")
     print(f"Riesgo operativo: {homeostasis['risk_score']}")
     print(f"Recomendación: {homeostasis['recommendation']}")
