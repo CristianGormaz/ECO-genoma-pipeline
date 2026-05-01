@@ -25,6 +25,18 @@ entrada de datos
 → comparación responsable
 ```
 
+La capa `eco_core.enteric_system` agrega una lectura más fiel al Sistema Nervioso Entérico: sensado local, barrera epitelial informacional, reflejo autónomo, motilidad, absorción, cuarentena, descarte, memoria microbiota mínima y homeostasis del flujo.
+
+```text
+dato crudo
+→ barrera epitelial
+→ sensado entérico
+→ reflejo local
+→ absorción / cuarentena / descarte
+→ memoria microbiota
+→ homeostasis
+```
+
 ## Quickstart
 
 ```bash
@@ -37,7 +49,7 @@ make check
 Resultado esperado actual:
 
 ```text
-34 passed
+39 passed
 OK: metabolismo informacional mínimo funcionando.
 Estado: OK, intestino informacional demo funcionando.
 Estado: OK, pipeline parametrizable E.C.O. funcionando.
