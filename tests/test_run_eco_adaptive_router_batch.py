@@ -5,15 +5,6 @@ from pathlib import Path
 
 
 def test_run_eco_adaptive_router_batch_exports_reports(tmp_path: Path):
-    batch_input = tmp_path / "batch.tsv"
-    batch_input.write_text(
-        "sequence_id\tsequence\tdescription\n"
-        "seq_a\tACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTAC\tvalid demo\n"
-        "seq_b\tTTTTACACACACGTTTACACACACGTTTACACACAC\tvalid repetitive\n"
-        "seq_bad\tACGTXYZ\tinvalid demo\n",
-        encoding="utf-8",
-    )
-
     output_json = tmp_path / "batch_report.json"
     output_md = tmp_path / "batch_report.md"
     output_html = tmp_path / "batch_report.html"
@@ -23,7 +14,7 @@ def test_run_eco_adaptive_router_batch_exports_reports(tmp_path: Path):
             sys.executable,
             "scripts/run_eco_adaptive_router_batch.py",
             "--batch-input",
-            str(batch_input),
+            "examples/demo_adaptive_router_batch.tsv",
             "--threshold",
             "0.20",
             "--embedding-k",
@@ -49,14 +40,20 @@ def test_run_eco_adaptive_router_batch_exports_reports(tmp_path: Path):
     assert output_html.exists()
 
     payload = json.loads(output_json.read_text(encoding="utf-8"))
-    assert payload["summary"]["total_sequences"] == 3
-    assert payload["summary"]["processed_sequences"] == 2
-    assert payload["summary"]["rejected_sequences"] == 1
+    summary = payload["summary"]
+
+    assert summary["total_sequences"] == 3
+    assert summary["processed_sequences"] == 2
+    assert summary["rejected_sequences"] == 1
+    assert summary["contradiction_count"] >= 1
+    assert summary["high_caution_count"] >= 1
+    assert "baseline_v3" in summary["route_counts"]
+    assert "none" in summary["route_counts"]
     assert len(payload["results"]) == 3
-    assert any(item["status"] == "rejected" for item in payload["results"])
-    assert any(item["status"] == "processed" for item in payload["results"])
-    assert "route_counts" in payload["summary"]
-    assert "caution_counts" in payload["summary"]
+
+    rejected = [item for item in payload["results"] if item["status"] == "rejected"]
+    assert len(rejected) == 1
+    assert rejected[0]["enteric_reflex"]["reflex_name"] == "reflejo_inmune_de_rechazo"
 
     markdown = output_md.read_text(encoding="utf-8")
     assert "# E.C.O. - Inferencia por lote con router adaptativo" in markdown
