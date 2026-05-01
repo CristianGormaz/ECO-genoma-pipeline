@@ -20,6 +20,7 @@ Esta carpeta representa la arquitectura entérica del proyecto:
 - homeostasis: equilibrio operativo del flujo entérico procesado.
 - gut_brain_axis: reporte comunicable del estado entérico interno.
 - packet_trace: trazabilidad digestiva resumida por paquete.
+- adaptive_state_dataset: filas entrenables de transición de estado.
 - enteric_system: orquestación integrada con sensado, reflejo local,
   motilidad, cuarentena, absorción y homeostasis.
 - sne_eco: contratos y métricas explícitas del Sistema Nervioso Entérico E.C.O.
@@ -43,6 +44,14 @@ from .defense import DefenseSignal, evaluate_defense
 from .homeostasis import HomeostasisSnapshot, build_homeostasis_snapshot
 from .gut_brain_axis import GutBrainReport, build_gut_brain_report
 from .packet_trace import PacketTrace, build_packet_trace, build_packet_traces, traces_to_markdown
+from .adaptive_state_dataset import (
+    AdaptiveStateRow,
+    DEFAULT_TRANSITION_PACKETS,
+    adaptive_rows_to_markdown,
+    build_adaptive_state_row,
+    build_adaptive_state_rows,
+    rows_to_dicts,
+)
 
 __all__ = [
     "EcoPacket",
@@ -82,4 +91,10 @@ __all__ = [
     "build_packet_trace",
     "build_packet_traces",
     "traces_to_markdown",
+    "AdaptiveStateRow",
+    "DEFAULT_TRANSITION_PACKETS",
+    "adaptive_rows_to_markdown",
+    "build_adaptive_state_row",
+    "build_adaptive_state_rows",
+    "rows_to_dicts",
 ]
