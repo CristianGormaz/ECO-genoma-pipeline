@@ -24,6 +24,7 @@ Esta carpeta representa la arquitectura entérica del proyecto:
 - adaptive_state_baseline: baseline auditable para transición de estado.
 - adaptive_state_evaluation: evaluación holdout y matriz de confusión.
 - adaptive_state_coverage: diagnóstico de cobertura de rutas adaptativas.
+- adaptive_state_confusion: análisis de rutas confundidas y escenarios sugeridos.
 - enteric_system: orquestación integrada con sensado, reflejo local,
   motilidad, cuarentena, absorción y homeostasis.
 - sne_eco: contratos y métricas explícitas del Sistema Nervioso Entérico E.C.O.
@@ -77,6 +78,15 @@ from .adaptive_state_coverage import (
     build_coverage_diagnostics,
     build_coverage_warnings,
     coverage_report_to_markdown,
+)
+from .adaptive_state_confusion import (
+    ConfusedRoute,
+    ConfusedRouteReport,
+    analyze_confused_routes,
+    build_suggested_focus,
+    confused_routes_to_markdown,
+    explain_confusion,
+    suggest_scenario,
 )
 
 __all__ = [
@@ -140,4 +150,11 @@ __all__ = [
     "build_coverage_diagnostics",
     "build_coverage_warnings",
     "coverage_report_to_markdown",
+    "ConfusedRoute",
+    "ConfusedRouteReport",
+    "analyze_confused_routes",
+    "build_suggested_focus",
+    "confused_routes_to_markdown",
+    "explain_confusion",
+    "suggest_scenario",
 ]
