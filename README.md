@@ -2,14 +2,15 @@
 
 ![E.C.O. Validation](https://github.com/CristianGormaz/ECO-genoma-pipeline/actions/workflows/eco-validation.yml/badge.svg)
 
-**E.C.O. — Entérico Codificador Orgánico** es un pipeline bioinspirado para procesar datos genómicos como un metabolismo de información: ingesta, filtrado, transformación, absorción, feedback y descarte.
+**E.C.O. — Entérico Codificador Orgánico** es un pipeline bioinspirado para procesar datos genómicos como un metabolismo de información: ingesta, filtrado, transformación, absorción, feedback, descarte y lectura entérica del estado interno.
 
-El proyecto trabaja hoy con cuatro rutas principales:
+El proyecto trabaja hoy con cinco rutas principales:
 
 1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
 2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
 3. **Clasificación baseline:** secuencias etiquetadas → auditoría de dataset → baseline v1/v2/v3 → comparación formal → sensibilidad → evaluación repetida → métricas JSON/Markdown/HTML.
 4. **Embeddings experimentales:** secuencias etiquetadas → embedding placeholder → centroides → comparación contra v1/v3 → reporte JSON/Markdown/HTML.
+5. **S.N.E.-E.C.O. v1.0:** barrera, sensor submucoso, motilidad mientérica, microbiota, defensa, homeostasis y eje intestino-cerebro → validación UX → artefactos Markdown/JSON.
 
 > Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
 
@@ -25,16 +26,61 @@ entrada de datos
 → comparación responsable
 ```
 
-La capa `eco_core.enteric_system` agrega una lectura más fiel al Sistema Nervioso Entérico: sensado local, barrera epitelial informacional, reflejo autónomo, motilidad, absorción, cuarentena, descarte, memoria microbiota mínima y homeostasis del flujo.
+La capa `eco_core.enteric_system` agrega una lectura más fiel al Sistema Nervioso Entérico: sensado local, barrera epitelial informacional, reflejo autónomo, motilidad, absorción, cuarentena, descarte, memoria microbiota mínima, defensa informacional, homeostasis del flujo y reporte eje intestino-cerebro.
 
 ```text
 dato crudo
 → barrera epitelial
-→ sensado entérico
-→ reflejo local
+→ sensado submucoso
+→ motilidad mientérica
 → absorción / cuarentena / descarte
 → memoria microbiota
+→ defensa informacional
 → homeostasis
+→ reporte eje intestino-cerebro
+```
+
+## S.N.E.-E.C.O. v1.0
+
+El módulo **S.N.E.-E.C.O.** convierte la metáfora entérica en arquitectura computacional verificable:
+
+```text
+barrier.py              → mucosa / barrera informacional
+sensor_local.py         → plexo submucoso / sensado local
+motility.py             → plexo mientérico / tránsito operativo
+microbiota.py           → memoria adaptativa / recurrencia
+defense.py              → sistema inmune informacional
+homeostasis.py          → equilibrio operativo del flujo
+gut_brain_axis.py       → reporte comunicable del estado interno
+enteric_orchestrator.py → coordinación de órganos entéricos
+```
+
+Documentos clave:
+
+```text
+docs/sne-eco-v1-indice-demo.md
+docs/guia-validacion-sne-eco.md
+docs/modulo-sne-eco-digestion-bioinspirada.md
+```
+
+Validación mínima:
+
+```bash
+make sne-validation
+```
+
+Artefactos generados:
+
+```text
+results/sne_eco_validation_report.md
+results/sne_eco_validation_report.json
+```
+
+Lectura esperada:
+
+```text
+S.N.E.-E.C.O. VALIDATION REPORT
+OK: S.N.E.-E.C.O. integrado funcionando.
 ```
 
 ## Quickstart
@@ -46,18 +92,10 @@ make install-dev
 make check
 ```
 
-Resultado esperado actual:
+Validación unitaria esperada en la fase S.N.E.-E.C.O. v1.0:
 
 ```text
-39 passed
-OK: metabolismo informacional mínimo funcionando.
-Estado: OK, intestino informacional demo funcionando.
-Estado: OK, pipeline parametrizable E.C.O. funcionando.
-Estado: OK, interpretación de variantes generada sin diagnóstico médico.
-Estado: OK, auditoría del dataset generada.
-Estado: OK, baseline explicable con métricas por clase ejecutado.
-Estado: OK, comparación baseline v1/v2/v3 generada.
-Estado: OK, ruta experimental de embeddings placeholder generada.
+108 passed
 ```
 
 ## Demo de portafolio
@@ -68,11 +106,13 @@ Para preparar una demo completa de presentación:
 make portfolio-demo
 ```
 
-Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG, exporta informes HTML y agrega evaluación repetida/sensibilidad del clasificador junto a la ruta experimental de embeddings placeholder.
+Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG, exporta informes HTML, agrega evaluación repetida/sensibilidad del clasificador, ejecuta la ruta experimental de embeddings placeholder y genera la validación S.N.E.-E.C.O.
 
 Al finalizar, deja rutas listas para revisar:
 
 ```text
+results/sne_eco_validation_report.md
+results/sne_eco_validation_report.json
 results/eco_demo_pipeline_report.md
 results/eco_custom_demo_report.md
 results/eco_variant_demo_report.md
@@ -94,6 +134,8 @@ results/eco_embedding_placeholder_report.html
 results/eco_clinvar_sample_report.md
 results/eco_clinvar_sample_report.html
 results/eco_clinvar_sample_charts/index.html
+docs/sne-eco-v1-indice-demo.md
+docs/guia-validacion-sne-eco.md
 docs/resumen-ejecutivo-eco.md
 docs/ficha-tecnica-clasificador-eco.md
 docs/criterios-dataset-clasificador-eco.md
@@ -111,6 +153,13 @@ Para una lectura profesional, breve y orientada a empleabilidad:
 ```text
 docs/resumen-ejecutivo-eco.md
 docs/caso-estudio-portafolio-eco.md
+```
+
+Para entender el cierre S.N.E.-E.C.O. v1.0:
+
+```text
+docs/sne-eco-v1-indice-demo.md
+docs/guia-validacion-sne-eco.md
 ```
 
 Para revisión técnica del clasificador:
@@ -165,6 +214,7 @@ Reglas centrales:
 ```bash
 make test                           # Ejecuta pytest
 make validate                       # Valida ingesta, filtro, absorción, descarte y feedback
+make sne-validation                 # Valida S.N.E.-E.C.O. y exporta Markdown/JSON
 make demo                           # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
 make review                         # Revisa el JSON integrado en formato humano
 make report                         # Exporta el reporte integrado a Markdown
@@ -201,7 +251,7 @@ make check                          # Pruebas + demos locales estables
 make clean                          # Limpieza de cachés/resultados temporales
 ```
 
-`make clinvar-sample` y `make portfolio-demo` quedan fuera de `make check` porque dependen de red externa/cache y de un archivo público cambiante.
+`make clinvar-sample` queda fuera de `make check` porque depende de red externa/cache y de un archivo público cambiante.
 
 ## Ruta 1: regiones y motivos regulatorios
 
@@ -445,6 +495,41 @@ Lectura prudente:
 
 > La ruta placeholder no busca reemplazar a v3. Su objetivo es dejar lista la arquitectura para que un embedding real pueda compararse de forma honesta contra v1 y v3.
 
+## Ruta 5: S.N.E.-E.C.O. v1.0
+
+Esta ruta valida el cuerpo entérico del pipeline.
+
+```bash
+make sne-validation
+```
+
+Flujo:
+
+```text
+lote mínimo de secuencias
+→ barrera informacional
+→ sensor local submucoso
+→ motilidad mientérica
+→ defensa informacional
+→ microbiota adaptativa
+→ homeostasis
+→ reporte eje intestino-cerebro
+→ Markdown/JSON
+```
+
+Salidas:
+
+```text
+results/sne_eco_validation_report.md
+results/sne_eco_validation_report.json
+```
+
+Documento índice:
+
+```text
+docs/sne-eco-v1-indice-demo.md
+```
+
 ## Decisión técnica actual
 
 ```text
@@ -452,6 +537,7 @@ v1 = control mínimo explicable
 v2 = variante exploratoria no principal
 v3 = candidato principal pre-embeddings
 embedding-placeholder = contrato experimental para futura ruta DNABERT/embeddings
+S.N.E.-E.C.O. v1.0 = cuerpo entérico modular, validable y demostrable
 ```
 
 ## Demo pública con descarga real de secuencia
@@ -492,6 +578,12 @@ Documento principal:
 docs/modulo-sne-eco-digestion-bioinspirada.md
 ```
 
+Índice técnico y demo v1.0:
+
+```text
+docs/sne-eco-v1-indice-demo.md
+```
+
 Define E.C.O. como un **metabolismo de información** inspirado en el Sistema Nervioso Entérico:
 
 ```text
@@ -502,6 +594,8 @@ dato crudo
 → absorción
 → feedback
 → descarte
+→ homeostasis
+→ reporte comunicable
 ```
 
 ## Estado actual del repositorio
@@ -518,6 +612,7 @@ scripts/run_eco_classifier_sensitivity.py
 scripts/run_eco_classifier_baseline.py
 scripts/compare_eco_classifier_baselines.py
 scripts/run_eco_embedding_placeholder.py
+scripts/run_sne_eco_validation.py
 scripts/run_eco_validation.py
 scripts/run_eco_demo_pipeline.py
 scripts/run_eco_pipeline.py
@@ -532,6 +627,8 @@ scripts/export_eco_demo_markdown.py
 tests/
 .github/workflows/eco-validation.yml
 data/README.md
+docs/sne-eco-v1-indice-demo.md
+docs/guia-validacion-sne-eco.md
 docs/resumen-ejecutivo-eco.md
 docs/ficha-tecnica-clasificador-eco.md
 docs/criterios-dataset-clasificador-eco.md
@@ -569,6 +666,8 @@ requirements-dev.txt
 - Mantener v1 como control explicable y v3 como candidato principal pre-embeddings.
 - Usar `embedding-placeholder` como contrato técnico antes de integrar modelos reales.
 - Comparar cualquier modelo avanzado contra v1 y v3.
+- Mantener S.N.E.-E.C.O. v1.0 como módulo de trazabilidad, validación y UX del pipeline.
+- Diseñar S.N.E.-E.C.O. v1.1 con lectura por lotes, estados comparativos y dashboard HTML.
 - Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas cuando exista una fuente adecuada.
 - Agregar visualizaciones y reportes comparativos adicionales.
 - Expandir la normalización de variantes y fuentes externas.
