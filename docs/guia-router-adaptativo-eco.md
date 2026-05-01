@@ -46,7 +46,7 @@ La analogía es arquitectónica, no literal. E.C.O. toma principios funcionales 
 
 ---
 
-## 3. Comando principal
+## 3. Comando demo principal
 
 ```bash
 make adaptive-router-predict-demo
@@ -76,9 +76,76 @@ results/eco_adaptive_router_prediction_demo.md
 results/eco_adaptive_router_prediction_demo.html
 ```
 
+Para abrir el HTML demo:
+
+```bash
+make open-adaptive-router-predict-demo
+```
+
 ---
 
-## 4. Campos principales del JSON
+## 4. Inferencia personalizada
+
+La ruta personalizada permite evaluar una secuencia sin escribir el comando largo de Python.
+
+```bash
+make adaptive-router-predict SEQUENCE=ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTAC SEQUENCE_ID=prueba_cristian_001
+```
+
+También puedes ajustar parámetros:
+
+```bash
+make adaptive-router-predict \
+  SEQUENCE=ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTAC \
+  SEQUENCE_ID=mi_prueba_001 \
+  THRESHOLD=0.20 \
+  EMBEDDING_K=4 \
+  DIMENSIONS=128
+```
+
+Salida personalizada:
+
+```text
+results/eco_adaptive_router_prediction_custom.json
+results/eco_adaptive_router_prediction_custom.md
+results/eco_adaptive_router_prediction_custom.html
+```
+
+Para abrirla:
+
+```bash
+make open-adaptive-router-predict
+```
+
+---
+
+## 5. HTML visual del router
+
+El reporte HTML ya no es solo un bloque técnico. Está organizado como una pantalla de lectura UX con tarjetas:
+
+| Tarjeta | Propósito |
+|---|---|
+| Entrada | Muestra `sequence_id`, longitud, umbral y secuencia |
+| Sensado entérico | Resume GC %, N ambiguas y composición básica |
+| Rutas internas | Compara `baseline_v3` y `embedding_semireal` |
+| Decisión final | Muestra ruta seleccionada y predicción final |
+| Reflejo entérico | Explica el reflejo activado, brecha de confianza y cautela |
+| Límite responsable | Recuerda que el resultado es demostrativo y no clínico |
+
+Esta capa visual convierte la predicción en una explicación presentable. La idea UX es que una persona vea rápidamente:
+
+```text
+qué entró
+qué sintió E.C.O.
+qué rutas comparó
+qué decidió
+cuánta cautela exige
+por qué no debe sobreinterpretarse
+```
+
+---
+
+## 6. Campos principales del JSON
 
 | Campo | Significado |
 |---|---|
@@ -94,7 +161,7 @@ results/eco_adaptive_router_prediction_demo.html
 
 ---
 
-## 5. Reflejos posibles
+## 7. Reflejos posibles
 
 ### `reflejo_explicable_rapido`
 
@@ -116,7 +183,7 @@ E.C.O. deriva hacia una ruta vectorial semi-real.
 
 ---
 
-## 6. Nivel de cautela
+## 8. Nivel de cautela
 
 | Nivel | Lectura UX |
 |---|---|
@@ -136,7 +203,7 @@ Esto es útil: E.C.O. no oculta la incertidumbre.
 
 ---
 
-## 7. Lectura para explicar el módulo
+## 9. Lectura para explicar el módulo
 
 Versión simple:
 
@@ -150,18 +217,24 @@ Versión bioinspirada:
 
 > El sistema actúa como un reflejo entérico: primero sensa el contenido, luego decide si absorber localmente la señal o redirigirla hacia una ruta de procesamiento más compleja.
 
+Versión UX:
+
+> La interfaz muestra el resultado como una historia corta: entrada, sensado, rutas comparadas, decisión final, reflejo activado y límite responsable.
+
 ---
 
-## 8. Valor para portafolio
+## 10. Valor para portafolio
 
 Este módulo demuestra que E.C.O. ya tiene:
 
 - pipeline reproducible;
 - pruebas automáticas;
 - reportes JSON/Markdown/HTML;
+- inferencia personalizada por Makefile;
 - comparación de rutas predictivas;
 - explicación de decisión;
 - manejo explícito de incertidumbre;
+- HTML visual con tarjetas de lectura;
 - capa UX para hacer legible el resultado.
 
 Frase sugerida:
@@ -170,12 +243,23 @@ Frase sugerida:
 
 ---
 
-## 9. Próxima mejora sugerida
+## 11. Próxima mejora sugerida
 
-Crear una ruta para inferencia personalizada:
+Crear una ruta de **inferencia por lote** para evaluar varias secuencias en un TSV:
 
 ```bash
-make adaptive-router-predict SEQUENCE=ACGT...
+make adaptive-router-batch INPUT=examples/mis_secuencias.tsv
 ```
 
-Esto permitiría evaluar nuevas secuencias sin escribir comandos largos.
+Objetivo:
+
+```text
+leer varias secuencias
+→ ejecutar router adaptativo por cada una
+→ generar resumen JSON/Markdown/HTML
+→ contar rutas seleccionadas
+→ contar niveles de cautela
+→ detectar casos donde las rutas empatan o se contradicen
+```
+
+Esta sería la siguiente pieza natural para pasar de una predicción individual a una operación más cercana a pipeline real.
