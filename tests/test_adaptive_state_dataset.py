@@ -32,12 +32,16 @@ def test_adaptive_state_rows_capture_digestive_signals():
     assert valid.motility_action == "advance"
 
     assert invalid.final_decision == "reject"
-    assert invalid.defense_severity in {"warning", "critical"}
+    assert invalid.defense_category == "invalid_payload"
+    assert invalid.defense_severity in {"high", "warning", "critical"}
+    assert invalid.immune_load_after > invalid.immune_load_before
 
     assert short.final_decision == "quarantine"
+    assert short.defense_category == "retained_payload"
     assert short.quarantine_ratio_after > short.quarantine_ratio_before
 
     assert duplicate.final_decision == "discard_duplicate"
+    assert duplicate.defense_category == "redundant_payload"
     assert duplicate.microbiota_seen_count == 2
     assert duplicate.recurrence_ratio_after > duplicate.recurrence_ratio_before
 
