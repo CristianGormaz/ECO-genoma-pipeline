@@ -12,6 +12,8 @@ Esta carpeta representa la arquitectura entérica del proyecto:
 - absorption: extracción de señales útiles.
 - feedback: métricas y aprendizaje del proceso.
 - discard: descarte controlado de datos no aprovechables.
+- barrier: barrera/mucosa informacional con permeabilidad medible.
+- sensor_local: plexo submucoso digital para sensado técnico del payload.
 - enteric_system: orquestación integrada con sensado, reflejo local,
   motilidad, cuarentena, absorción y homeostasis.
 - sne_eco: contratos y métricas explícitas del Sistema Nervioso Entérico E.C.O.
@@ -28,6 +30,7 @@ from .feedback import EcoFeedback, build_feedback_summary
 from .discard import EcoDiscardRecord, discard_packet
 from .enteric_system import EntericDecision, EntericHomeostasis, EntericSystem
 from .sne_eco import EntericLayer, SNEEcoMetrics, build_sne_metrics, describe_enteric_layers
+from .sensor_local import SensoryProfile, analyze_packet, analyze_payload, build_payload_key
 
 __all__ = [
     "EcoPacket",
@@ -48,4 +51,8 @@ __all__ = [
     "SNEEcoMetrics",
     "build_sne_metrics",
     "describe_enteric_layers",
+    "SensoryProfile",
+    "analyze_packet",
+    "analyze_payload",
+    "build_payload_key",
 ]
