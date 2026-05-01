@@ -18,7 +18,7 @@ def test_sensor_local_detects_invalid_characters():
     profile = analyze_payload("ACGTXYZ", source="invalid_sequence", packet_type="dna")
 
     assert profile.invalid_characters == ("X", "Y", "Z")
-    assert any("caracteres no válidos" in issue for issue in profile.filter_issues)
+    assert any("caracteres no válidos" in issue.lower() for issue in profile.filter_issues)
 
 
 def test_sensor_local_detects_non_text_payload():
