@@ -16,6 +16,7 @@ Esta carpeta representa la arquitectura entérica del proyecto:
 - sensor_local: plexo submucoso digital para sensado técnico del payload.
 - motility: plexo mientérico digital para movimiento y tránsito operativo.
 - microbiota: memoria adaptativa para exposiciones y redundancia.
+- defense: defensa informacional para señales de invalidez, ambigüedad y redundancia.
 - enteric_system: orquestación integrada con sensado, reflejo local,
   motilidad, cuarentena, absorción y homeostasis.
 - sne_eco: contratos y métricas explícitas del Sistema Nervioso Entérico E.C.O.
@@ -35,6 +36,7 @@ from .sne_eco import EntericLayer, SNEEcoMetrics, build_sne_metrics, describe_en
 from .sensor_local import SensoryProfile, analyze_packet, analyze_payload, build_payload_key
 from .motility import MotilityDecision, decide_motility
 from .microbiota import InformationalMicrobiota, MicrobiotaRecord, update_microbiota_memory
+from .defense import DefenseSignal, evaluate_defense
 
 __all__ = [
     "EcoPacket",
@@ -64,4 +66,6 @@ __all__ = [
     "InformationalMicrobiota",
     "MicrobiotaRecord",
     "update_microbiota_memory",
+    "DefenseSignal",
+    "evaluate_defense",
 ]
