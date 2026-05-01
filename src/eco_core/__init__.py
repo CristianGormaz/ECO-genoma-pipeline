@@ -21,6 +21,7 @@ Esta carpeta representa la arquitectura entérica del proyecto:
 - gut_brain_axis: reporte comunicable del estado entérico interno.
 - packet_trace: trazabilidad digestiva resumida por paquete.
 - adaptive_state_dataset: filas entrenables de transición de estado.
+- adaptive_state_baseline: baseline auditable para transición de estado.
 - enteric_system: orquestación integrada con sensado, reflejo local,
   motilidad, cuarentena, absorción y homeostasis.
 - sne_eco: contratos y métricas explícitas del Sistema Nervioso Entérico E.C.O.
@@ -51,6 +52,14 @@ from .adaptive_state_dataset import (
     build_adaptive_state_row,
     build_adaptive_state_rows,
     rows_to_dicts,
+)
+from .adaptive_state_baseline import (
+    StateBaselinePrediction,
+    StateTransitionBaseline,
+    baseline_report_to_markdown,
+    evaluate_state_transition_baseline,
+    feature_key,
+    train_state_transition_baseline,
 )
 
 __all__ = [
@@ -97,4 +106,10 @@ __all__ = [
     "build_adaptive_state_row",
     "build_adaptive_state_rows",
     "rows_to_dicts",
+    "StateBaselinePrediction",
+    "StateTransitionBaseline",
+    "baseline_report_to_markdown",
+    "evaluate_state_transition_baseline",
+    "feature_key",
+    "train_state_transition_baseline",
 ]
