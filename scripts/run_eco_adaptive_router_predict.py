@@ -23,7 +23,71 @@ def clean_sequence(seq):
     return seq
 
 
+def sequence_sensory_profile(sequence):
+    informative = [base for base in sequence if base in "ACGT"]
+    gc_count = sum(1 for base in informative if base in "GC")
+    n_count = sequence.count("N")
+    gc_percent = round((gc_count / len(informative)) * 100, 4) if informative else 0.0
+    n_percent = round((n_count / len(sequence)) * 100, 4) if sequence else 0.0
+    return {
+        "length": len(sequence),
+        "gc_percent": gc_percent,
+        "n_percent": n_percent,
+        "contains_ambiguous_n": n_count > 0,
+        "ambiguous_n_count": n_count,
+    }
+
+
+def build_enteric_reflex(payload):
+    baseline_confidence = payload["baseline_v3"]["confidence"]
+    embedding_confidence = payload["embedding_semireal"]["confidence"]
+    threshold = payload["threshold"]
+    selected_route = payload["selected_route"]
+
+    confidence_gap = round(abs(baseline_confidence - embedding_confidence), 4)
+    sensory_profile = payload["sensory_profile"]
+
+    if selected_route == "baseline_v3":
+        reflex_name = "reflejo_explicable_rapido"
+        biological_analogy = "plexo submucoso: absorción directa de una señal suficientemente clara"
+        ux_summary = "E.C.O. eligió la ruta explicable porque la confianza del baseline superó el umbral operativo."
+    else:
+        reflex_name = "reflejo_vectorial_de_derivacion"
+        biological_analogy = "plexo mientérico: redirección del flujo cuando la señal local no es suficiente"
+        ux_summary = "E.C.O. derivó la secuencia hacia la ruta vectorial porque el baseline no alcanzó el umbral de confianza."
+
+    if confidence_gap < 0.02:
+        caution_level = "alta"
+        caution_message = "Las rutas están muy cercanas; tratar como empate operativo y no como decisión fuerte."
+    elif max(baseline_confidence, embedding_confidence) < threshold:
+        caution_level = "media"
+        caution_message = "La confianza general es baja; conviene revisar con más datos o evaluación externa."
+    else:
+        caution_level = "normal"
+        caution_message = "La decisión es aceptable dentro del marco demostrativo del proyecto."
+
+    return {
+        "reflex_name": reflex_name,
+        "selected_route": selected_route,
+        "threshold": threshold,
+        "confidence_gap": confidence_gap,
+        "biological_analogy": biological_analogy,
+        "ux_summary": ux_summary,
+        "caution_level": caution_level,
+        "caution_message": caution_message,
+        "sensory_interpretation": {
+            "length": sensory_profile["length"],
+            "gc_percent": sensory_profile["gc_percent"],
+            "n_percent": sensory_profile["n_percent"],
+            "reading": "Perfil sensorial básico usado para contextualizar la decisión del router.",
+        },
+    }
+
+
 def make_markdown(payload):
+    reflex = payload["enteric_reflex"]
+    sensory = payload["sensory_profile"]
+
     lines = []
     lines.append("# E.C.O. - Predicción con router adaptativo")
     lines.append("")
@@ -47,6 +111,15 @@ def make_markdown(payload):
     lines.append(f"| Longitud | {payload['length']} |")
     lines.append(f"| Umbral | {payload['threshold']} |")
     lines.append("")
+    lines.append("## Sensado entérico")
+    lines.append("")
+    lines.append("| Señal | Valor |")
+    lines.append("| --- | ---: |")
+    lines.append(f"| Longitud | {sensory['length']} |")
+    lines.append(f"| GC % | {sensory['gc_percent']} |")
+    lines.append(f"| N ambiguas % | {sensory['n_percent']} |")
+    lines.append(f"| Conteo N | {sensory['ambiguous_n_count']} |")
+    lines.append("")
     lines.append("## Resultados internos")
     lines.append("")
     lines.append("| Ruta | Predicción | Confianza |")
@@ -61,6 +134,18 @@ def make_markdown(payload):
     lines.append(f"| Ruta seleccionada | {payload['selected_route']} |")
     lines.append(f"| Predicción final | {payload['final_prediction']} |")
     lines.append(f"| Motivo | {payload['reason']} |")
+    lines.append("")
+    lines.append("## Reflejo entérico del router")
+    lines.append("")
+    lines.append("| Elemento | Lectura |")
+    lines.append("| --- | --- |")
+    lines.append(f"| Reflejo activado | {reflex['reflex_name']} |")
+    lines.append(f"| Analogía biológica | {reflex['biological_analogy']} |")
+    lines.append(f"| Brecha de confianza | {reflex['confidence_gap']} |")
+    lines.append(f"| Nivel de cautela | {reflex['caution_level']} |")
+    lines.append(f"| Mensaje de cautela | {reflex['caution_message']} |")
+    lines.append("")
+    lines.append(reflex["ux_summary"])
     lines.append("")
     lines.append("## Lectura E.C.O.")
     lines.append("")
@@ -142,6 +227,7 @@ def main():
         "sequence": sequence,
         "length": len(sequence),
         "threshold": args.threshold,
+        "sensory_profile": sequence_sensory_profile(sequence),
         "baseline_v3": {
             "prediction": pred_v3,
             "confidence": round(confidence_v3, 4),
@@ -161,6 +247,7 @@ def main():
             "umbral basado en R8-G.5",
         ],
     }
+    payload["enteric_reflex"] = build_enteric_reflex(payload)
 
     Path("results").mkdir(exist_ok=True)
 
@@ -178,6 +265,8 @@ def main():
     print(f"embedding_semireal: {pred_semireal} | confianza={round(confidence_semireal, 4)}")
     print(f"Ruta seleccionada: {selected_route}")
     print(f"Predicción final: {final_prediction}")
+    print(f"Reflejo entérico: {payload['enteric_reflex']['reflex_name']}")
+    print(f"Cautela: {payload['enteric_reflex']['caution_level']}")
     print(f"Reporte Markdown: {args.output_md}")
     print(f"Reporte HTML: {args.output_html}")
     print("Estado: OK, predicción adaptativa generada.")
