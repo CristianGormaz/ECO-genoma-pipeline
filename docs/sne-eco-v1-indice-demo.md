@@ -145,7 +145,7 @@ S.N.E.-E.C.O. v1.0 se considera cerrado cuando:
 
 ## 9. Límites éticos y biomédicos
 
-S.N.E.-E.C.O. es un sistema bioinformático educativo y bioinspirado. No diagnostica, no interpreta clínicamente, no predice enfermedad y no reemplaza análisis profesional. Sus analogías con mucosa, plexos, microbiota, defensa y eje intestino-cerebro son metáforas arquitectónicas para organizar el flujo de datos.
+Sistema bioinformático educativo y bioinspirado: S.N.E.-E.C.O. no diagnostica, no interpreta clínicamente, no predice enfermedad y no reemplaza análisis profesional. Sus analogías con mucosa, plexos, microbiota, defensa y eje intestino-cerebro son metáforas arquitectónicas para organizar el flujo de datos.
 
 ## 10. Roadmap v1.1
 
