@@ -18,6 +18,7 @@ Esta carpeta representa la arquitectura entérica del proyecto:
 - microbiota: memoria adaptativa para exposiciones y redundancia.
 - defense: defensa informacional para señales de invalidez, ambigüedad y redundancia.
 - homeostasis: equilibrio operativo del flujo entérico procesado.
+- gut_brain_axis: reporte comunicable del estado entérico interno.
 - enteric_system: orquestación integrada con sensado, reflejo local,
   motilidad, cuarentena, absorción y homeostasis.
 - sne_eco: contratos y métricas explícitas del Sistema Nervioso Entérico E.C.O.
@@ -39,6 +40,7 @@ from .motility import MotilityDecision, decide_motility
 from .microbiota import InformationalMicrobiota, MicrobiotaRecord, update_microbiota_memory
 from .defense import DefenseSignal, evaluate_defense
 from .homeostasis import HomeostasisSnapshot, build_homeostasis_snapshot
+from .gut_brain_axis import GutBrainReport, build_gut_brain_report
 
 __all__ = [
     "EcoPacket",
@@ -72,4 +74,6 @@ __all__ = [
     "evaluate_defense",
     "HomeostasisSnapshot",
     "build_homeostasis_snapshot",
+    "GutBrainReport",
+    "build_gut_brain_report",
 ]
