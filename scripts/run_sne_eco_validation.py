@@ -49,7 +49,7 @@ def main() -> None:
     print(f"rejected_packets: {snapshot.rejected_packets}")
     print(f"quarantined_packets: {snapshot.quarantined_packets}")
     print(f"discarded_packets: {snapshot.discarded_packets}")
-    print(f"recurrent_packets: {snapshot.recurrent_packets}")
+    print(f"duplicate_packets: {snapshot.duplicate_packets}")
     print(f"defense_alerts: {snapshot.defense_alerts}")
     print(f"state: {snapshot.state}")
     print()
