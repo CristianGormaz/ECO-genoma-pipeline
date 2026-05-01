@@ -49,9 +49,11 @@ from .packet_trace import PacketTrace, build_packet_trace, build_packet_traces, 
 from .adaptive_state_dataset import (
     AdaptiveStateRow,
     DEFAULT_TRANSITION_PACKETS,
+    EXTENDED_TRANSITION_PACKETS,
     adaptive_rows_to_markdown,
     build_adaptive_state_row,
     build_adaptive_state_rows,
+    get_transition_packets,
     rows_to_dicts,
 )
 from .adaptive_state_baseline import (
@@ -110,9 +112,11 @@ __all__ = [
     "traces_to_markdown",
     "AdaptiveStateRow",
     "DEFAULT_TRANSITION_PACKETS",
+    "EXTENDED_TRANSITION_PACKETS",
     "adaptive_rows_to_markdown",
     "build_adaptive_state_row",
     "build_adaptive_state_rows",
+    "get_transition_packets",
     "rows_to_dicts",
     "StateBaselinePrediction",
     "StateTransitionBaseline",
