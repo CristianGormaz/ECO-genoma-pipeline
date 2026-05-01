@@ -19,9 +19,9 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.eco_core import (
-    DEFAULT_TRANSITION_PACKETS,
     build_adaptive_state_rows,
     evaluate_state_transition_holdout,
+    get_transition_packets,
     holdout_report_to_markdown,
 )
 
@@ -38,22 +38,24 @@ def write_text(path: Path, content: str) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Exporta evaluación holdout E.C.O. v0.")
+    parser.add_argument("--extended", action="store_true", help="Usa escenarios sintéticos extendidos.")
     parser.add_argument("--output-json", type=Path, default=None, help="Ruta opcional para guardar JSON.")
     parser.add_argument("--output-md", type=Path, default=None, help="Ruta opcional para guardar Markdown.")
     return parser.parse_args()
 
 
-def build_payload() -> tuple[dict[str, object], str]:
-    rows = build_adaptive_state_rows(DEFAULT_TRANSITION_PACKETS)
+def build_payload(*, extended: bool = False) -> tuple[dict[str, object], str]:
+    rows = build_adaptive_state_rows(get_transition_packets(extended=extended))
     evaluation = evaluate_state_transition_holdout(rows)
     payload = evaluation.to_dict()
+    payload["scenario_set"] = "extended" if extended else "default"
     markdown = holdout_report_to_markdown(evaluation)
     return payload, markdown
 
 
 def main() -> None:
     args = parse_args()
-    payload, markdown = build_payload()
+    payload, markdown = build_payload(extended=args.extended)
 
     print(markdown)
     print("")

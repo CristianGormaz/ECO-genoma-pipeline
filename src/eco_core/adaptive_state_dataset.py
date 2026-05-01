@@ -150,9 +150,34 @@ def adaptive_rows_to_markdown(rows: Iterable[AdaptiveStateRow]) -> str:
     return "\n".join(lines)
 
 
+def get_transition_packets(*, extended: bool = False) -> tuple[tuple[str, str], ...]:
+    """Obtiene el catálogo mínimo o extendido de escenarios sintéticos."""
+    return EXTENDED_TRANSITION_PACKETS if extended else DEFAULT_TRANSITION_PACKETS
+
+
 DEFAULT_TRANSITION_PACKETS: tuple[tuple[str, str], ...] = (
     ("valid_sequence", "ACGTCCAATGGTATAAA"),
     ("invalid_sequence", "ACGTXYZ"),
     ("short_sequence", "ACG"),
     ("duplicate_sequence", "ACGTCCAATGGTATAAA"),
+)
+
+
+EXTENDED_TRANSITION_PACKETS: tuple[tuple[str, str], ...] = (
+    ("valid_sequence_a", "ACGTCCAATGGTATAAA"),
+    ("valid_sequence_b", "TTGACCGTAACCGGTA"),
+    ("valid_gc_rich", "GGCGGCGGCGGCTAAT"),
+    ("valid_at_rich", "ATATATAAACCCGGTT"),
+    ("short_sequence_a", "ACG"),
+    ("short_sequence_b", "TTT"),
+    ("invalid_letters_a", "ACGTXYZ"),
+    ("invalid_letters_b", "MUGICA"),
+    ("high_n_content", "NNNNNNNNACGT"),
+    ("mixed_n_content", "ACGTNNNNACGT"),
+    ("duplicate_sequence_a", "ACGTCCAATGGTATAAA"),
+    ("duplicate_sequence_b", "TTGACCGTAACCGGTA"),
+    ("recurrent_valid_a", "ACGTCCAATGGTATAAA"),
+    ("recurrent_valid_b", "TTGACCGTAACCGGTA"),
+    ("long_valid_sequence", "ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTAC"),
+    ("long_invalid_tail", "ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTACXYZ"),
 )
