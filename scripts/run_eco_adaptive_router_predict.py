@@ -158,19 +158,154 @@ def make_markdown(payload):
     return "\n".join(lines)
 
 
-def make_html(md):
+def badge_class(caution_level):
+    if caution_level == "alta":
+        return "badge badge-high"
+    if caution_level == "media":
+        return "badge badge-medium"
+    return "badge badge-normal"
+
+
+def make_metric(label, value):
+    return f"""
+    <div class="metric">
+      <span>{escape(str(label))}</span>
+      <strong>{escape(str(value))}</strong>
+    </div>
+    """
+
+
+def make_html(payload, md):
+    sensory = payload["sensory_profile"]
+    reflex = payload["enteric_reflex"]
+    sequence = escape(payload["sequence"])
+    caution_class = badge_class(reflex["caution_level"])
+
     return f"""<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>E.C.O. Predicción adaptativa</title>
 <style>
-body {{ font-family: Arial, sans-serif; margin: 40px; line-height: 1.5; }}
-pre {{ background: #f4f4f4; padding: 12px; overflow-x: auto; }}
+:root {{
+  --bg: #0f172a;
+  --panel: #111827;
+  --card: #ffffff;
+  --muted: #64748b;
+  --line: #e5e7eb;
+  --ink: #0f172a;
+  --soft: #f8fafc;
+}}
+body {{
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--soft);
+  color: var(--ink);
+  line-height: 1.5;
+}}
+.hero {{
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  padding: 44px 32px;
+}}
+.hero h1 {{ margin: 0 0 8px; font-size: 32px; }}
+.hero p {{ margin: 0; max-width: 920px; color: #cbd5e1; }}
+.wrap {{ max-width: 1120px; margin: 0 auto; padding: 28px; }}
+.grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }}
+.card {{
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}}
+.card h2 {{ margin-top: 0; font-size: 19px; }}
+.metric {{ display: flex; justify-content: space-between; gap: 18px; border-bottom: 1px solid var(--line); padding: 9px 0; }}
+.metric:last-child {{ border-bottom: 0; }}
+.metric span {{ color: var(--muted); }}
+.metric strong {{ text-align: right; }}
+.sequence {{
+  word-break: break-all;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: monospace;
+}}
+.badge {{ display: inline-block; padding: 6px 10px; border-radius: 999px; font-weight: 700; }}
+.badge-high {{ background: #fee2e2; color: #991b1b; }}
+.badge-medium {{ background: #fef3c7; color: #92400e; }}
+.badge-normal {{ background: #dcfce7; color: #166534; }}
+.route {{ font-size: 28px; margin: 10px 0 0; }}
+.callout {{ border-left: 5px solid #334155; background: #f8fafc; padding: 14px 16px; border-radius: 12px; }}
+details {{ margin-top: 18px; }}
+summary {{ cursor: pointer; font-weight: 700; }}
+pre {{ background: #0b1020; color: #e5e7eb; padding: 16px; border-radius: 14px; overflow-x: auto; }}
+.footer {{ color: var(--muted); font-size: 14px; margin-top: 18px; }}
 </style>
 </head>
 <body>
-<pre>{escape(md)}</pre>
+<header class="hero">
+  <h1>E.C.O. — Predicción adaptativa</h1>
+  <p>Vista UX del router adaptativo: sensado de secuencia, comparación de rutas, decisión final y reflejo entérico responsable.</p>
+</header>
+<main class="wrap">
+  <section class="grid">
+    <article class="card" data-section="input-card">
+      <h2>Entrada</h2>
+      {make_metric('Sequence ID', payload['sequence_id'])}
+      {make_metric('Longitud', payload['length'])}
+      {make_metric('Umbral', payload['threshold'])}
+      <p class="sequence">{sequence}</p>
+    </article>
+
+    <article class="card" data-section="sensory-card">
+      <h2>Sensado entérico</h2>
+      {make_metric('GC %', sensory['gc_percent'])}
+      {make_metric('N ambiguas %', sensory['n_percent'])}
+      {make_metric('Conteo N', sensory['ambiguous_n_count'])}
+      {make_metric('Contiene N', sensory['contains_ambiguous_n'])}
+    </article>
+
+    <article class="card" data-section="route-card">
+      <h2>Rutas internas</h2>
+      {make_metric('baseline_v3', payload['baseline_v3']['prediction'])}
+      {make_metric('Confianza baseline', payload['baseline_v3']['confidence'])}
+      {make_metric('embedding_semireal', payload['embedding_semireal']['prediction'])}
+      {make_metric('Confianza embedding', payload['embedding_semireal']['confidence'])}
+    </article>
+
+    <article class="card" data-section="decision-card">
+      <h2>Decisión final</h2>
+      <div class="route">{escape(payload['final_prediction'])}</div>
+      {make_metric('Ruta seleccionada', payload['selected_route'])}
+      {make_metric('Motivo', payload['reason'])}
+    </article>
+  </section>
+
+  <section class="card" data-section="enteric-reflex-card" style="margin-top:18px;">
+    <h2>Reflejo entérico del router</h2>
+    <p><span class="{caution_class}">Cautela: {escape(reflex['caution_level'])}</span></p>
+    {make_metric('Reflejo activado', reflex['reflex_name'])}
+    {make_metric('Brecha de confianza', reflex['confidence_gap'])}
+    {make_metric('Analogía biológica', reflex['biological_analogy'])}
+    <div class="callout">
+      <strong>Lectura UX:</strong> {escape(reflex['ux_summary'])}<br>
+      <strong>Mensaje de cautela:</strong> {escape(reflex['caution_message'])}
+    </div>
+  </section>
+
+  <section class="card" data-section="responsible-limit-card" style="margin-top:18px;">
+    <h2>Límite responsable</h2>
+    <p>Este resultado es demostrativo. No es diagnóstico clínico, no es benchmark científico y no reemplaza validación externa.</p>
+    <p class="footer">Lectura E.C.O.: {escape(payload['eco_reading'])}</p>
+  </section>
+
+  <details>
+    <summary>Ver Markdown técnico completo</summary>
+    <pre>{escape(md)}</pre>
+  </details>
+</main>
 </body>
 </html>
 """
@@ -255,7 +390,7 @@ def main():
 
     Path(args.output_json).write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     Path(args.output_md).write_text(md, encoding="utf-8")
-    Path(args.output_html).write_text(make_html(md), encoding="utf-8")
+    Path(args.output_html).write_text(make_html(payload, md), encoding="utf-8")
 
     print("E.C.O. ADAPTIVE ROUTER PREDICTION")
     print("=================================")

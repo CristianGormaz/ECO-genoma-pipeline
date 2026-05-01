@@ -1,0 +1,4 @@
+sequence_id	sequence	description
+lote_001	ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTAC	secuencia demo con motivos regulatorios
+lote_002	TTTTACACACACGTTTACACACACGTTTACACACAC	secuencia repetitiva demo
+lote_003	ACGTXYZCCAAT	secuencia inválida para probar rechazo inmune informacional
