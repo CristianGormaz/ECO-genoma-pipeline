@@ -31,7 +31,8 @@ def test_run_sne_eco_state_confusion_exports_actionable_report(tmp_path):
     markdown = output_md.read_text(encoding="utf-8")
 
     assert payload["scenario_set"] == "extended"
-    assert payload["confused_routes"]
-    assert payload["suggested_focus"]
+    assert payload["confused_routes"] == []
+    assert payload["suggested_focus"] == []
     assert "Análisis de rutas confundidas E.C.O." in markdown
     assert "Focos sugeridos" in markdown
+    assert "Sin rutas confundidas relevantes" in markdown
