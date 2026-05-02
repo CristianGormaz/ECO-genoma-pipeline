@@ -2,21 +2,43 @@
 
 ![E.C.O. Validation](https://github.com/CristianGormaz/ECO-genoma-pipeline/actions/workflows/eco-validation.yml/badge.svg)
 
-**E.C.O. — Entérico Codificador Orgánico** es un pipeline bioinspirado para procesar datos genómicos como un metabolismo de información: ingesta, filtrado, transformación, absorción, feedback, descarte y lectura entérica del estado interno.
+**E.C.O. — Entérico Codificador Orgánico** es un pipeline bioinspirado para procesar datos genómicos como un metabolismo de información: ingesta, filtrado, transformación, absorción, feedback, descarte, lectura entérica del estado interno y estabilización adaptativa de rutas.
 
-El proyecto trabaja hoy con cinco rutas principales:
+> Uso educativo, bioinformático y experimental. No interpreta pacientes, no entrega diagnósticos, no reemplaza evaluación profesional y no modela conciencia humana.
 
-1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
-2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
-3. **Clasificación baseline:** secuencias etiquetadas → auditoría de dataset → baseline v1/v2/v3 → comparación formal → sensibilidad → evaluación repetida → métricas JSON/Markdown/HTML.
-4. **Embeddings experimentales:** secuencias etiquetadas → embedding placeholder → centroides → comparación contra v1/v3 → reporte JSON/Markdown/HTML.
-5. **S.N.E.-E.C.O. v1.0:** barrera, sensor submucoso, motilidad mientérica, microbiota, defensa, homeostasis y eje intestino-cerebro → validación UX → artefactos Markdown/JSON.
+## Estado actual
 
-> Uso educativo y bioinformático. No interpreta pacientes ni reemplaza evaluación profesional.
+La rama S.N.E.-E.C.O. adaptativa quedó estabilizada con una suite de regresión:
+
+```text
+153 tests passing
+Rutas confundidas: 0
+Rutas confundidas de recurrencia: 0
+Default_state inesperado: eliminado en rutas confundidas
+```
+
+Comandos reproducibles:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt
+.venv/bin/python -m pytest -q
+make sne-state-confusion
+.venv/bin/python scripts/run_sne_eco_recurrence_audit.py
+```
+
+También puedes activar el entorno y usar `python` dentro del `.venv`:
+
+```bash
+source .venv/bin/activate
+python -m pytest -q
+```
+
+En Linux Mint u otras distribuciones, si `python` no existe fuera del entorno virtual, usa `python3` o `.venv/bin/python`.
 
 ## Idea central
 
-Así como el sistema digestivo transforma alimento en nutrientes útiles, E.C.O. transforma datos genómicos crudos en señales interpretables.
+Así como el sistema digestivo transforma alimento en nutrientes útiles, E.C.O. transforma datos crudos en señales interpretables.
 
 ```text
 entrada de datos
@@ -26,7 +48,7 @@ entrada de datos
 → comparación responsable
 ```
 
-La capa `eco_core.enteric_system` agrega una lectura más fiel al Sistema Nervioso Entérico: sensado local, barrera epitelial informacional, reflejo autónomo, motilidad, absorción, cuarentena, descarte, memoria microbiota mínima, defensa informacional, homeostasis del flujo y reporte eje intestino-cerebro.
+La capa `eco_core.enteric_system` agrega una lectura más fiel al Sistema Nervioso Entérico como arquitectura de software: sensado local, barrera epitelial informacional, reflejo autónomo, motilidad, absorción, cuarentena, descarte, memoria microbiota mínima, defensa informacional, homeostasis del flujo y reporte eje intestino-cerebro.
 
 ```text
 dato crudo
@@ -40,48 +62,55 @@ dato crudo
 → reporte eje intestino-cerebro
 ```
 
-## S.N.E.-E.C.O. v1.0
+## Rutas principales del proyecto
+
+1. **Secuencias/regiones:** BED → FASTA → `eco_core` → análisis de motivos → reporte.
+2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
+3. **Clasificación baseline:** secuencias etiquetadas → auditoría de dataset → baseline v1/v2/v3 → comparación formal → sensibilidad → evaluación repetida → métricas JSON/Markdown/HTML.
+4. **Embeddings experimentales:** secuencias etiquetadas → embedding placeholder/semireal → centroides → comparación contra v1/v3 → reporte JSON/Markdown/HTML.
+5. **S.N.E.-E.C.O. v1.x:** barrera, sensor submucoso, motilidad mientérica, microbiota, defensa, homeostasis, eje intestino-cerebro, estado adaptativo, auditoría de recurrencia y estabilidad.
+
+## S.N.E.-E.C.O. v1.x
 
 El módulo **S.N.E.-E.C.O.** convierte la metáfora entérica en arquitectura computacional verificable:
 
 ```text
-barrier.py              → mucosa / barrera informacional
-sensor_local.py         → plexo submucoso / sensado local
-motility.py             → plexo mientérico / tránsito operativo
-microbiota.py           → memoria adaptativa / recurrencia
-defense.py              → sistema inmune informacional
-homeostasis.py          → equilibrio operativo del flujo
-gut_brain_axis.py       → reporte comunicable del estado interno
-enteric_orchestrator.py → coordinación de órganos entéricos
+barrier.py                    → mucosa / barrera informacional
+sensor_local.py               → plexo submucoso / sensado local
+motility.py                   → plexo mientérico / tránsito operativo
+microbiota.py                 → memoria adaptativa / recurrencia
+defense.py                    → sistema inmune informacional
+homeostasis.py                → equilibrio operativo del flujo
+gut_brain_axis.py             → reporte comunicable del estado interno
+adaptive_state_dataset.py     → filas entrenables de transición de estado
+adaptive_state_baseline.py    → baseline jerárquico auditable
+adaptive_state_evaluation.py  → evaluación holdout y matriz de confusión
+adaptive_state_coverage.py    → diagnóstico de cobertura
+adaptive_state_confusion.py   → análisis de rutas confundidas
+enteric_system.py             → coordinación de órganos entéricos
 ```
 
-Documentos clave:
+### Evolución empírica reciente
 
 ```text
-docs/sne-eco-v1-indice-demo.md
-docs/guia-validacion-sne-eco.md
-docs/modulo-sne-eco-digestion-bioinspirada.md
+SNE-03 → variantes dirigidas: rutas confundidas 5 → 2
+SNE-04 → baseline jerárquico: elimina default_state prematuro
+SNE-05 → proyección homeostática: rutas confundidas 2 → 1
+SNE-06 → auditoría de recurrencia: identifica recurrent_valid_d
+SNE-07 → recurrence guard: rutas confundidas 1 → 0
+SNE-08 → suite de estabilidad: 153 tests, 0 rutas confundidas
+SNE-09 → narrativa empírica documentada
 ```
 
-Validación mínima:
-
-```bash
-make sne-validation
-```
-
-Artefactos generados:
+Documento principal de esta evolución:
 
 ```text
-results/sne_eco_validation_report.md
-results/sne_eco_validation_report.json
+docs/sne-eco-empirical-narrative.md
 ```
 
-Lectura esperada:
+Lectura breve:
 
-```text
-S.N.E.-E.C.O. VALIDATION REPORT
-OK: S.N.E.-E.C.O. integrado funcionando.
-```
+> E.C.O. funciona como un intestino informacional. No solo revisa si un dato entra o no entra; observa cómo ese dato afecta el equilibrio del sistema. Si el dato es útil, lo absorbe. Si es ambiguo, lo pone en cuarentena. Si es inválido, lo rechaza. Si es repetido, lo reconoce. Y si la repetición no es peligrosa, no sobrerreacciona.
 
 ## Quickstart
 
@@ -92,10 +121,85 @@ make install-dev
 make check
 ```
 
-Validación unitaria esperada en la fase S.N.E.-E.C.O. v1.0:
+Validación unitaria esperada en la fase S.N.E.-E.C.O. estabilizada:
 
 ```text
-108 passed
+153 passed
+```
+
+Validación rápida del estado adaptativo:
+
+```bash
+.venv/bin/python -m pytest -q
+make sne-state-confusion
+.venv/bin/python scripts/run_sne_eco_recurrence_audit.py
+```
+
+Salidas principales:
+
+```text
+results/sne_eco_state_confusion_report.md
+results/sne_eco_state_confusion_report.json
+results/sne_eco_recurrence_audit.md
+results/sne_eco_recurrence_audit.json
+```
+
+Lectura esperada:
+
+```text
+Rutas confundidas: 0
+Rutas confundidas de recurrencia: 0
+```
+
+## Validaciones S.N.E.-E.C.O.
+
+Validación entérica base:
+
+```bash
+make sne-validation
+```
+
+Artefactos:
+
+```text
+results/sne_eco_validation_report.md
+results/sne_eco_validation_report.json
+```
+
+Dataset adaptativo:
+
+```bash
+make sne-state-dataset
+```
+
+Baseline adaptativo:
+
+```bash
+make sne-state-baseline
+```
+
+Evaluación holdout:
+
+```bash
+make sne-state-holdout
+```
+
+Cobertura:
+
+```bash
+make sne-state-coverage
+```
+
+Rutas confundidas:
+
+```bash
+make sne-state-confusion
+```
+
+Auditoría de recurrencia:
+
+```bash
+.venv/bin/python scripts/run_sne_eco_recurrence_audit.py
 ```
 
 ## Demo de portafolio
@@ -106,45 +210,9 @@ Para preparar una demo completa de presentación:
 make portfolio-demo
 ```
 
-Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG, exporta informes HTML, agrega evaluación repetida/sensibilidad del clasificador, ejecuta la ruta experimental de embeddings placeholder y genera la validación S.N.E.-E.C.O.
+Este comando ejecuta validaciones locales, genera reportes Markdown/JSON, descarga o reutiliza cache de la muestra ClinVar, crea visualizaciones SVG, exporta informes HTML, agrega evaluación repetida/sensibilidad del clasificador, ejecuta rutas experimentales de embeddings y genera la validación S.N.E.-E.C.O.
 
-Al finalizar, deja rutas listas para revisar:
-
-```text
-results/sne_eco_validation_report.md
-results/sne_eco_validation_report.json
-results/eco_demo_pipeline_report.md
-results/eco_custom_demo_report.md
-results/eco_variant_demo_report.md
-results/eco_dataset_audit_report.md
-results/eco_classifier_baseline_report.md
-results/eco_classifier_baseline_report.html
-results/eco_classifier_baseline_v2_report.md
-results/eco_classifier_baseline_v2_report.html
-results/eco_classifier_baseline_v3_report.md
-results/eco_classifier_baseline_v3_report.html
-results/eco_classifier_comparison_report.md
-results/eco_classifier_comparison_report.html
-results/eco_classifier_repeated_eval_report.md
-results/eco_classifier_repeated_eval_report.html
-results/eco_classifier_sensitivity_report.md
-results/eco_classifier_sensitivity_report.html
-results/eco_embedding_placeholder_report.md
-results/eco_embedding_placeholder_report.html
-results/eco_clinvar_sample_report.md
-results/eco_clinvar_sample_report.html
-results/eco_clinvar_sample_charts/index.html
-docs/sne-eco-v1-indice-demo.md
-docs/guia-validacion-sne-eco.md
-docs/resumen-ejecutivo-eco.md
-docs/ficha-tecnica-clasificador-eco.md
-docs/criterios-dataset-clasificador-eco.md
-docs/nota-tecnica-v3-vs-v2.md
-docs/nota-tecnica-embedding-placeholder.md
-docs/caso-estudio-portafolio-eco.md
-docs/arquitectura-pipeline-eco.md
-docs/roadmap-tecnico-eco.md
-```
+Al finalizar, deja reportes en `results/` y documentos de apoyo en `docs/`.
 
 ## Documentos principales
 
@@ -155,11 +223,18 @@ docs/resumen-ejecutivo-eco.md
 docs/caso-estudio-portafolio-eco.md
 ```
 
-Para entender el cierre S.N.E.-E.C.O. v1.0:
+Para entender la evolución empírica S.N.E.-E.C.O.:
 
 ```text
+docs/sne-eco-empirical-narrative.md
 docs/sne-eco-v1-indice-demo.md
 docs/guia-validacion-sne-eco.md
+docs/guia-dataset-adaptativo-eco.md
+docs/guia-baseline-adaptativo-eco.md
+docs/guia-evaluacion-holdout-eco.md
+docs/guia-diagnostico-cobertura-eco.md
+docs/guia-rutas-confundidas-eco.md
+docs/guia-trazabilidad-sne-eco.md
 ```
 
 Para revisión técnica del clasificador:
@@ -167,30 +242,24 @@ Para revisión técnica del clasificador:
 ```text
 docs/ficha-tecnica-clasificador-eco.md
 docs/nota-tecnica-v3-vs-v2.md
+docs/criterios-dataset-clasificador-eco.md
 ```
 
-Para la ruta experimental pre-embeddings:
+Para la ruta experimental de embeddings/router:
 
 ```text
 docs/nota-tecnica-embedding-placeholder.md
-```
-
-Para ampliar el dataset etiquetado sin inflar métricas ni perder trazabilidad:
-
-```text
-docs/criterios-dataset-clasificador-eco.md
+docs/nota-tecnica-embedding-semireal.md
+docs/guia-router-adaptativo-eco.md
+docs/guia-router-adaptativo-batch-eco.md
 ```
 
 Para entender E.C.O. como sistema de rutas:
 
 ```text
 docs/arquitectura-pipeline-eco.md
-```
-
-Para ver la evolución recomendada:
-
-```text
 docs/roadmap-tecnico-eco.md
+docs/roadmap-sne-eco-v1-1.md
 ```
 
 ## Uso responsable de datos públicos
@@ -215,6 +284,13 @@ Reglas centrales:
 make test                           # Ejecuta pytest
 make validate                       # Valida ingesta, filtro, absorción, descarte y feedback
 make sne-validation                 # Valida S.N.E.-E.C.O. y exporta Markdown/JSON
+make sne-state-dataset              # Genera dataset adaptativo S.N.E.-E.C.O.
+make sne-state-baseline             # Genera baseline adaptativo
+make sne-state-holdout              # Evalúa holdout adaptativo
+make sne-state-coverage             # Diagnostica cobertura adaptativa
+make sne-state-confusion            # Analiza rutas confundidas
+make enteric-report                 # Reporte entérico interno
+make enteric-html                   # Exporta HTML entérico
 make demo                           # Ejecuta BED -> FASTA -> eco_core -> análisis de motivos
 make review                         # Revisa el JSON integrado en formato humano
 make report                         # Exporta el reporte integrado a Markdown
@@ -225,27 +301,18 @@ make dataset-audit                  # Audita composición del dataset etiquetado
 make classifier-baseline            # Entrena/evalúa baseline v1 con features de motivos
 make classifier-baseline-v2         # Entrena/evalúa baseline v2 con motivos + k-mers k=2 + minmax_train
 make classifier-baseline-v3         # Entrena/evalúa baseline v3 con motivos + k-mers k=3 + minmax_train
-make classifier-html                # Convierte el JSON del baseline v1 en HTML estático
-make classifier-html-v2             # Convierte el JSON del baseline v2 en HTML estático
-make classifier-html-v3             # Convierte el JSON del baseline v3 en HTML estático
 make classifier-compare             # Compara baseline v1/v2/v3 en Markdown/HTML
 make classifier-repeated-eval       # Repite evaluación v1/v2/v3 con splits estratificados
 make classifier-sensitivity         # Diagnostica feature modes, k-mers y normalización
 make embedding-placeholder          # Ejecuta ruta experimental de embeddings placeholder
+make embedding-semireal             # Ejecuta ruta experimental de embeddings semireales
+make embedding-repeated-eval        # Evaluación repetida de embeddings placeholder
+make model-decision                 # Reporte de decisión comparativa de modelos
+make adaptive-router-predict-demo   # Demo de router adaptativo para una secuencia
+make adaptive-router-batch          # Router adaptativo por lotes
 make clinvar-sample                 # Muestra pública real desde ClinVar con reporte E.C.O.
 make clinvar-charts                 # Genera visualizaciones SVG desde el JSON ClinVar
 make clinvar-html                   # Convierte el reporte JSON de ClinVar en HTML estático integrado
-make preview-clinvar                # Vista rápida del Markdown ClinVar en terminal
-make inspect-clinvar-json           # Vista rápida del JSON ClinVar formateado
-make open-classifier-html           # Abre el HTML del clasificador v1 en navegador
-make open-classifier-html-v2        # Abre el HTML del clasificador v2 en navegador
-make open-classifier-html-v3        # Abre el HTML del clasificador v3 en navegador
-make open-classifier-comparison     # Abre el HTML comparativo v1/v2/v3 en navegador
-make open-classifier-repeated-eval  # Abre HTML de evaluación repetida
-make open-classifier-sensitivity    # Abre HTML de sensibilidad del clasificador
-make open-embedding-placeholder     # Abre HTML de embeddings placeholder
-make open-clinvar-html              # Abre el HTML principal en navegador
-make open-clinvar-charts            # Abre el índice visual de gráficos SVG
 make portfolio-demo                 # Prepara demo completa para portafolio/entrevista
 make check                          # Pruebas + demos locales estables
 make clean                          # Limpieza de cachés/resultados temporales
@@ -268,18 +335,6 @@ examples/demo_regions.bed
 + examples/tiny_reference.fa
 → results/eco_demo_pipeline.fa
 → results/eco_demo_pipeline_report.json
-```
-
-También puedes generar un reporte Markdown:
-
-```bash
-make report
-```
-
-Salida:
-
-```text
-results/eco_demo_pipeline_report.md
 ```
 
 Motivos incluidos en el MVP:
@@ -323,21 +378,6 @@ El informe incluye resumen por categoría, resumen por gen, matriz gen × catego
 
 Antes de incorporar embeddings tipo DNABERT, E.C.O. incluye una línea base simple, medible y auditable.
 
-### Auditoría del dataset
-
-```bash
-make dataset-audit
-```
-
-Salidas:
-
-```text
-results/eco_dataset_audit_report.json
-results/eco_dataset_audit_report.md
-```
-
-La auditoría revisa tamaño, clases, splits, longitud promedio, GC promedio y motivos detectados.
-
 ### Dataset actual
 
 ```text
@@ -349,63 +389,17 @@ Clases: regulatory y non_regulatory
 
 El dataset actual es demostrativo, balanceado y contiene casos fáciles, ambiguos y difíciles. No representa un benchmark científico general.
 
-### Baseline v1: control explicable
+### Baseline v1/v2/v3
 
 ```bash
+make dataset-audit
 make classifier-baseline
-make classifier-html
-```
-
-Usa:
-
-```text
-motivos + longitud + GC + N + señales simples
-feature_scaling = none
-Test macro F1 = 0.8333
-```
-
-### Baseline v2: variante exploratoria
-
-```bash
 make classifier-baseline-v2
-make classifier-html-v2
-```
-
-Usa:
-
-```text
-motivos + longitud + GC + N + frecuencias k-mer de k=2
-feature_scaling = minmax_train
-Test macro F1 = 0.7333
-```
-
-En el dataset actual, v2 queda bajo v1 y no se mantiene como configuración principal.
-
-### Baseline v3: candidato principal pre-embeddings
-
-```bash
 make classifier-baseline-v3
-make classifier-html-v3
-```
-
-Usa:
-
-```text
-motivos + longitud + GC + N + frecuencias k-mer de k=3
-feature_scaling = minmax_train
-Test macro F1 = 0.9161
-```
-
-La normalización min-max se ajusta solo con el split de entrenamiento para evitar fuga de información desde prueba.
-
-### Comparación formal v1/v2/v3
-
-```bash
 make classifier-compare
-make open-classifier-comparison
 ```
 
-Resultado actual sobre el dataset demostrativo ampliado:
+Resultado resumido sobre el dataset demostrativo ampliado:
 
 ```text
 baseline_v1 | motif      | none       | Test macro F1 0.8333
@@ -417,19 +411,11 @@ Lectura prudente:
 
 > v3 obtiene el mejor resultado en el split fijo, pero debe contrastarse con evaluación repetida, sensibilidad y futuros datos externos antes de tratarlo como desempeño general.
 
-### Evaluación repetida
+### Evaluación repetida y sensibilidad
 
 ```bash
 make classifier-repeated-eval
-make open-classifier-repeated-eval
-```
-
-Salidas:
-
-```text
-results/eco_classifier_repeated_eval_report.json
-results/eco_classifier_repeated_eval_report.md
-results/eco_classifier_repeated_eval_report.html
+make classifier-sensitivity
 ```
 
 Resultado actual:
@@ -442,65 +428,33 @@ Mejor promedio: v3
 Delta v3 vs v1: +0.0755
 ```
 
-### Sensibilidad del clasificador
-
-```bash
-make classifier-sensitivity
-make open-classifier-sensitivity
-```
-
-Objetivo:
-
-```text
-diagnosticar si el rendimiento cambia por feature mode, k-mer, normalización o tamaño de k
-```
-
-Resultado actual:
-
-```text
-Mejor configuración: kmer3_minmax
-Delta mejor vs v1: +0.0754
-Delta v2 actual vs v1: -0.0254
-```
-
-## Ruta 4: embeddings experimentales placeholder
+## Ruta 4: embeddings experimentales
 
 Esta ruta prepara el contrato vectorial antes de incorporar DNABERT u otro modelo real. No descarga modelos pesados ni suma dependencias nuevas al flujo estable.
 
 ```bash
 make embedding-placeholder
-make open-embedding-placeholder
-```
-
-Flujo:
-
-```text
-examples/eco_labeled_sequences.tsv
-→ embedding placeholder determinista
-→ normalización minmax_train
-→ centroides por clase
-→ comparación contra baseline_v1 y baseline_v3
-→ JSON/Markdown/HTML
-```
-
-Salidas:
-
-```text
-results/eco_embedding_placeholder_report.json
-results/eco_embedding_placeholder_report.md
-results/eco_embedding_placeholder_report.html
+make embedding-semireal
+make embedding-repeated-eval
+make model-decision
 ```
 
 Lectura prudente:
 
-> La ruta placeholder no busca reemplazar a v3. Su objetivo es dejar lista la arquitectura para que un embedding real pueda compararse de forma honesta contra v1 y v3.
+> La ruta placeholder/semireal no busca reemplazar a v3. Su objetivo es dejar lista la arquitectura para que un embedding real pueda compararse de forma honesta contra v1 y v3.
 
-## Ruta 5: S.N.E.-E.C.O. v1.0
+## Ruta 5: estado adaptativo S.N.E.-E.C.O.
 
-Esta ruta valida el cuerpo entérico del pipeline.
+Esta ruta valida el cuerpo entérico adaptativo del pipeline.
 
 ```bash
 make sne-validation
+make sne-state-dataset
+make sne-state-baseline
+make sne-state-holdout
+make sne-state-coverage
+make sne-state-confusion
+.venv/bin/python scripts/run_sne_eco_recurrence_audit.py
 ```
 
 Flujo:
@@ -513,49 +467,30 @@ lote mínimo de secuencias
 → defensa informacional
 → microbiota adaptativa
 → homeostasis
-→ reporte eje intestino-cerebro
-→ Markdown/JSON
+→ baseline jerárquico
+→ proyección homeostática
+→ recurrence guard
+→ auditoría de confusión y recurrencia
+→ suite de estabilidad
 ```
 
-Salidas:
+Salidas principales:
 
 ```text
 results/sne_eco_validation_report.md
 results/sne_eco_validation_report.json
-```
-
-Documento índice:
-
-```text
-docs/sne-eco-v1-indice-demo.md
-```
-
-## Decisión técnica actual
-
-```text
-v1 = control mínimo explicable
-v2 = variante exploratoria no principal
-v3 = candidato principal pre-embeddings
-embedding-placeholder = contrato experimental para futura ruta DNABERT/embeddings
-S.N.E.-E.C.O. v1.0 = cuerpo entérico modular, validable y demostrable
-```
-
-## Demo pública con descarga real de secuencia
-
-```bash
-make public-demo
-```
-
-Flujo:
-
-```text
-descarga pública chrM.fa.gz
-→ descompresión
-→ generación BED
-→ FASTA
-→ eco_core
-→ análisis de motivos
-→ informe interpretativo
+results/sne_eco_state_dataset.json
+results/sne_eco_state_dataset.tsv
+results/sne_eco_state_baseline_report.json
+results/sne_eco_state_baseline_report.md
+results/sne_eco_state_holdout_report.json
+results/sne_eco_state_holdout_report.md
+results/sne_eco_state_coverage_report.json
+results/sne_eco_state_coverage_report.md
+results/sne_eco_state_confusion_report.json
+results/sne_eco_state_confusion_report.md
+results/sne_eco_recurrence_audit.json
+results/sne_eco_recurrence_audit.md
 ```
 
 ## Pipeline parametrizable
@@ -563,88 +498,23 @@ descarga pública chrM.fa.gz
 Para usar tus propios archivos BED y FASTA:
 
 ```bash
-python3 scripts/run_eco_pipeline.py \
+.venv/bin/python scripts/run_eco_pipeline.py \
   --bed data/mis_regiones.bed \
   --reference data/mi_referencia.fa \
   --output-dir results \
   --prefix mi_analisis
 ```
 
-## Marco conceptual SNE-E.C.O.
-
-Documento principal:
-
-```text
-docs/modulo-sne-eco-digestion-bioinspirada.md
-```
-
-Índice técnico y demo v1.0:
-
-```text
-docs/sne-eco-v1-indice-demo.md
-```
-
-Define E.C.O. como un **metabolismo de información** inspirado en el Sistema Nervioso Entérico:
-
-```text
-dato crudo
-→ fragmentación
-→ filtro
-→ transformación
-→ absorción
-→ feedback
-→ descarte
-→ homeostasis
-→ reporte comunicable
-```
-
 ## Estado actual del repositorio
 
 ```text
-src/eco_motif_analysis.py
-src/eco_bed_to_fasta.py
-src/eco_variant_interpretation.py
-src/eco_sequence_classifier.py
 src/eco_core/
-scripts/audit_eco_labeled_dataset.py
-scripts/run_eco_classifier_repeated_eval.py
-scripts/run_eco_classifier_sensitivity.py
-scripts/run_eco_classifier_baseline.py
-scripts/compare_eco_classifier_baselines.py
-scripts/run_eco_embedding_placeholder.py
-scripts/run_sne_eco_validation.py
-scripts/run_eco_validation.py
-scripts/run_eco_demo_pipeline.py
-scripts/run_eco_pipeline.py
-scripts/run_eco_public_chrM_report.py
-scripts/run_eco_variant_demo.py
-scripts/run_eco_clinvar_sample_report.py
-scripts/export_eco_classifier_html.py
-scripts/export_eco_clinvar_charts.py
-scripts/export_eco_variant_html.py
-scripts/review_eco_demo_report.py
-scripts/export_eco_demo_markdown.py
+scripts/
 tests/
+docs/
+examples/
 .github/workflows/eco-validation.yml
 data/README.md
-docs/sne-eco-v1-indice-demo.md
-docs/guia-validacion-sne-eco.md
-docs/resumen-ejecutivo-eco.md
-docs/ficha-tecnica-clasificador-eco.md
-docs/criterios-dataset-clasificador-eco.md
-docs/nota-tecnica-v3-vs-v2.md
-docs/nota-tecnica-embedding-placeholder.md
-docs/modulo-sne-eco-digestion-bioinspirada.md
-docs/arquitectura-pipeline-eco.md
-docs/roadmap-tecnico-eco.md
-docs/resultado-demostrativo-eco.md
-docs/guia-uso-archivos-propios.md
-docs/guia-interpretacion-variantes-eco.md
-docs/uso-responsable-datos-eco.md
-docs/caso-estudio-portafolio-eco.md
-docs/ejemplo-local-coordenadas-bed.md
-examples/clinvar_style_demo_variants.tsv
-examples/eco_labeled_sequences.tsv
 Makefile
 requirements-dev.txt
 ```
@@ -655,7 +525,7 @@ requirements-dev.txt
 - El análisis de motivos usa expresiones regulares simples.
 - El clasificador baseline usa un dataset demostrativo y no representa desempeño general.
 - v3 es candidato pre-embeddings, no modelo final.
-- La ruta de embeddings actual es placeholder; no es DNABERT ni embedding profundo real.
+- Las rutas de embeddings actuales son experimentales; no son DNABERT ni embedding profundo real.
 - La evaluación repetida reduce dependencia de un split, pero no reemplaza validación externa.
 - La conversión BED → FASTA requiere que BED y FASTA usen el mismo sistema de referencia.
 - La analogía con el Sistema Nervioso Entérico es arquitectónica, no biológica literal.
@@ -664,9 +534,9 @@ requirements-dev.txt
 ## Próximos pasos
 
 - Mantener v1 como control explicable y v3 como candidato principal pre-embeddings.
-- Usar `embedding-placeholder` como contrato técnico antes de integrar modelos reales.
+- Usar `embedding-placeholder` y `embedding-semireal` como contratos técnicos antes de integrar modelos reales.
 - Comparar cualquier modelo avanzado contra v1 y v3.
-- Mantener S.N.E.-E.C.O. v1.0 como módulo de trazabilidad, validación y UX del pipeline.
+- Mantener S.N.E.-E.C.O. como módulo de trazabilidad, validación, homeostasis y UX del pipeline.
 - Diseñar S.N.E.-E.C.O. v1.1 con lectura por lotes, estados comparativos y dashboard HTML.
 - Añadir ejemplos con coordenadas regulatorias reales y muestras reducidas cuando exista una fuente adecuada.
 - Agregar visualizaciones y reportes comparativos adicionales.
