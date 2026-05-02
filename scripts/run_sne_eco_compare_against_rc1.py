@@ -42,9 +42,29 @@ def _as_int(value: Any, default: int = 0) -> int:
     return int(value)
 
 
+def _as_optional_int(value: Any) -> int | None:
+    if value in (None, "", "no informado", "unknown"):
+        return None
+    return int(value)
+
+
+def _delta_optional(current: int | None, baseline: int) -> int | None:
+    if current is None:
+        return None
+    return current - baseline
+
+
+def _fmt(value: object) -> object:
+    if value is None:
+        return "no informado"
+    return value
+
+
 def build_comparison(*, dashboard_payload: dict[str, Any], baseline_tag: str = RC1_BASELINE["tag"]) -> dict[str, Any]:
+    current_tests_passed = _as_optional_int(dashboard_payload.get("tests_passed"))
     current = {
-        "tests_passed": _as_int(dashboard_payload.get("tests_passed"), default=0),
+        "tests_passed": current_tests_passed,
+        "tests_passed_reported": current_tests_passed is not None,
         "confused_routes": _as_int(dashboard_payload.get("confused_routes"), default=0),
         "confused_recurrence_rows": _as_int(dashboard_payload.get("confused_recurrence_rows"), default=0),
         "default_state_confused_routes": _as_int(dashboard_payload.get("default_state_confused_routes"), default=0),
@@ -55,14 +75,14 @@ def build_comparison(*, dashboard_payload: dict[str, Any], baseline_tag: str = R
     baseline["tag"] = baseline_tag
 
     deltas = {
-        "tests_passed": current["tests_passed"] - baseline["tests_passed"],
+        "tests_passed": _delta_optional(current["tests_passed"], baseline["tests_passed"]),
         "confused_routes": current["confused_routes"] - baseline["confused_routes"],
         "confused_recurrence_rows": current["confused_recurrence_rows"] - baseline["confused_recurrence_rows"],
         "default_state_confused_routes": current["default_state_confused_routes"] - baseline["default_state_confused_routes"],
     }
 
     regressions: list[str] = []
-    if current["tests_passed"] < baseline["tests_passed"]:
+    if current["tests_passed"] is not None and current["tests_passed"] < baseline["tests_passed"]:
         regressions.append("tests_passed_below_rc1")
     if current["confused_routes"] > baseline["confused_routes"]:
         regressions.append("confused_routes_increased")
@@ -77,6 +97,10 @@ def build_comparison(*, dashboard_payload: dict[str, Any], baseline_tag: str = R
     if current["dashboard_status"] == "yellow" and not regressions:
         status = "yellow"
 
+    notes = []
+    if not current["tests_passed_reported"]:
+        notes.append("tests_passed_not_reported_by_dashboard")
+
     return {
         "comparison_name": "sne_eco_compare_against_rc1",
         "baseline": baseline,
@@ -84,6 +108,7 @@ def build_comparison(*, dashboard_payload: dict[str, Any], baseline_tag: str = R
         "deltas": deltas,
         "status": status,
         "regressions": regressions,
+        "notes": notes,
         "responsible_limit": (
             "Comparación educativa/experimental contra RC1; no ejecuta nuevas reglas, "
             "no recalibra el baseline y no representa desempeño general, clínico ni forense."
@@ -97,6 +122,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
     current = payload["current"]
     deltas = payload["deltas"]
     regressions = payload.get("regressions", []) or []
+    notes = payload.get("notes", []) or []
 
     lines = [
         "# Comparación S.N.E.-E.C.O. contra RC1",
@@ -108,7 +134,7 @@ def to_markdown(payload: dict[str, Any]) -> str:
         "",
         "| Métrica | RC1 | Actual | Delta |",
         "|---|---:|---:|---:|",
-        f"| Tests passing | {baseline['tests_passed']} | {current['tests_passed']} | {deltas['tests_passed']} |",
+        f"| Tests passing | {baseline['tests_passed']} | {_fmt(current['tests_passed'])} | {_fmt(deltas['tests_passed'])} |",
         f"| Rutas confundidas | {baseline['confused_routes']} | {current['confused_routes']} | {deltas['confused_routes']} |",
         f"| Recurrencias confundidas | {baseline['confused_recurrence_rows']} | {current['confused_recurrence_rows']} | {deltas['confused_recurrence_rows']} |",
         f"| Rutas default_state confundidas | {baseline['default_state_confused_routes']} | {current['default_state_confused_routes']} | {deltas['default_state_confused_routes']} |",
@@ -121,6 +147,10 @@ def to_markdown(payload: dict[str, Any]) -> str:
         lines.extend(f"- {item}" for item in regressions)
     else:
         lines.append("- Sin regresiones respecto a RC1.")
+
+    if notes:
+        lines.extend(["", "## Notas", ""])
+        lines.extend(f"- {item}" for item in notes)
 
     lines.extend(
         [
