@@ -46,9 +46,11 @@ class StateTransitionBaseline:
     1. feature_key: ruta exacta completa.
     2. digestive_key: familia digestiva sin `state_before`.
     3. defense_key: familia defensiva mínima.
-    4. homeostasis_projection: desempate técnico cuando una regla de bajo
+    4. recurrence_guard: evita escalar redundancia baja desde `watch` a
+       `attention` cuando no hay carga crítica.
+    5. homeostasis_projection: desempate técnico cuando una regla de bajo
        soporte contradice la presión homeostática estimada.
-    5. default_state: estado dominante del entrenamiento.
+    6. default_state: estado dominante del entrenamiento.
     """
 
     transition_table: dict[FeatureKey, dict[str, int]]
@@ -70,6 +72,15 @@ class StateTransitionBaseline:
                 predicted, votes = _winner(counts)
                 total = sum(counts.values())
                 confidence = round(votes / total, 4)
+                if _should_use_recurrence_guard(row=row, learned_state=predicted):
+                    return StateBaselinePrediction(
+                        source=row.source,
+                        observed_state=row.state_after,
+                        predicted_state="watch",
+                        matched_rule="recurrence_guard",
+                        confidence=0.85,
+                        correct=row.state_after == "watch",
+                    )
                 if _should_use_homeostasis_projection(
                     learned_state=predicted,
                     projected_state=projected_state,
@@ -262,6 +273,19 @@ def baseline_report_to_markdown(report: dict[str, object]) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def _should_use_recurrence_guard(*, row: AdaptiveStateRow, learned_state: str) -> bool:
+    """Mantiene en vigilancia una recurrencia baja que ya venía desde `watch`."""
+    return (
+        learned_state == "attention"
+        and row.state_before == "watch"
+        and row.final_decision == "discard_duplicate"
+        and row.defense_category == "redundant_payload"
+        and row.defense_severity == "low"
+        and row.immune_load_before <= 0.4
+        and row.quarantine_ratio_before <= 0.3
+    )
 
 
 def _should_use_homeostasis_projection(*, learned_state: str, projected_state: str, support: int) -> bool:
