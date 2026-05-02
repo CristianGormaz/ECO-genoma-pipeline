@@ -567,4 +567,4 @@ Lectura esperada:
 - Umbrales modificados: False
 - Solo dry-run: True
 
-`yellow` no representa falla. Indica que existen observaciones externas retenidas por gobernanza y que ninguna evidencia externa se admite todavía al dataset estable.
+yellow no representa falla. `yellow` indica que existen observaciones externas retenidas por gobernanza y que ninguna evidencia externa se admite todavía al dataset estable.
