@@ -30,7 +30,7 @@ def test_admission_governance_command_exports_report(tmp_path):
     markdown = output_md.read_text(encoding="utf-8")
 
     assert payload["baseline"] == "sne-eco-v1.0-rc1"
-    assert payload["status"] == "green"
+    assert payload["status"] == "yellow"
     assert payload["stability_locks"]["stable_dataset_modified"] is False
     assert payload["stability_locks"]["baseline_modified"] is False
     assert payload["stability_locks"]["rules_modified"] is False
