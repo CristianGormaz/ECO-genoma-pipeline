@@ -29,9 +29,13 @@ def test_run_sne_eco_state_baseline_exports_json_and_markdown(tmp_path):
     payload = json.loads(output_json.read_text(encoding="utf-8"))
     markdown = output_md.read_text(encoding="utf-8")
 
-    assert payload["model_name"] == "adaptive_state_baseline_v0"
+    assert payload["model_name"] == "adaptive_state_baseline_v0_hierarchical"
     assert payload["training_rows"] == 4
     assert payload["accuracy_demo"] == 1.0
+    assert payload["digestive_rule_count"] >= 3
+    assert payload["defense_rule_count"] >= 3
     assert "no representa desempeño general" in payload["responsible_limit"]
     assert "Baseline adaptativo E.C.O. v0" in markdown
+    assert "Reglas digestivas aprendidas" in markdown
+    assert "Reglas defensivas aprendidas" in markdown
     assert "Accuracy demostrativa" in markdown
