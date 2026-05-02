@@ -17,17 +17,17 @@ def test_coverage_diagnostics_counts_extended_routes():
     assert diagnostics.state_counts["stable"] >= 3
     assert diagnostics.state_counts["watch"] >= 2
     assert diagnostics.state_counts["attention"] >= 3
-    assert diagnostics.fallback_predictions >= 0
-    assert diagnostics.incorrect_predictions >= 0
+    assert diagnostics.fallback_predictions == 0
+    assert diagnostics.incorrect_predictions == 0
 
 
-def test_coverage_diagnostics_warns_about_fallback_or_errors():
+def test_coverage_diagnostics_reports_current_risk_or_clean_state():
     rows = build_adaptive_state_rows(EXTENDED_TRANSITION_PACKETS)
     evaluation = evaluate_state_transition_holdout(rows)
     diagnostics = build_coverage_diagnostics(rows, evaluation=evaluation)
 
-    assert diagnostics.coverage_warnings
-    assert any("predictions" in warning for warning in diagnostics.coverage_warnings)
+    assert isinstance(diagnostics.coverage_warnings, tuple)
+    assert all("predictions" not in warning for warning in diagnostics.coverage_warnings)
     assert "no representa desempeño general" in diagnostics.responsible_limit
 
 
