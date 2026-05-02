@@ -37,7 +37,7 @@ def test_confused_route_report_to_dict_and_markdown_are_actionable():
     assert "confused_routes" in payload
     assert "suggested_focus" in payload
     assert payload["confused_routes"] == []
-    assert payload["suggested_focus"] == []
+    assert not payload["suggested_focus"]
     assert "Análisis de rutas confundidas E.C.O." in markdown
     assert "Focos sugeridos" in markdown
     assert "Sin rutas confundidas relevantes" in markdown
