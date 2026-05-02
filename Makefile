@@ -1,4 +1,4 @@
-.PHONY: install-dev test validate sne-validation sne-state-dataset sne-state-baseline sne-state-holdout sne-state-coverage sne-state-confusion enteric-report enteric-html open-enteric-html demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval open-model-decision portfolio-demo check clean embedding-semireal open-embedding-semireal embedding-semireal-repeated-eval open-embedding-semireal-repeated-eval difficulty-eval open-difficulty-eval hybrid-router-eval open-hybrid-router-eval confidence-router-eval open-confidence-router-eval confidence-router-calibrated-eval open-confidence-router-calibrated-eval adaptive-router-predict-demo open-adaptive-router-predict-demo adaptive-router-predict open-adaptive-router-predict adaptive-router-batch open-adaptive-router-batch sne-recurrence-audit sne-observability-dashboard sne-neurogastro-context sne-neurogastro-pipeline
+.PHONY: install-dev test validate sne-validation sne-state-dataset sne-state-baseline sne-state-holdout sne-state-coverage sne-state-confusion enteric-report enteric-html open-enteric-html demo review report pipeline public-demo variant-demo clinvar-sample clinvar-html clinvar-charts preview-clinvar inspect-clinvar-json open-clinvar-html open-clinvar-charts dataset-audit classifier-baseline classifier-baseline-v2 classifier-baseline-v3 classifier-html classifier-html-v2 classifier-html-v3 classifier-compare classifier-repeated-eval classifier-sensitivity embedding-placeholder embedding-repeated-eval model-decision open-classifier-html open-classifier-html-v2 open-classifier-html-v3 open-classifier-comparison open-classifier-repeated-eval open-classifier-sensitivity open-embedding-placeholder open-embedding-repeated-eval open-model-decision portfolio-demo check clean embedding-semireal open-embedding-semireal embedding-semireal-repeated-eval open-embedding-semireal-repeated-eval difficulty-eval open-difficulty-eval hybrid-router-eval open-hybrid-router-eval confidence-router-eval open-confidence-router-eval confidence-router-calibrated-eval open-confidence-router-calibrated-eval adaptive-router-predict-demo open-adaptive-router-predict-demo adaptive-router-predict open-adaptive-router-predict adaptive-router-batch open-adaptive-router-batch sne-recurrence-audit sne-observability-dashboard sne-neurogastro-context sne-neurogastro-summary sne-neurogastro-pipeline
 
 PYTHON ?= python3
 VENV ?= .venv
@@ -53,7 +53,10 @@ sne-observability-dashboard: sne-state-confusion sne-recurrence-audit
 sne-neurogastro-context: sne-state-dataset sne-observability-dashboard
 	$(PY) scripts/run_sne_eco_neurogastro_context_report.py
 
-sne-neurogastro-pipeline: sne-neurogastro-context
+sne-neurogastro-summary: sne-neurogastro-context
+	$(PY) scripts/run_sne_eco_neurogastro_pipeline_summary.py
+
+sne-neurogastro-pipeline: sne-neurogastro-summary
 	@echo ""
 	@echo "S.N.E.-E.C.O. neurogastro pipeline ready"
 	@echo "========================================"
@@ -68,6 +71,8 @@ sne-neurogastro-pipeline: sne-neurogastro-context
 	@echo "- results/sne_eco_observability_dashboard.md"
 	@echo "- results/sne_eco_neurogastro_context_report.json"
 	@echo "- results/sne_eco_neurogastro_context_report.md"
+	@echo "- results/sne_eco_neurogastro_pipeline_summary.json"
+	@echo "- results/sne_eco_neurogastro_pipeline_summary.md"
 
 enteric-report:
 	$(PY) scripts/run_eco_enteric_report.py
