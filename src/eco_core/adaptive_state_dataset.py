@@ -164,20 +164,42 @@ DEFAULT_TRANSITION_PACKETS: tuple[tuple[str, str], ...] = (
 
 
 EXTENDED_TRANSITION_PACKETS: tuple[tuple[str, str], ...] = (
+    # Absorción estable: rutas válidas que permiten observar homeostasis normal.
     ("valid_sequence_a", "ACGTCCAATGGTATAAA"),
     ("valid_sequence_b", "TTGACCGTAACCGGTA"),
     ("valid_gc_rich", "GGCGGCGGCGGCTAAT"),
     ("valid_at_rich", "ATATATAAACCCGGTT"),
+    ("long_valid_sequence", "ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTAC"),
+
+    # Retención/cuarentena: payloads demasiado cortos para absorber con confianza.
     ("short_sequence_a", "ACG"),
     ("short_sequence_b", "TTT"),
+    ("short_sequence_c", "A"),
+    ("short_sequence_d", "TG"),
+    ("short_sequence_e", "CCCC"),
+
+    # Rechazo defensivo: letras/símbolos externos al alfabeto técnico esperado.
     ("invalid_letters_a", "ACGTXYZ"),
     ("invalid_letters_b", "MUGICA"),
+    ("invalid_letters_c", "XYZXYZ"),
+    ("invalid_letters_d", "ACGT123"),
+    ("invalid_letters_e", "ACGT-XYZ"),
+    ("long_invalid_tail", "ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTACXYZ"),
+
+    # Ambigüedad: presencia de N como señal de incertidumbre informacional.
     ("high_n_content", "NNNNNNNNACGT"),
     ("mixed_n_content", "ACGTNNNNACGT"),
+    ("mixed_n_content_b", "ACNNGTACGT"),
+    ("mixed_n_content_c", "ACGTNACGTN"),
+    ("high_n_content_b", "NNNNACGTNNNN"),
+
+    # Recurrencia/microbiota: repetición controlada para separar memoria de novedad.
     ("duplicate_sequence_a", "ACGTCCAATGGTATAAA"),
     ("duplicate_sequence_b", "TTGACCGTAACCGGTA"),
     ("recurrent_valid_a", "ACGTCCAATGGTATAAA"),
     ("recurrent_valid_b", "TTGACCGTAACCGGTA"),
-    ("long_valid_sequence", "ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTAC"),
-    ("long_invalid_tail", "ACGTCCAATGGTATAAAGGCGGGCGGAATAAAGTACXYZ"),
+    ("recurrent_valid_c", "GGCGGCGGCGGCTAAT"),
+    ("duplicate_sequence_c", "GGCGGCGGCGGCTAAT"),
+    ("recurrent_valid_d", "ATATATAAACCCGGTT"),
 )
+

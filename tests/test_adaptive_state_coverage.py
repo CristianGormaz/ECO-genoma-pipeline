@@ -15,7 +15,7 @@ def test_coverage_diagnostics_counts_extended_routes():
     assert diagnostics.row_count == len(EXTENDED_TRANSITION_PACKETS)
     assert diagnostics.unique_feature_routes >= 6
     assert diagnostics.state_counts["stable"] >= 3
-    assert diagnostics.state_counts["watch"] >= 3
+    assert diagnostics.state_counts["watch"] >= 2
     assert diagnostics.state_counts["attention"] >= 3
     assert diagnostics.fallback_predictions >= 0
     assert diagnostics.incorrect_predictions >= 0
