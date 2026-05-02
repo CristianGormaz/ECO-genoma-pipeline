@@ -15,6 +15,8 @@ def test_state_transition_baseline_trains_from_adaptive_rows():
     assert model.training_rows == 4
     assert model.default_state in {"stable", "watch", "attention"}
     assert len(model.transition_table) >= 3
+    assert len(model.digestive_table) >= 3
+    assert len(model.defense_table) >= 3
     assert feature_key(rows[0]) in model.transition_table
 
 
@@ -34,9 +36,11 @@ def test_state_transition_baseline_report_is_auditable():
     rows = build_adaptive_state_rows(DEFAULT_TRANSITION_PACKETS)
     report = evaluate_state_transition_baseline(rows)
 
-    assert report["model_name"] == "adaptive_state_baseline_v0"
+    assert report["model_name"] == "adaptive_state_baseline_v0_hierarchical"
     assert report["training_rows"] == 4
     assert report["accuracy_demo"] == 1.0
+    assert report["digestive_rule_count"] >= 3
+    assert report["defense_rule_count"] >= 3
     assert len(report["predictions"]) == 4
     assert "no representa desempeño general" in report["responsible_limit"]
 
@@ -47,6 +51,8 @@ def test_state_transition_baseline_markdown_mentions_limits():
     markdown = baseline_report_to_markdown(report)
 
     assert "Baseline adaptativo E.C.O. v0" in markdown
+    assert "Reglas digestivas aprendidas" in markdown
+    assert "Reglas defensivas aprendidas" in markdown
     assert "Accuracy demostrativa" in markdown
     assert "valid_sequence" in markdown
     assert "no representa desempeño general" in markdown
