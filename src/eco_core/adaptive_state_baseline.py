@@ -46,7 +46,9 @@ class StateTransitionBaseline:
     1. feature_key: ruta exacta completa.
     2. digestive_key: familia digestiva sin `state_before`.
     3. defense_key: familia defensiva mínima.
-    4. default_state: estado dominante del entrenamiento.
+    4. homeostasis_projection: desempate técnico cuando una regla de bajo
+       soporte contradice la presión homeostática estimada.
+    5. default_state: estado dominante del entrenamiento.
     """
 
     transition_table: dict[FeatureKey, dict[str, int]]
@@ -57,6 +59,8 @@ class StateTransitionBaseline:
     training_rows: int
 
     def predict(self, row: AdaptiveStateRow) -> StateBaselinePrediction:
+        projected_state = project_homeostatic_state(row)
+
         for matched_rule, counts in (
             ("feature_key", self.transition_table.get(feature_key(row))),
             ("digestive_key", self.digestive_table.get(digestive_key(row))),
@@ -66,6 +70,19 @@ class StateTransitionBaseline:
                 predicted, votes = _winner(counts)
                 total = sum(counts.values())
                 confidence = round(votes / total, 4)
+                if _should_use_homeostasis_projection(
+                    learned_state=predicted,
+                    projected_state=projected_state,
+                    support=total,
+                ):
+                    return StateBaselinePrediction(
+                        source=row.source,
+                        observed_state=row.state_after,
+                        predicted_state=projected_state,
+                        matched_rule="homeostasis_projection",
+                        confidence=0.75,
+                        correct=projected_state == row.state_after,
+                    )
                 return StateBaselinePrediction(
                     source=row.source,
                     observed_state=row.state_after,
@@ -78,10 +95,10 @@ class StateTransitionBaseline:
         return StateBaselinePrediction(
             source=row.source,
             observed_state=row.state_after,
-            predicted_state=self.default_state,
-            matched_rule="default_state",
-            confidence=self.default_confidence,
-            correct=self.default_state == row.state_after,
+            predicted_state=projected_state,
+            matched_rule="homeostasis_projection",
+            confidence=0.6,
+            correct=projected_state == row.state_after,
         )
 
 
@@ -111,6 +128,40 @@ def defense_key(row: AdaptiveStateRow) -> DefenseKey:
     return (
         row.defense_category,
         row.final_decision,
+    )
+
+
+def project_homeostatic_state(row: AdaptiveStateRow) -> str:
+    """Proyecta el estado homeostático después de aplicar la decisión actual.
+
+    Usa métricas previas + decisión final del paquete, evitando depender de
+    `state_after`. Sirve como desempate técnico cuando una regla aprendida tiene
+    bajo soporte y contradice la presión homeostática esperada.
+    """
+    total_before = row.total_packets_before
+    total_after = total_before + 1
+    if total_after <= 0:
+        return "idle"
+
+    absorbed = _count_from_ratio(row.absorption_ratio_before, total_before)
+    immune = _count_from_ratio(row.immune_load_before, total_before)
+    quarantined = _count_from_ratio(row.quarantine_ratio_before, total_before)
+
+    if row.final_decision == "absorb":
+        absorbed += 1
+    elif row.final_decision == "quarantine":
+        quarantined += 1
+    elif row.final_decision == "reject":
+        immune += 1
+
+    absorption_ratio = round(absorbed / total_after, 4)
+    immune_load = round(immune / total_after, 4)
+    quarantine_ratio = round(quarantined / total_after, 4)
+
+    return _classify_projected_state(
+        immune_load=immune_load,
+        quarantine_ratio=quarantine_ratio,
+        absorption_ratio=absorption_ratio,
     )
 
 
@@ -211,6 +262,27 @@ def baseline_report_to_markdown(report: dict[str, object]) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def _should_use_homeostasis_projection(*, learned_state: str, projected_state: str, support: int) -> bool:
+    """Usa proyección si una regla de muy bajo soporte contradice la homeostasis."""
+    return support <= 1 and learned_state != projected_state
+
+
+def _count_from_ratio(ratio: float, total: int) -> int:
+    if total <= 0:
+        return 0
+    return int(round(ratio * total))
+
+
+def _classify_projected_state(*, immune_load: float, quarantine_ratio: float, absorption_ratio: float) -> str:
+    if immune_load > 0.6:
+        return "overload"
+    if immune_load > 0.4 or quarantine_ratio > 0.3:
+        return "attention"
+    if absorption_ratio >= 0.7:
+        return "stable"
+    return "watch"
 
 
 def _winner(counts: dict[str, int]) -> tuple[str, int]:
