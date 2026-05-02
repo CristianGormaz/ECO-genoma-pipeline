@@ -548,3 +548,23 @@ requirements-dev.txt
 Proyecto E.C.O. - Entérico Codificador Orgánico
 
 Actualización asistida por ChatGPT.
+
+
+## Gobernanza de admisión posterior a RC1
+
+Comando principal:
+
+`make sne-admission-governance`
+
+Este comando ejecuta la cadena completa de gobernanza de admisión S.N.E.-E.C.O. posterior a `sne-eco-v1.0-rc1`: observabilidad, sonda de escenarios externos, revisión de evidencia externa, política de evidencia externa, plan de admisión estable, dry-run de admisión y comparación contra RC1.
+
+Lectura esperada:
+
+- Estado: yellow
+- Dataset estable modificado: False
+- Baseline modificado: False
+- Reglas modificadas: False
+- Umbrales modificados: False
+- Solo dry-run: True
+
+`yellow` no representa falla. Indica que existen observaciones externas retenidas por gobernanza y que ninguna evidencia externa se admite todavía al dataset estable.
