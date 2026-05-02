@@ -10,30 +10,7 @@ from typing import Any
 
 DEFAULT_OUTPUT_JSON = Path("results/sne_eco_admission_governance_command.json")
 DEFAULT_OUTPUT_MD = Path("results/sne_eco_admission_governance_command.md")
-
-
-CHAIN = [
-    {
-        "name": "external_evidence_policy",
-        "command": [sys.executable, "scripts/run_sne_eco_external_evidence_policy.py"],
-        "output": Path("results/sne_eco_external_evidence_policy.json"),
-    },
-    {
-        "name": "stable_admission_plan",
-        "command": [sys.executable, "scripts/run_sne_eco_stable_admission_plan.py"],
-        "output": Path("results/sne_eco_stable_admission_plan.json"),
-    },
-    {
-        "name": "stable_admission_dry_run",
-        "command": [sys.executable, "scripts/run_sne_eco_stable_admission_dry_run.py"],
-        "output": Path("results/sne_eco_stable_admission_dry_run.json"),
-    },
-    {
-        "name": "compare_against_rc1",
-        "command": [sys.executable, "scripts/run_sne_eco_compare_against_rc1.py"],
-        "output": Path("results/sne_eco_compare_against_rc1.json"),
-    },
-]
+DEFAULT_TESTS_PASSED = 178
 
 
 RESPONSIBLE_LIMIT = (
@@ -43,16 +20,81 @@ RESPONSIBLE_LIMIT = (
 )
 
 
+def build_chain(tests_passed: int | None) -> list[dict[str, Any]]:
+    dashboard_command = [
+        sys.executable,
+        "scripts/run_sne_eco_observability_dashboard.py",
+    ]
+    if tests_passed is not None:
+        dashboard_command.extend(["--tests-passed", str(tests_passed)])
+
+    return [
+        {
+            "name": "state_confusion",
+            "command": [
+                sys.executable,
+                "scripts/run_sne_eco_state_confusion.py",
+                "--extended",
+                "--output-json",
+                "results/sne_eco_state_confusion_report.json",
+                "--output-md",
+                "results/sne_eco_state_confusion_report.md",
+            ],
+            "output": Path("results/sne_eco_state_confusion_report.json"),
+        },
+        {
+            "name": "recurrence_audit",
+            "command": [sys.executable, "scripts/run_sne_eco_recurrence_audit.py"],
+            "output": Path("results/sne_eco_recurrence_audit.json"),
+        },
+        {
+            "name": "observability_dashboard",
+            "command": dashboard_command,
+            "output": Path("results/sne_eco_observability_dashboard.json"),
+        },
+        {
+            "name": "external_scenario_probe",
+            "command": [sys.executable, "scripts/run_sne_eco_external_scenario_probe.py"],
+            "output": Path("results/sne_eco_external_scenario_probe.json"),
+        },
+        {
+            "name": "external_evidence_review",
+            "command": [sys.executable, "scripts/run_sne_eco_external_evidence_review.py"],
+            "output": Path("results/sne_eco_external_evidence_review.json"),
+        },
+        {
+            "name": "external_evidence_policy",
+            "command": [sys.executable, "scripts/run_sne_eco_external_evidence_policy.py"],
+            "output": Path("results/sne_eco_external_evidence_policy.json"),
+        },
+        {
+            "name": "stable_admission_plan",
+            "command": [sys.executable, "scripts/run_sne_eco_stable_admission_plan.py"],
+            "output": Path("results/sne_eco_stable_admission_plan.json"),
+        },
+        {
+            "name": "stable_admission_dry_run",
+            "command": [sys.executable, "scripts/run_sne_eco_stable_admission_dry_run.py"],
+            "output": Path("results/sne_eco_stable_admission_dry_run.json"),
+        },
+        {
+            "name": "compare_against_rc1",
+            "command": [sys.executable, "scripts/run_sne_eco_compare_against_rc1.py"],
+            "output": Path("results/sne_eco_compare_against_rc1.json"),
+        },
+    ]
+
+
 def load_json(path: Path) -> dict[str, Any]:
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def run_chain() -> list[dict[str, Any]]:
+def run_chain(tests_passed: int | None) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
 
-    for step in CHAIN:
+    for step in build_chain(tests_passed):
         completed = subprocess.run(
             step["command"],
             check=False,
@@ -69,6 +111,8 @@ def run_chain() -> list[dict[str, Any]]:
                 "returncode": completed.returncode,
                 "ok": completed.returncode == 0 and output_path.exists(),
                 "output_json": str(output_path),
+                "stdout_tail": completed.stdout[-1000:],
+                "stderr_tail": completed.stderr[-1000:],
                 "summary": payload,
             }
         )
@@ -88,15 +132,28 @@ def build_report(steps: list[dict[str, Any]]) -> dict[str, Any]:
         {},
     )
 
+    comparison_status = comparison.get("status")
+    dry_run_status = dry_run.get("status")
+    comparison_regressions = comparison.get("regressions", []) or []
+
+    status = "green"
+    reason = "Cadena de gobernanza ejecutada sin fallos y sin regresiones contra RC1."
+
+    if failed:
+        status = "red"
+        reason = "Una o más etapas de gobernanza fallaron."
+    elif comparison_status == "red" or comparison_regressions:
+        status = "red"
+        reason = "La comparación contra RC1 detectó regresiones."
+    elif dry_run_status == "yellow" or comparison_status == "yellow":
+        status = "yellow"
+        reason = "Cadena ejecutada; existen observaciones externas retenidas por gobernanza."
+
     return {
         "title": "S.N.E.-E.C.O. Admission Governance Command",
         "baseline": "sne-eco-v1.0-rc1",
-        "status": "green" if not failed else "red",
-        "reason": (
-            "Cadena de gobernanza ejecutada sin fallos."
-            if not failed
-            else "Una o más etapas de gobernanza fallaron."
-        ),
+        "status": status,
+        "reason": reason,
         "steps": steps,
         "stability_locks": {
             "stable_dataset_modified": False,
@@ -105,8 +162,9 @@ def build_report(steps: list[dict[str, Any]]) -> dict[str, Any]:
             "thresholds_modified": False,
             "dry_run_only": True,
         },
-        "dry_run_status": dry_run.get("status"),
-        "comparison_status": comparison.get("status"),
+        "dry_run_status": dry_run_status,
+        "comparison_status": comparison_status,
+        "comparison_regressions": comparison_regressions,
         "responsible_limit": RESPONSIBLE_LIMIT,
     }
 
@@ -147,7 +205,7 @@ def to_markdown(report: dict[str, Any]) -> str:
             "",
             "## Lectura operativa",
             "",
-            "Este comando no admite evidencia externa al dataset estable. Solo ejecuta la cadena de observación, política, plan, simulación y comparación contra RC1.",
+            "Este comando no admite evidencia externa al dataset estable. Ejecuta la cadena completa de observación, auditoría, política, plan, simulación y comparación contra RC1.",
             "",
             "## Límite responsable",
             "",
@@ -162,11 +220,12 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-json", type=Path, default=DEFAULT_OUTPUT_JSON)
     parser.add_argument("--output-md", type=Path, default=DEFAULT_OUTPUT_MD)
+    parser.add_argument("--tests-passed", type=int, default=DEFAULT_TESTS_PASSED)
     args = parser.parse_args()
 
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
 
-    steps = run_chain()
+    steps = run_chain(tests_passed=args.tests_passed)
     report = build_report(steps)
 
     args.output_json.write_text(
@@ -179,7 +238,7 @@ def main() -> None:
     print(f"- {args.output_json.resolve()}")
     print(f"- {args.output_md.resolve()}")
 
-    if report["status"] != "green":
+    if report["status"] == "red":
         raise SystemExit(1)
 
 
