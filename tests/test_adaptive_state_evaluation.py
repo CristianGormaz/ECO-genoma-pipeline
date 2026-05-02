@@ -17,7 +17,7 @@ def test_split_rows_holdout_uses_even_rows_for_training_and_odd_for_test():
     assert [row.source for row in test] == ["invalid_sequence", "duplicate_sequence"]
 
 
-def test_holdout_evaluation_reports_generalization_gap_on_minimal_dataset():
+def test_holdout_evaluation_uses_hierarchical_fallback_on_minimal_dataset():
     rows = build_adaptive_state_rows(DEFAULT_TRANSITION_PACKETS)
     evaluation = evaluate_state_transition_holdout(rows)
 
@@ -27,7 +27,11 @@ def test_holdout_evaluation_reports_generalization_gap_on_minimal_dataset():
     assert 0.0 <= evaluation.accuracy_holdout <= 1.0
     assert 0.0 <= evaluation.macro_f1_holdout <= 1.0
     assert evaluation.predictions
-    assert any(prediction.matched_rule == "default_state" for prediction in evaluation.predictions)
+    assert not any(prediction.matched_rule == "default_state" for prediction in evaluation.predictions)
+    assert any(
+        prediction.matched_rule in {"digestive_key", "defense_key", "homeostasis_projection"}
+        for prediction in evaluation.predictions
+    )
     assert "no representa desempeño general" in evaluation.responsible_limit
 
 
