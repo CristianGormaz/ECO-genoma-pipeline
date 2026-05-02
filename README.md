@@ -8,7 +8,7 @@
 
 ## Estado actual
 
-La rama S.N.E.-E.C.O. adaptativa quedó estabilizada con una suite de regresión:
+La rama **S.N.E.-E.C.O. v1.0** quedó estabilizada y evoluciona como línea **S.N.E.-E.C.O. v1.x** con una suite de regresión:
 
 ```text
 153 tests passing
@@ -68,11 +68,11 @@ dato crudo
 2. **Variantes públicas:** registros estilo ClinVar → clasificación E.C.O. → evidencia → reporte JSON/Markdown/HTML + visualizaciones SVG.
 3. **Clasificación baseline:** secuencias etiquetadas → auditoría de dataset → baseline v1/v2/v3 → comparación formal → sensibilidad → evaluación repetida → métricas JSON/Markdown/HTML.
 4. **Embeddings experimentales:** secuencias etiquetadas → embedding placeholder/semireal → centroides → comparación contra v1/v3 → reporte JSON/Markdown/HTML.
-5. **S.N.E.-E.C.O. v1.x:** barrera, sensor submucoso, motilidad mientérica, microbiota, defensa, homeostasis, eje intestino-cerebro, estado adaptativo, auditoría de recurrencia y estabilidad.
+5. **S.N.E.-E.C.O. v1.0/v1.x:** barrera, sensor submucoso, motilidad mientérica, microbiota, defensa, homeostasis, eje intestino-cerebro, estado adaptativo, auditoría de recurrencia y estabilidad.
 
-## S.N.E.-E.C.O. v1.x
+## S.N.E.-E.C.O. v1.0 / v1.x
 
-El módulo **S.N.E.-E.C.O.** convierte la metáfora entérica en arquitectura computacional verificable:
+El módulo **S.N.E.-E.C.O. v1.0** convierte la metáfora entérica en arquitectura computacional verificable. La línea **v1.x** mantiene esa base y agrega estabilización adaptativa:
 
 ```text
 barrier.py                    → mucosa / barrera informacional
