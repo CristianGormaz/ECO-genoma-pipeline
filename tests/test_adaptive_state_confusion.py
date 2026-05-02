@@ -16,14 +16,20 @@ def test_confused_route_analysis_finds_holdout_failures():
     assert "no representa desempeño general" in report.responsible_limit
 
 
-def test_confused_route_analysis_explains_default_predictions():
+def test_confused_route_analysis_uses_hierarchical_fallback_before_default_state():
     rows = build_adaptive_state_rows(EXTENDED_TRANSITION_PACKETS)
     report = analyze_confused_routes(rows)
 
     default_routes = [route for route in report.confused_routes if route.matched_rule == "default_state"]
-    assert default_routes
-    assert all("add_training_route" in route.suggested_scenario for route in default_routes)
-    assert all("estado por defecto" in route.reason for route in default_routes)
+    hierarchical_routes = [
+        route
+        for route in report.confused_routes
+        if route.matched_rule in {"digestive_key", "defense_key"}
+    ]
+
+    assert not default_routes
+    assert hierarchical_routes
+    assert all("add_training_route" not in route.suggested_scenario for route in hierarchical_routes)
 
 
 def test_confused_route_report_to_dict_and_markdown_are_actionable():
