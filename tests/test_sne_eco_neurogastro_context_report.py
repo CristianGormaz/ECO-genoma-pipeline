@@ -83,7 +83,7 @@ def test_neurogastro_context_report_escalates_watch_and_attention():
     assert watch_payload["status"] == "watch"
     assert "vigilancia" in watch_payload["ux_reading"]["state"]
     assert attention_payload["status"] == "attention"
-    assert "auditoría" in attention_payload["ux_reading"]["suggested_action"]
+    assert "auditar" in attention_payload["ux_reading"]["suggested_action"]
 
 
 def test_neurogastro_context_report_markdown_is_safe_and_explainable():
