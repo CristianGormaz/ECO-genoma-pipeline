@@ -1,0 +1,31 @@
+name: S.N.E.-E.C.O. CI
+
+on:
+  push:
+    branches:
+      - main
+      - "sne-*"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install project environment
+        run: |
+          make install-dev
+
+      - name: Run S.N.E.-E.C.O. portfolio demo
+        run: |
+          make sne-portfolio-demo
