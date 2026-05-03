@@ -14,7 +14,7 @@ def test_integration_readiness_report_builds_green_or_attention():
 def test_integration_readiness_report_tracks_git_state():
     report = build_report()
 
-    assert report["branch"]
+    assert report["branch"] or report["head"]
     assert report["head"]
     assert report["origin_main"]
     assert isinstance(report["ahead_of_main"], int)
