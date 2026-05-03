@@ -431,3 +431,6 @@ sne-governed-ml-evaluation-gate:
 
 sne-responsible-experiment-manifest:
 	.venv/bin/python scripts/run_sne_eco_responsible_experiment_manifest.py
+
+sne-integration-readiness-report:
+	.venv/bin/python scripts/run_sne_eco_integration_readiness_report.py
