@@ -585,3 +585,6 @@ Para entender el flujo interno de S.N.E.-E.C.O.:
 
 Para revisar el vocabulario técnico-bioinspirado de S.N.E.-E.C.O.:
 - [Glosario técnico-bioinspirado](docs/sne-eco-glossary.md)
+
+Para revisar la trazabilidad de evidencias de S.N.E.-E.C.O.:
+- [Matriz de evidencias](docs/sne-eco-evidence-matrix.md)

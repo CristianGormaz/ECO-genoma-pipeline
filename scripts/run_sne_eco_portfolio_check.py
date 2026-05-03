@@ -17,6 +17,7 @@ REQUIRED_FILES = [
     "docs/sne-eco-quick-evaluation.md",
     "docs/sne-eco-architecture-map.md",
     "docs/sne-eco-glossary.md",
+    "docs/sne-eco-evidence-matrix.md",
 ]
 
 RECOMMENDED_REPORTS = [
@@ -33,6 +34,7 @@ README_REQUIRED_TEXT = [
     "docs/sne-eco-quick-evaluation.md",
     "docs/sne-eco-architecture-map.md",
     "docs/sne-eco-glossary.md",
+    "docs/sne-eco-evidence-matrix.md",
 ]
 
 
