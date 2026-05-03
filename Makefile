@@ -407,3 +407,6 @@ sne-empirical-seed-report:
 
 sne-training-readiness:
 	.venv/bin/python scripts/run_sne_eco_training_readiness.py
+
+sne-empirical-train-eval-split:
+	.venv/bin/python scripts/run_sne_eco_empirical_train_eval_split.py
