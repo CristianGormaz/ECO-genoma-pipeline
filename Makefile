@@ -434,3 +434,6 @@ sne-responsible-experiment-manifest:
 
 sne-integration-readiness-report:
 	.venv/bin/python scripts/run_sne_eco_integration_readiness_report.py
+
+sne-pr-package-check:
+	.venv/bin/python scripts/run_sne_eco_pr_package_check.py
