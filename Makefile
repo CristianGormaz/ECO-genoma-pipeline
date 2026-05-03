@@ -422,3 +422,6 @@ sne-sensitive-intake-gate:
 
 sne-sensitive-source-registry:
 	.venv/bin/python scripts/run_sne_eco_sensitive_source_registry.py
+
+sne-sensitive-governance-summary:
+	.venv/bin/python scripts/run_sne_eco_sensitive_governance_summary.py
