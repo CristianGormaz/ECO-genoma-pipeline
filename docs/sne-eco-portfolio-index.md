@@ -112,3 +112,11 @@ docs/sne-eco-glossary.md
 ```
 
 Documento que define los conceptos principales del sistema E.C.O. en lenguaje simple, técnico y responsable.
+
+## 11. Matriz de evidencias
+
+```text
+docs/sne-eco-evidence-matrix.md
+```
+
+Documento que conecta cada pieza del portafolio con su evidencia observable, validación técnica y límite responsable.
