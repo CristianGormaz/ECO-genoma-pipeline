@@ -428,3 +428,6 @@ sne-sensitive-governance-summary:
 
 sne-governed-ml-evaluation-gate:
 	.venv/bin/python scripts/run_sne_eco_governed_ml_evaluation_gate.py
+
+sne-responsible-experiment-manifest:
+	.venv/bin/python scripts/run_sne_eco_responsible_experiment_manifest.py
