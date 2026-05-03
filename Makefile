@@ -416,3 +416,6 @@ sne-ml-baseline:
 
 sne-ml-challenge-eval:
 	.venv/bin/python scripts/run_sne_eco_ml_challenge_eval.py
+
+sne-sensitive-intake-gate:
+	.venv/bin/python scripts/run_sne_eco_sensitive_intake_gate.py
