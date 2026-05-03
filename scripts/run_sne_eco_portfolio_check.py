@@ -15,6 +15,7 @@ REQUIRED_FILES = [
     "docs/case-study-sne-eco-neurogastro-pipeline.md",
     "docs/sne-eco-public-summary.md",
     "docs/sne-eco-quick-evaluation.md",
+    "docs/sne-eco-architecture-map.md",
 ]
 
 RECOMMENDED_REPORTS = [
@@ -29,6 +30,7 @@ README_REQUIRED_TEXT = [
     "docs/case-study-sne-eco-neurogastro-pipeline.md",
     "docs/sne-eco-public-summary.md",
     "docs/sne-eco-quick-evaluation.md",
+    "docs/sne-eco-architecture-map.md",
 ]
 
 

@@ -96,3 +96,11 @@ docs/sne-eco-quick-evaluation.md
 ```
 
 Documento breve para revisar el proyecto en pocos minutos, ejecutar la demo principal y entender los límites responsables.
+
+## 9. Mapa de arquitectura
+
+```text
+docs/sne-eco-architecture-map.md
+```
+
+Documento que explica el flujo interno entrada → barrera → motilidad → defensa → estado → reporte.
