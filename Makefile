@@ -413,3 +413,6 @@ sne-empirical-train-eval-split:
 
 sne-ml-baseline:
 	.venv/bin/python scripts/run_sne_eco_ml_baseline.py
+
+sne-ml-challenge-eval:
+	.venv/bin/python scripts/run_sne_eco_ml_challenge_eval.py
