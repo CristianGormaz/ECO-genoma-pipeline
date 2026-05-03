@@ -579,3 +579,6 @@ yellow no representa falla. `yellow` indica que existen observaciones externas r
 
 Para evaluar rápidamente el proyecto S.N.E.-E.C.O.:
 - [Guía rápida de evaluación](docs/sne-eco-quick-evaluation.md)
+
+Para entender el flujo interno de S.N.E.-E.C.O.:
+- [Mapa de arquitectura](docs/sne-eco-architecture-map.md)
