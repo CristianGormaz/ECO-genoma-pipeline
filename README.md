@@ -582,3 +582,6 @@ Para evaluar rápidamente el proyecto S.N.E.-E.C.O.:
 
 Para entender el flujo interno de S.N.E.-E.C.O.:
 - [Mapa de arquitectura](docs/sne-eco-architecture-map.md)
+
+Para revisar el vocabulario técnico-bioinspirado de S.N.E.-E.C.O.:
+- [Glosario técnico-bioinspirado](docs/sne-eco-glossary.md)

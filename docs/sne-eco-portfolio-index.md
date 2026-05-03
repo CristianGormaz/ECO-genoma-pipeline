@@ -104,3 +104,11 @@ docs/sne-eco-architecture-map.md
 ```
 
 Documento que explica el flujo interno entrada → barrera → motilidad → defensa → estado → reporte.
+
+## 10. Glosario técnico-bioinspirado
+
+```text
+docs/sne-eco-glossary.md
+```
+
+Documento que define los conceptos principales del sistema E.C.O. en lenguaje simple, técnico y responsable.
