@@ -401,3 +401,6 @@ sne-portfolio-demo:
 	@echo "- pipeline neurogastrocomputacional"
 	@echo "- chequeo de portafolio"
 	@echo "- validación completa de tests"
+
+sne-empirical-seed-report:
+	.venv/bin/python scripts/run_sne_eco_empirical_seed_report.py
