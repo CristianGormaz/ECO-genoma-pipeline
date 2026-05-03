@@ -410,3 +410,6 @@ sne-training-readiness:
 
 sne-empirical-train-eval-split:
 	.venv/bin/python scripts/run_sne_eco_empirical_train_eval_split.py
+
+sne-ml-baseline:
+	.venv/bin/python scripts/run_sne_eco_ml_baseline.py
