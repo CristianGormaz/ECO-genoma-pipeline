@@ -1,0 +1,14 @@
+{
+  "version": "sne-eco-v1.1",
+  "type": "experimental-educational",
+  "tests_passed": 211,
+  "confused_routes": 0,
+  "recurrence_confused": 0,
+  "default_state_confused": 0,
+  "rules_modified": false,
+  "thresholds_modified": false,
+  "clinical_use": false,
+  "diagnostic_use": false,
+  "forensic_use": false,
+  "models_human_consciousness": false
+}
