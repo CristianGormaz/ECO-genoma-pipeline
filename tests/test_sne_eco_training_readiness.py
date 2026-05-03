@@ -3,13 +3,13 @@ from pathlib import Path
 from scripts.run_sne_eco_training_readiness import build_report, to_markdown
 
 
-def test_training_readiness_blocks_seed_dataset_training():
+def test_training_readiness_allows_training_when_seed_dataset_reaches_minimum():
     report = build_report()
 
-    assert report["status"] == "attention"
-    assert report["training_allowed"] is False
+    assert report["status"] == "green"
+    assert report["training_allowed"] is True
     assert report["row_count"] >= 6
-    assert report["row_count"] < report["minimum_rows_for_training"]
+    assert report["row_count"] >= report["minimum_rows_for_training"]
 
 
 def test_training_readiness_keeps_expected_decision_coverage():
