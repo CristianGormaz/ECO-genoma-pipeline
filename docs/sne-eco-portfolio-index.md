@@ -120,3 +120,11 @@ docs/sne-eco-evidence-matrix.md
 ```
 
 Documento que conecta cada pieza del portafolio con su evidencia observable, validación técnica y límite responsable.
+
+## 12. Matriz de afirmaciones y límites
+
+```text
+docs/sne-eco-claims-and-limits.md
+```
+
+Documento que define qué puede afirmarse responsablemente sobre E.C.O. y qué afirmaciones deben evitarse.
