@@ -401,3 +401,6 @@ sne-portfolio-demo:
 	@echo "- pipeline neurogastrocomputacional"
 	@echo "- chequeo de portafolio"
 	@echo "- validación completa de tests"
+
+sne-compare-v1-1:
+	.venv/bin/python scripts/run_sne_eco_compare_against_v1_1.py
