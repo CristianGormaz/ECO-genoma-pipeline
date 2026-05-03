@@ -402,10 +402,8 @@ sne-portfolio-demo:
 	@echo "- chequeo de portafolio"
 	@echo "- validación completa de tests"
 
-<<<<<<< Updated upstream
 sne-empirical-seed-report:
 	.venv/bin/python scripts/run_sne_eco_empirical_seed_report.py
-=======
+
 sne-training-readiness:
 	.venv/bin/python scripts/run_sne_eco_training_readiness.py
->>>>>>> Stashed changes
