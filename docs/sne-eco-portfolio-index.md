@@ -66,3 +66,17 @@ El valor del proyecto está en su trazabilidad, su estructura modular, su valida
 - Software bioinspirado.
 - Validación por pruebas automatizadas.
 - Documentación profesional para portafolio.
+
+## 7. Demo reproducible
+
+```text
+docs/sne-eco-demo-walkthrough.md
+```
+
+Comando sugerido:
+
+```bash
+make sne-portfolio-demo
+```
+
+Esta guía permite presentar el proyecto como una demostración técnica breve, reproducible y entendible para usuarios no expertos.
