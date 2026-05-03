@@ -425,3 +425,6 @@ sne-sensitive-source-registry:
 
 sne-sensitive-governance-summary:
 	.venv/bin/python scripts/run_sne_eco_sensitive_governance_summary.py
+
+sne-governed-ml-evaluation-gate:
+	.venv/bin/python scripts/run_sne_eco_governed_ml_evaluation_gate.py
