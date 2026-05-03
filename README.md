@@ -220,6 +220,7 @@ Para lectura rápida de portafolio S.N.E.-E.C.O.:
 
 ```text
 docs/sne-eco-portfolio-index.md
+docs/sne-eco-public-summary.md
 docs/case-study-sne-eco-neurogastro-pipeline.md
 ```
 
