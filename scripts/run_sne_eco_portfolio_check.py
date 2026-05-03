@@ -13,6 +13,7 @@ REQUIRED_FILES = [
     "README.md",
     "docs/sne-eco-portfolio-index.md",
     "docs/case-study-sne-eco-neurogastro-pipeline.md",
+    "docs/sne-eco-public-summary.md",
 ]
 
 RECOMMENDED_REPORTS = [
@@ -25,6 +26,7 @@ README_REQUIRED_TEXT = [
     "Para lectura rápida de portafolio S.N.E.-E.C.O.",
     "docs/sne-eco-portfolio-index.md",
     "docs/case-study-sne-eco-neurogastro-pipeline.md",
+    "docs/sne-eco-public-summary.md",
 ]
 
 

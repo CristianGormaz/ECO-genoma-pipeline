@@ -80,3 +80,11 @@ make sne-portfolio-demo
 ```
 
 Esta guía permite presentar el proyecto como una demostración técnica breve, reproducible y entendible para usuarios no expertos.
+
+## 8. Resumen público
+
+```text
+docs/sne-eco-public-summary.md
+```
+
+Lectura sugerida para presentar E.C.O. a reclutadores, usuarios no técnicos o revisores externos.
