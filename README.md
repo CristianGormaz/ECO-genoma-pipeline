@@ -216,6 +216,13 @@ Al finalizar, deja reportes en `results/` y documentos de apoyo en `docs/`.
 
 ## Documentos principales
 
+Para lectura rápida de portafolio S.N.E.-E.C.O.:
+
+```text
+docs/sne-eco-portfolio-index.md
+docs/case-study-sne-eco-neurogastro-pipeline.md
+```
+
 Para una lectura profesional, breve y orientada a empleabilidad:
 
 ```text
