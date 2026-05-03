@@ -419,3 +419,6 @@ sne-ml-challenge-eval:
 
 sne-sensitive-intake-gate:
 	.venv/bin/python scripts/run_sne_eco_sensitive_intake_gate.py
+
+sne-sensitive-source-registry:
+	.venv/bin/python scripts/run_sne_eco_sensitive_source_registry.py
