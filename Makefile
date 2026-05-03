@@ -393,6 +393,7 @@ sne-portfolio-check:
 
 sne-portfolio-demo:
 	$(MAKE) sne-neurogastro-pipeline
+	$(MAKE) sne-compare-v1-1
 	$(MAKE) sne-portfolio-check
 	$(PY) -m pytest -q
 	@echo ""
