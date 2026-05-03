@@ -588,3 +588,6 @@ Para revisar el vocabulario técnico-bioinspirado de S.N.E.-E.C.O.:
 
 Para revisar la trazabilidad de evidencias de S.N.E.-E.C.O.:
 - [Matriz de evidencias](docs/sne-eco-evidence-matrix.md)
+
+Para revisar las afirmaciones responsables y límites de S.N.E.-E.C.O.:
+- [Matriz de afirmaciones y límites](docs/sne-eco-claims-and-limits.md)
