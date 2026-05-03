@@ -24,6 +24,7 @@ REQUIRED_FILES = [
 RECOMMENDED_REPORTS = [
     "results/sne_eco_neurogastro_pipeline_summary.json",
     "results/sne_eco_compare_against_rc1.json",
+    "results/sne_eco_compare_against_v1_1.json",
     "results/sne_eco_neurogastro_context_report.json",
 ]
 
