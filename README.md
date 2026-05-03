@@ -576,3 +576,6 @@ Lectura esperada:
 - Solo dry-run: True
 
 yellow no representa falla. `yellow` indica que existen observaciones externas retenidas por gobernanza y que ninguna evidencia externa se admite todavía al dataset estable.
+
+Para evaluar rápidamente el proyecto S.N.E.-E.C.O.:
+- [Guía rápida de evaluación](docs/sne-eco-quick-evaluation.md)
