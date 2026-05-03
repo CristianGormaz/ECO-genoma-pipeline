@@ -88,3 +88,11 @@ docs/sne-eco-public-summary.md
 ```
 
 Lectura sugerida para presentar E.C.O. a reclutadores, usuarios no técnicos o revisores externos.
+
+## 8. Guía rápida de evaluación
+
+```text
+docs/sne-eco-quick-evaluation.md
+```
+
+Documento breve para revisar el proyecto en pocos minutos, ejecutar la demo principal y entender los límites responsables.
