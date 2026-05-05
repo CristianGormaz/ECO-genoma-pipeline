@@ -437,3 +437,10 @@ sne-integration-readiness-report:
 
 sne-pr-package-check:
 	.venv/bin/python scripts/run_sne_eco_pr_package_check.py
+
+# E.C.O. Vacuum State demo
+ECO_VACUUM_OUTPUT_DIR ?= results
+
+.PHONY: eco-vacuum-state-demo
+eco-vacuum-state-demo:
+	$(PYTHON) scripts/run_eco_vacuum_state_demo.py --output-dir $(ECO_VACUUM_OUTPUT_DIR)
