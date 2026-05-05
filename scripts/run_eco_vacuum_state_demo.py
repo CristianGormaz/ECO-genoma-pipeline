@@ -76,6 +76,11 @@ def write_outputs(payload, output_dir):
         encoding="utf-8",
     )
 
+    summary = payload["summary"]
+    total_steps = summary["total_steps"]
+    observable_events = summary["observable_events"]
+    basal_silence_events = summary["basal_silence_events"]
+
     lines = [
         "# Demo E.C.O. - Vacuum State",
         "",
@@ -93,9 +98,9 @@ def write_outputs(payload, output_dir):
         "",
         "## Resumen",
         "",
-        f"- Pasos evaluados: {payload["summary"]["total_steps"]}",
-        f"- Eventos observables: {payload["summary"]["observable_events"]}",
-        f"- Silencios basales: {payload["summary"]["basal_silence_events"]}",
+        f"- Pasos evaluados: {total_steps}",
+        f"- Eventos observables: {observable_events}",
+        f"- Silencios basales: {basal_silence_events}",
         "",
         "## Vocabulario controlado",
         "",
