@@ -401,3 +401,39 @@ sne-portfolio-demo:
 	@echo "- pipeline neurogastrocomputacional"
 	@echo "- chequeo de portafolio"
 	@echo "- validación completa de tests"
+
+sne-empirical-seed-report:
+	.venv/bin/python scripts/run_sne_eco_empirical_seed_report.py
+
+sne-training-readiness:
+	.venv/bin/python scripts/run_sne_eco_training_readiness.py
+
+sne-empirical-train-eval-split:
+	.venv/bin/python scripts/run_sne_eco_empirical_train_eval_split.py
+
+sne-ml-baseline:
+	.venv/bin/python scripts/run_sne_eco_ml_baseline.py
+
+sne-ml-challenge-eval:
+	.venv/bin/python scripts/run_sne_eco_ml_challenge_eval.py
+
+sne-sensitive-intake-gate:
+	.venv/bin/python scripts/run_sne_eco_sensitive_intake_gate.py
+
+sne-sensitive-source-registry:
+	.venv/bin/python scripts/run_sne_eco_sensitive_source_registry.py
+
+sne-sensitive-governance-summary:
+	.venv/bin/python scripts/run_sne_eco_sensitive_governance_summary.py
+
+sne-governed-ml-evaluation-gate:
+	.venv/bin/python scripts/run_sne_eco_governed_ml_evaluation_gate.py
+
+sne-responsible-experiment-manifest:
+	.venv/bin/python scripts/run_sne_eco_responsible_experiment_manifest.py
+
+sne-integration-readiness-report:
+	.venv/bin/python scripts/run_sne_eco_integration_readiness_report.py
+
+sne-pr-package-check:
+	.venv/bin/python scripts/run_sne_eco_pr_package_check.py
