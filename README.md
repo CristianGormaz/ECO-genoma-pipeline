@@ -591,3 +591,27 @@ Para revisar la trazabilidad de evidencias de S.N.E.-E.C.O.:
 
 Para revisar las afirmaciones responsables y límites de S.N.E.-E.C.O.:
 - [Matriz de afirmaciones y límites](docs/sne-eco-claims-and-limits.md)
+
+
+## E.C.O. Vacuum State demo
+
+Demo educativa y experimental para representar un estado informacional minimo inspirado en patrones del vacio cuantico.
+
+Ejecucion rapida:
+
+```bash
+make eco-vacuum-state-demo
+```
+
+Salidas esperadas:
+
+- `results/eco_vacuum_state_demo.json`
+- `results/eco_vacuum_state_demo.md`
+
+Documentos relacionados:
+
+- `docs/research/eco-vacio-cuantico-patrones-minimos.md`
+- `docs/research/eco-vacuum-state-demo-traceability.md`
+
+Limite responsable: no mide el vacio cuantico real, no usa datos sensibles, no entrena modelos, no modifica baseline y no recalibra umbrales estables.
+
