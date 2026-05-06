@@ -615,3 +615,22 @@ Documentos relacionados:
 
 Limite responsable: no mide el vacio cuantico real, no usa datos sensibles, no entrena modelos, no modifica baseline y no recalibra umbrales estables.
 
+## Operación segura del repositorio
+
+Antes de iniciar, cerrar o retomar un sprint, ejecuta:
+
+```bash
+make eco-status
+```
+
+Guía relacionada:
+
+- [Cuándo detenerse en terminal](docs/operations/terminal-stop-guide.md)
+
+Lectura rápida:
+
+- Estado green: puedes detenerte o iniciar un nuevo sprint desde main.
+- Estado attention: revisa cambios pendientes antes de seguir.
+- Estado unknown o error: no hagas commit ni push hasta diagnosticar.
+
+Límite operativo: este flujo solo inspecciona el repositorio. No modifica baseline, no entrena modelos y no recalibra umbrales.
