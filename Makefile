@@ -449,3 +449,7 @@ eco-vacuum-state-demo:
 eco-status:
 	$(PYTHON) scripts/run_eco_status.py
 
+# E.C.O. minimal synthetic simulation demo
+.PHONY: eco-minimal-simulation-demo
+eco-minimal-simulation-demo:
+	$(PYTHON) scripts/run_eco_minimal_simulation.py
