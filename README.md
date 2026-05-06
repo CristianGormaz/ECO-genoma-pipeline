@@ -647,3 +647,17 @@ make eco-validate-synthetic-demos
 ```
 
 Este comando ejecuta las demos sintéticas disponibles y valida sus salidas contra el contrato sintético.
+
+## Registro de demos sintéticas E.C.O.
+
+Consulta el registro oficial de demos sintéticas:
+
+- [Registro de demos sintéticas E.C.O.](docs/architecture/eco-synthetic-demo-registry.md)
+
+Uso recomendado:
+
+```bash
+make eco-validate-synthetic-demos
+```
+
+Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibración.
