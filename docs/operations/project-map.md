@@ -51,3 +51,9 @@ Este documento es operativo y documental. No usa datos sensibles, no entrena mod
 
 - [Guía para agregar una demo sintética E.C.O.](eco-add-synthetic-demo-guide.md)
 
+## Reporte suite sintética
+
+- `make eco-synthetic-demos-suite-report`: genera un resumen operativo de las demos sintéticas registradas.
+- `scripts/run_eco_synthetic_demos_suite_report.py`: runner del reporte.
+- `results/eco_synthetic_demos_suite_report.json`: salida JSON temporal.
+- `results/eco_synthetic_demos_suite_report.md`: salida Markdown temporal.
