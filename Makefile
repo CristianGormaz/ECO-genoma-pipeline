@@ -444,3 +444,8 @@ ECO_VACUUM_OUTPUT_DIR ?= results
 .PHONY: eco-vacuum-state-demo
 eco-vacuum-state-demo:
 	$(PYTHON) scripts/run_eco_vacuum_state_demo.py --output-dir $(ECO_VACUUM_OUTPUT_DIR)
+# E.C.O. operational status
+.PHONY: eco-status
+eco-status:
+	$(PYTHON) scripts/run_eco_status.py
+
