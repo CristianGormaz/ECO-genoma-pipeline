@@ -43,6 +43,7 @@ def test_validator_loads_registry():
     assert "minimal_simulation" in demo_ids
     assert "signal_balance" in demo_ids
     assert "waste_pressure" in demo_ids
+    assert "absorption_threshold" in demo_ids
     assert data["data_policy"] == "synthetic_only"
 
 

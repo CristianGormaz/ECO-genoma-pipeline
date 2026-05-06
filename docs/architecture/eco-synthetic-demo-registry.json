@@ -27,6 +27,13 @@
       "runner": "scripts/run_eco_waste_pressure_demo.py",
       "json_output": "results/eco_waste_pressure_demo.json",
       "markdown_output": "results/eco_waste_pressure_demo.md"
+    },
+    {
+      "id": "absorption_threshold",
+      "name": "absorption threshold",
+      "runner": "scripts/run_eco_absorption_threshold_demo.py",
+      "json_output": "results/eco_absorption_threshold_demo.json",
+      "markdown_output": "results/eco_absorption_threshold_demo.md"
     }
   ]
 }
