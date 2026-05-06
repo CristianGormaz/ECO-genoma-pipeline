@@ -57,3 +57,9 @@ Este documento es operativo y documental. No usa datos sensibles, no entrena mod
 - `scripts/run_eco_synthetic_demos_suite_report.py`: runner del reporte.
 - `results/eco_synthetic_demos_suite_report.json`: salida JSON temporal.
 - `results/eco_synthetic_demos_suite_report.md`: salida Markdown temporal.
+
+## Guía de interpretación del reporte suite sintético
+
+- [Guía de interpretación del reporte de suite sintética E.C.O.](docs/operations/eco-synthetic-demos-suite-report-guide.md)
+- Comando asociado: `make eco-synthetic-demos-suite-report`
+- Uso: entender el estado `passed`, las salidas generadas y los límites responsables del reporte.

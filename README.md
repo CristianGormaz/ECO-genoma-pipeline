@@ -673,3 +673,9 @@ Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibr
 - Uso: resumir las demos sintéticas oficiales registradas en el pipeline.
 
 Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibración de umbrales.
+
+## Guía de interpretación del reporte suite sintético
+
+- [Guía de interpretación del reporte de suite sintética E.C.O.](docs/operations/eco-synthetic-demos-suite-report-guide.md)
+- Comando asociado: `make eco-synthetic-demos-suite-report`
+- Uso: entender el estado `passed`, las salidas generadas y los límites responsables del reporte.
