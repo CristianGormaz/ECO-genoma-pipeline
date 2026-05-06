@@ -47,3 +47,9 @@ git status --short
 ## Límite responsable
 
 Este reporte usa solo datos sintéticos. No usa datos sensibles, no entrena modelos, no modifica baseline, no recalibra umbrales y no convierte metáforas simbólicas en conclusiones científicas.
+
+## Check operativo completo
+
+- Comando recomendado: `make eco-check`
+- Ejecuta estado operativo, validación global de demos sintéticas, reporte suite y pytest global.
+- Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibración.

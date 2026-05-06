@@ -486,3 +486,11 @@ eco-absorption-threshold-demo:
 .PHONY: eco-synthetic-demos-suite-report
 eco-synthetic-demos-suite-report:
 	$(PYTHON) scripts/run_eco_synthetic_demos_suite_report.py
+
+# E.C.O. operational full check
+.PHONY: eco-check
+eco-check:
+	$(MAKE) eco-status
+	$(MAKE) eco-validate-synthetic-demos
+	$(MAKE) eco-synthetic-demos-suite-report
+	$(PYTHON) -m pytest -q
