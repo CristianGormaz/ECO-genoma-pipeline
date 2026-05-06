@@ -661,3 +661,7 @@ make eco-validate-synthetic-demos
 ```
 
 Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibración.
+## Guía para nuevas demos sintéticas
+
+- [Guía para agregar una demo sintética E.C.O.](docs/operations/eco-add-synthetic-demo-guide.md)
+
