@@ -31,3 +31,19 @@ Esta guía define el mínimo seguro para agregar una nueva demo sintética al pi
 - No recalibrar umbrales.
 - No hacer afirmaciones biomédicas aplicadas.
 - No convertir metáforas simbólicas en conclusiones científicas.
+
+## Validación posterior recomendada
+
+Después de agregar o modificar una demo sintética, ejecuta:
+
+- `make eco-validate-synthetic-demos`
+- `make eco-synthetic-demos-suite-report`
+- `python3 -m pytest -q`
+
+El reporte de suite se genera con `scripts/run_eco_synthetic_demos_suite_report.py` y resume las demos declaradas en `docs/architecture/eco-synthetic-demo-registry.json`.
+
+Salidas esperadas del reporte suite:
+
+- `results/eco_synthetic_demos_suite_report.json`
+- `results/eco_synthetic_demos_suite_report.md`
+

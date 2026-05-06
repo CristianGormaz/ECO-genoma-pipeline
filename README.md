@@ -665,3 +665,11 @@ Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibr
 
 - [Guía para agregar una demo sintética E.C.O.](docs/operations/eco-add-synthetic-demo-guide.md)
 
+## Reporte de suite de demos sintéticas E.C.O.
+
+- Comando: `make eco-synthetic-demos-suite-report`
+- Script: `scripts/run_eco_synthetic_demos_suite_report.py`
+- Fuente: `docs/architecture/eco-synthetic-demo-registry.json`
+- Uso: resumir las demos sintéticas oficiales registradas en el pipeline.
+
+Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibración de umbrales.
