@@ -26,4 +26,4 @@ jobs:
           python -m pip install pytest
 
       - name: Run E.C.O. operational check
-        run: make eco-check
+        run: make eco-check-clean

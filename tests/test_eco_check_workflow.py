@@ -14,11 +14,8 @@ def test_eco_check_workflow_exists():
     assert "- main" in text
 
 
-def test_eco_check_workflow_runs_operational_check():
+def test_eco_check_workflow_runs_check_clean_command():
     text = WORKFLOW.read_text(encoding="utf-8")
 
-    assert "actions/checkout@v4" in text
-    assert "actions/setup-python@v5" in text
-    assert "python-version:" in text
-    assert "python -m pip install pytest" in text
-    assert "make eco-check" in text
+    assert "make eco-check-clean" in text
+    assert "run: make eco-check-clean" in text
