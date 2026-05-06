@@ -73,3 +73,8 @@ Uso: ubicar demos oficiales, comandos, salidas esperadas y validadores asociados
 - Comando: `make eco-absorption-threshold-demo`
 - Runner: `scripts/run_eco_absorption_threshold_demo.py`
 - Salidas: `results/eco_absorption_threshold_demo.json` y `results/eco_absorption_threshold_demo.md`
+
+## Comparación de demos sintéticas
+
+- [Comparación de demos sintéticas E.C.O.](eco-synthetic-demo-comparison.md)
+- Uso: entender qué patrón mínimo representa cada demo registrada.
