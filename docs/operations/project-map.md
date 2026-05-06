@@ -1,0 +1,38 @@
+# Mapa operativo del proyecto E.C.O.
+
+## Estado
+
+Estado: operativo.
+
+Clasificación: permitido.
+
+Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar código ni resultados del pipeline.
+
+## Entrada principal
+
+- README.md: punto de entrada general del proyecto.
+- Makefile: comandos operativos reutilizables.
+
+## Comandos útiles
+
+- make eco-status: revisa rama, HEAD, origin/main y limpieza del árbol.
+- make eco-vacuum-state-demo: genera la demo educativa de Vacuum State.
+
+## Carpetas principales
+
+- docs/operations/: guías para operar el repositorio con seguridad.
+- docs/research/: documentos de investigación y trazabilidad conceptual.
+- scripts/: comandos ejecutables del pipeline.
+- tests/: validaciones automáticas con pytest.
+- results/: salidas generadas por demos o reportes cuando corresponde.
+
+## Archivos operativos actuales
+
+- docs/operations/terminal-stop-guide.md: guía para saber cuándo detenerse.
+- docs/operations/project-map.md: este mapa operativo.
+- docs/research/eco-research-index.md: índice de investigación E.C.O.
+- scripts/run_eco_status.py: inspección rápida del estado del repositorio.
+
+## Límite responsable
+
+Este documento es operativo y documental. No usa datos sensibles, no entrena modelos, no modifica baseline, no recalibra umbrales y no hace afirmaciones biomédicas aplicadas.
