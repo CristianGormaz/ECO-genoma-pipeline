@@ -487,6 +487,11 @@ eco-absorption-threshold-demo:
 eco-synthetic-demos-suite-report:
 	$(PYTHON) scripts/run_eco_synthetic_demos_suite_report.py
 
+# E.C.O. synthetic signal matrix report
+.PHONY: eco-synthetic-signal-matrix-report
+eco-synthetic-signal-matrix-report:
+	$(PYTHON) scripts/run_eco_synthetic_signal_matrix_report.py
+
 # E.C.O. operational full check
 .PHONY: eco-check
 eco-check:
@@ -494,6 +499,7 @@ eco-check:
 	$(MAKE) eco-validate-synthetic-demos
 	$(MAKE) eco-synthetic-demos-suite-report
 	$(MAKE) eco-synthetic-demo-comparison-report
+	$(MAKE) eco-synthetic-signal-matrix-report
 	$(PYTHON) -m pytest -q
 
 # E.C.O. generated results cleanup
@@ -511,6 +517,8 @@ eco-clean-results:
 	rm -f results/eco_synthetic_demos_suite_report.md
 	rm -f results/eco_synthetic_demo_comparison_report.json
 	rm -f results/eco_synthetic_demo_comparison_report.md
+	rm -f results/eco_synthetic_signal_matrix_report.json
+	rm -f results/eco_synthetic_signal_matrix_report.md
 
 # E.C.O. check and cleanup
 .PHONY: eco-check-clean
