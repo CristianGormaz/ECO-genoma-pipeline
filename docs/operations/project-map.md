@@ -38,3 +38,7 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 ## Límite responsable
 
 Este documento es operativo y documental. No usa datos sensibles, no entrena modelos, no modifica baseline, no recalibra umbrales y no hace afirmaciones biomédicas aplicadas.
+
+## Validación sintética global
+
+- make eco-validate-synthetic-demos: ejecuta y valida todas las demos sintéticas permitidas.
