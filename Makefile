@@ -494,3 +494,17 @@ eco-check:
 	$(MAKE) eco-validate-synthetic-demos
 	$(MAKE) eco-synthetic-demos-suite-report
 	$(PYTHON) -m pytest -q
+
+# E.C.O. generated results cleanup
+.PHONY: eco-clean-results
+eco-clean-results:
+	rm -f results/eco_minimal_simulation_demo.json
+	rm -f results/eco_minimal_simulation_demo.md
+	rm -f results/eco_signal_balance_demo.json
+	rm -f results/eco_signal_balance_demo.md
+	rm -f results/eco_waste_pressure_demo.json
+	rm -f results/eco_waste_pressure_demo.md
+	rm -f results/eco_absorption_threshold_demo.json
+	rm -f results/eco_absorption_threshold_demo.md
+	rm -f results/eco_synthetic_demos_suite_report.json
+	rm -f results/eco_synthetic_demos_suite_report.md

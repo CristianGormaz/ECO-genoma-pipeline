@@ -1,0 +1,50 @@
+import subprocess
+from pathlib import Path
+
+
+MAKEFILE = Path("Makefile")
+README = Path("README.md")
+PROJECT_MAP = Path("docs/operations/project-map.md")
+GUIDE = Path("docs/operations/eco-synthetic-demos-suite-report-guide.md")
+
+RESULTS = [
+    Path("results/eco_minimal_simulation_demo.json"),
+    Path("results/eco_minimal_simulation_demo.md"),
+    Path("results/eco_signal_balance_demo.json"),
+    Path("results/eco_signal_balance_demo.md"),
+    Path("results/eco_waste_pressure_demo.json"),
+    Path("results/eco_waste_pressure_demo.md"),
+    Path("results/eco_absorption_threshold_demo.json"),
+    Path("results/eco_absorption_threshold_demo.md"),
+    Path("results/eco_synthetic_demos_suite_report.json"),
+    Path("results/eco_synthetic_demos_suite_report.md"),
+]
+
+
+def test_makefile_has_eco_clean_results_command():
+    text = MAKEFILE.read_text(encoding="utf-8")
+
+    assert ".PHONY: eco-clean-results" in text
+    assert "eco-clean-results:" in text
+    for path in RESULTS:
+        assert f"rm -f {path}" in text
+
+
+def test_eco_clean_results_removes_generated_artifacts():
+    for path in RESULTS:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("temporary synthetic artifact", encoding="utf-8")
+
+    result = subprocess.run(["make", "eco-clean-results"], capture_output=True, text=True, check=False)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    for path in RESULTS:
+        assert not path.exists()
+
+
+def test_operational_docs_mention_eco_clean_results():
+    for path in [README, PROJECT_MAP, GUIDE]:
+        text = path.read_text(encoding="utf-8")
+        assert "make eco-clean-results" in text
+        assert "results/" in text
+        assert "no elimina código" in text
