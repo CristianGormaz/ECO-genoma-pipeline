@@ -508,3 +508,9 @@ eco-clean-results:
 	rm -f results/eco_absorption_threshold_demo.md
 	rm -f results/eco_synthetic_demos_suite_report.json
 	rm -f results/eco_synthetic_demos_suite_report.md
+
+# E.C.O. check and cleanup
+.PHONY: eco-check-clean
+eco-check-clean:
+	$(MAKE) eco-check
+	$(MAKE) eco-clean-results
