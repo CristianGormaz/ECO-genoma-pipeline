@@ -691,3 +691,10 @@ Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibr
 - Comando: `make eco-clean-results`
 - Uso: eliminar artefactos generados en `results/` por demos sintéticas y reporte suite.
 - Límite: no elimina código, documentación, tests, baseline ni umbrales.
+
+## Chequeo operativo con limpieza
+
+- Comando recomendado: `make eco-check-clean`
+- Ejecuta `make eco-check` y luego `make eco-clean-results`.
+- Uso: validar el pipeline completo y limpiar salidas sintéticas generadas en `results/`.
+- Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin baseline; sin recalibración.
