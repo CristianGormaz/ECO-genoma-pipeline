@@ -59,3 +59,9 @@ make eco-validate-synthetic-demos
 ```
 
 Uso: validar todas las demos sintéticas registradas sin usar datos sensibles, sin entrenamiento y sin recalibrar umbrales.
+
+## Registro de demos
+
+- [Registro de demos sintéticas E.C.O.](eco-synthetic-demo-registry.md)
+
+Uso: ubicar demos oficiales, comandos, salidas esperadas y validadores asociados.
