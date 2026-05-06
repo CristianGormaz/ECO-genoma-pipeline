@@ -42,3 +42,8 @@ Este documento es operativo y documental. No usa datos sensibles, no entrena mod
 ## Validación sintética global
 
 - make eco-validate-synthetic-demos: ejecuta y valida todas las demos sintéticas permitidas.
+
+## Registro sintético
+
+- docs/architecture/eco-synthetic-demo-registry.md: registro de demos sintéticas oficiales, comandos, salidas y validadores.
+- make eco-validate-synthetic-demos: validación global recomendada antes de cerrar cambios relacionados con demos sintéticas.
