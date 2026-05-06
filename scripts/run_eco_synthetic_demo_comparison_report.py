@@ -56,26 +56,26 @@ def write_outputs(report: dict) -> None:
     JSON_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     JSON_OUTPUT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     md = ["# E.C.O. synthetic demo comparison report", ""]
-    md.append(f"Estado: {report["status"]}")
-    md.append(f"Demos comparadas: {report["demo_count"]}")
+    md.append(f"Estado: {report['status']}")
+    md.append(f"Demos comparadas: {report['demo_count']}")
     md.append("")
     md.append("| Demo | Patrón mínimo | Lectura operativa | Límite responsable |")
     md.append("|---|---|---|---|")
     for demo in report["demos"]:
-        md.append(f"| {demo["name"]} | {demo["pattern_minimum"]} | {demo["operational_reading"]} | {demo["responsible_limit"]} |")
+        md.append(f"| {demo['name']} | {demo['pattern_minimum']} | {demo['operational_reading']} | {demo['responsible_limit']} |")
     md.append("")
-    md.append(f"Límite: {report["limit"]}.")
+    md.append(f"Límite: {report['limit']}.")
     MD_OUTPUT.write_text("\n".join(md) + "\n", encoding="utf-8")
 
 def main() -> int:
     report = build_report(load_registry())
     write_outputs(report)
     print("# E.C.O. synthetic demo comparison report")
-    print(f"Estado: {report["status"]}")
-    print(f"Demos comparadas: {report["demo_count"]}")
+    print(f"Estado: {report['status']}")
+    print(f"Demos comparadas: {report['demo_count']}")
     print(f"Salida JSON: {JSON_OUTPUT}")
     print(f"Salida Markdown: {MD_OUTPUT}")
-    print(f"Límite: {report["limit"]}.")
+    print(f"Límite: {report['limit']}.")
     return 0
 
 if __name__ == "__main__":
