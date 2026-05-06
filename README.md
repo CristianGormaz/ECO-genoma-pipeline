@@ -679,3 +679,9 @@ Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibr
 - [Guía de interpretación del reporte de suite sintética E.C.O.](docs/operations/eco-synthetic-demos-suite-report-guide.md)
 - Comando asociado: `make eco-synthetic-demos-suite-report`
 - Uso: entender el estado `passed`, las salidas generadas y los límites responsables del reporte.
+
+## Check operativo completo
+
+- Comando recomendado: `make eco-check`
+- Ejecuta estado operativo, validación global de demos sintéticas, reporte suite y pytest global.
+- Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibración.
