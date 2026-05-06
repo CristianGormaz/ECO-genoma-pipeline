@@ -627,6 +627,7 @@ Guía relacionada:
 
 - [Cuándo detenerse en terminal](docs/operations/terminal-stop-guide.md)
 - [Mapa operativo del proyecto](docs/operations/project-map.md)
+- [Índice de demos sintéticas E.C.O.](docs/architecture/eco-synthetic-demos-index.md)
 - [Contrato de datos sintéticos E.C.O.](docs/architecture/eco-synthetic-data-contract.md)
 
 Lectura rápida:
