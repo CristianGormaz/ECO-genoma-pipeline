@@ -1,0 +1,44 @@
+{
+  "title": "E.C.O. synthetic signal matrix",
+  "status": "draft-operational",
+  "classification": "allowed",
+  "limit": "datos sintéticos; sin entrenamiento; sin datos sensibles; sin modificación de baseline; sin recalibración; sin afirmaciones biomédicas aplicadas",
+  "signals": [
+    {
+      "id": "minimal_simulation",
+      "demo": "minimal simulation",
+      "synthetic_input": "señal mínima procesable",
+      "observed_pattern": "procesamiento mínimo de señal sintética",
+      "operational_reading": "el pipeline puede digerir una entrada básica",
+      "risk": "sobreinterpretar una simulación mínima como evidencia aplicada",
+      "allowed_next_experiment": "comparar con otra demo sintética sin cambiar baseline"
+    },
+    {
+      "id": "signal_balance",
+      "demo": "signal balance",
+      "synthetic_input": "dos o más señales sintéticas comparables",
+      "observed_pattern": "balance entre señales sintéticas",
+      "operational_reading": "una señal puede dominar, equilibrarse o quedar bajo otra",
+      "risk": "confundir equilibrio sintético con equilibrio biológico real",
+      "allowed_next_experiment": "documentar criterios de comparación sintética"
+    },
+    {
+      "id": "waste_pressure",
+      "demo": "waste pressure",
+      "synthetic_input": "residuo o carga sintética acumulada",
+      "observed_pattern": "presión residual y estabilidad",
+      "operational_reading": "el sistema puede observar acumulación simulada sin diagnosticar",
+      "risk": "usar presión residual como indicador clínico o biológico real",
+      "allowed_next_experiment": "comparar presión residual sintética con umbrales simulados"
+    },
+    {
+      "id": "absorption_threshold",
+      "demo": "absorption threshold",
+      "synthetic_input": "señal sintética frente a umbral definido",
+      "observed_pattern": "umbral de absorción sintético",
+      "operational_reading": "el sistema observa cuándo una señal supera un umbral simulado",
+      "risk": "recalibrar umbrales estables sin auditoría",
+      "allowed_next_experiment": "generar reporte de umbral sin modificar valores estables"
+    }
+  ]
+}
