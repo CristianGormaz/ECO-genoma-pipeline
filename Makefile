@@ -453,3 +453,9 @@ eco-status:
 .PHONY: eco-minimal-simulation-demo
 eco-minimal-simulation-demo:
 	$(PYTHON) scripts/run_eco_minimal_simulation.py
+# E.C.O. synthetic contract validation
+.PHONY: eco-validate-synthetic-contract
+eco-validate-synthetic-contract:
+	$(PYTHON) scripts/run_eco_minimal_simulation.py
+	$(PYTHON) scripts/validate_eco_synthetic_contract.py results/eco_minimal_simulation_demo.json
+
