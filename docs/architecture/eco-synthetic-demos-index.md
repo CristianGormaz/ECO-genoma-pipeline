@@ -49,3 +49,13 @@ Por ahora, el contrato permite estas acciones:
 ## Límite responsable
 
 Este índice es documental y operativo. No ejecuta simulaciones, no modifica resultados, no entrena modelos, no usa datos sensibles y no convierte metáforas simbólicas en conclusiones científicas.
+
+## Validador global
+
+Comando recomendado:
+
+```bash
+make eco-validate-synthetic-demos
+```
+
+Uso: validar todas las demos sintéticas registradas sin usar datos sensibles, sin entrenamiento y sin recalibrar umbrales.

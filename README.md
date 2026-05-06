@@ -637,3 +637,13 @@ Lectura rápida:
 - Estado unknown o error: no hagas commit ni push hasta diagnosticar.
 
 Límite operativo: este flujo solo inspecciona el repositorio. No modifica baseline, no entrena modelos y no recalibra umbrales.
+
+## Validación global de demos sintéticas E.C.O.
+
+Para ejecutar y validar todas las demos sintéticas permitidas:
+
+```bash
+make eco-validate-synthetic-demos
+```
+
+Este comando ejecuta las demos sintéticas disponibles y valida sus salidas contra el contrato sintético.
