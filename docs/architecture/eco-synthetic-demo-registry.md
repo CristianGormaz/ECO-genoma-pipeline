@@ -50,3 +50,11 @@ Este registro es documental y operativo. no usa datos sensibles, no entrena mode
 - Comando recomendado: `make eco-validate-synthetic-demos`
 
 El validador global debe leer el registro operativo para evitar duplicar listas de demos dentro del código.
+## Waste pressure
+
+- Runner: `scripts/run_eco_waste_pressure_demo.py`
+- JSON: `results/eco_waste_pressure_demo.json`
+- Markdown: `results/eco_waste_pressure_demo.md`
+- Validador: `make eco-validate-synthetic-demos`
+- Límite: datos sintéticos; sin datos sensibles; sin entrenamiento.
+
