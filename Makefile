@@ -481,3 +481,8 @@ eco-waste-pressure-demo:
 .PHONY: eco-absorption-threshold-demo
 eco-absorption-threshold-demo:
 	$(PYTHON) scripts/run_eco_absorption_threshold_demo.py
+
+# E.C.O. synthetic demos suite report
+.PHONY: eco-synthetic-demos-suite-report
+eco-synthetic-demos-suite-report:
+	$(PYTHON) scripts/run_eco_synthetic_demos_suite_report.py
