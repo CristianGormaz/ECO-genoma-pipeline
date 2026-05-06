@@ -34,7 +34,8 @@ def load_registry(path: Path = REGISTRY_PATH) -> dict:
         if missing:
             raise ValueError(f"demo {index} missing keys: " + ", ".join(sorted(missing)))
         if not Path(demo["runner"]).exists():
-            raise ValueError(f"runner does not exist: {demo["runner"]}")
+            runner = demo["runner"]
+            raise ValueError(f"runner does not exist: {runner}")
     return data
 
 
