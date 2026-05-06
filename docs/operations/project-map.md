@@ -31,6 +31,7 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 - docs/operations/terminal-stop-guide.md: guía para saber cuándo detenerse.
 - docs/operations/project-map.md: este mapa operativo.
 - docs/research/eco-research-index.md: índice de investigación E.C.O.
+- docs/architecture/eco-synthetic-data-contract.md: contrato mínimo para datos sintéticos y trazas de simulación.
 - scripts/run_eco_status.py: inspección rápida del estado del repositorio.
 
 ## Límite responsable
