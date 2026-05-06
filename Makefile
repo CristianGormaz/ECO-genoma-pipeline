@@ -472,3 +472,8 @@ eco-validate-signal-balance-demo: eco-signal-balance-demo
 .PHONY: eco-validate-synthetic-demos
 eco-validate-synthetic-demos:
 	$(PYTHON) scripts/validate_eco_synthetic_demos.py
+# E.C.O. synthetic waste pressure demo
+.PHONY: eco-waste-pressure-demo
+eco-waste-pressure-demo:
+	$(PYTHON) scripts/run_eco_waste_pressure_demo.py
+

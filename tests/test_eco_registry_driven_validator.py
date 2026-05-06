@@ -39,7 +39,10 @@ def test_validator_loads_registry():
     module = load_validator_module()
     data = module.load_registry()
 
-    assert len(data["demos"]) == 2
+    demo_ids = {demo["id"] for demo in data["demos"]}
+    assert "minimal_simulation" in demo_ids
+    assert "signal_balance" in demo_ids
+    assert "waste_pressure" in demo_ids
     assert data["data_policy"] == "synthetic_only"
 
 

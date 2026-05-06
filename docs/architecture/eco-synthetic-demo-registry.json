@@ -20,6 +20,13 @@
       "runner": "scripts/run_eco_signal_balance_demo.py",
       "json_output": "results/eco_signal_balance_demo.json",
       "markdown_output": "results/eco_signal_balance_demo.md"
+    },
+    {
+      "id": "waste_pressure",
+      "name": "waste pressure",
+      "runner": "scripts/run_eco_waste_pressure_demo.py",
+      "json_output": "results/eco_waste_pressure_demo.json",
+      "markdown_output": "results/eco_waste_pressure_demo.md"
     }
   ]
 }
