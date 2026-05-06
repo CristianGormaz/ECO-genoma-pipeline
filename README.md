@@ -626,6 +626,7 @@ make eco-status
 Guía relacionada:
 
 - [Cuándo detenerse en terminal](docs/operations/terminal-stop-guide.md)
+- [Mapa operativo del proyecto](docs/operations/project-map.md)
 
 Lectura rápida:
 
