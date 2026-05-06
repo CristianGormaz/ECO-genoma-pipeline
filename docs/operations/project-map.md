@@ -47,3 +47,7 @@ Este documento es operativo y documental. No usa datos sensibles, no entrena mod
 
 - docs/architecture/eco-synthetic-demo-registry.md: registro de demos sintéticas oficiales, comandos, salidas y validadores.
 - make eco-validate-synthetic-demos: validación global recomendada antes de cerrar cambios relacionados con demos sintéticas.
+## Guía para nuevas demos sintéticas
+
+- [Guía para agregar una demo sintética E.C.O.](eco-add-synthetic-demo-guide.md)
+
