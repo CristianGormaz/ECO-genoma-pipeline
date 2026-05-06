@@ -43,3 +43,10 @@ make eco-check-clean
 ## Límite responsable
 
 Este documento es interpretativo y operativo. Usa solo demos sintéticas, no datos sensibles, no entrenamiento de modelos, no modificación de baseline, no recalibración de umbrales y no convierte metáforas simbólicas en conclusiones científicas o biomédicas.
+
+## Reporte comparativo de demos sintéticas
+
+- Comando: `make eco-synthetic-demo-comparison-report`
+- Salida JSON: `results/eco_synthetic_demo_comparison_report.json`
+- Salida Markdown: `results/eco_synthetic_demo_comparison_report.md`
+- Uso: comparar patrones mínimos, lectura operativa y límites responsables de cada demo registrada.

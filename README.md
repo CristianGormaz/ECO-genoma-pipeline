@@ -698,3 +698,10 @@ Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibr
 - Ejecuta `make eco-check` y luego `make eco-clean-results`.
 - Uso: validar el pipeline completo y limpiar salidas sintéticas generadas en `results/`.
 - Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin baseline; sin recalibración.
+
+## Reporte comparativo de demos sintéticas
+
+- Comando: `make eco-synthetic-demo-comparison-report`
+- Salida JSON: `results/eco_synthetic_demo_comparison_report.json`
+- Salida Markdown: `results/eco_synthetic_demo_comparison_report.md`
+- Uso: comparar patrones mínimos, lectura operativa y límites responsables de cada demo registrada.

@@ -493,6 +493,7 @@ eco-check:
 	$(MAKE) eco-status
 	$(MAKE) eco-validate-synthetic-demos
 	$(MAKE) eco-synthetic-demos-suite-report
+	$(MAKE) eco-synthetic-demo-comparison-report
 	$(PYTHON) -m pytest -q
 
 # E.C.O. generated results cleanup
@@ -508,9 +509,16 @@ eco-clean-results:
 	rm -f results/eco_absorption_threshold_demo.md
 	rm -f results/eco_synthetic_demos_suite_report.json
 	rm -f results/eco_synthetic_demos_suite_report.md
+	rm -f results/eco_synthetic_demo_comparison_report.json
+	rm -f results/eco_synthetic_demo_comparison_report.md
 
 # E.C.O. check and cleanup
 .PHONY: eco-check-clean
 eco-check-clean:
 	$(MAKE) eco-check
 	$(MAKE) eco-clean-results
+
+# E.C.O. synthetic demo comparison report
+.PHONY: eco-synthetic-demo-comparison-report
+eco-synthetic-demo-comparison-report:
+	$(PYTHON) scripts/run_eco_synthetic_demo_comparison_report.py
