@@ -685,3 +685,9 @@ Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibr
 - Comando recomendado: `make eco-check`
 - Ejecuta estado operativo, validación global de demos sintéticas, reporte suite y pytest global.
 - Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibración.
+
+## Limpieza de resultados sintéticos
+
+- Comando: `make eco-clean-results`
+- Uso: eliminar artefactos generados en `results/` por demos sintéticas y reporte suite.
+- Límite: no elimina código, documentación, tests, baseline ni umbrales.
