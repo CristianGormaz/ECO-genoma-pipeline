@@ -49,3 +49,18 @@ pytest: passed
 ## Límite responsable
 
 Esta guía es operativa. No modifica datos, no ejecuta entrenamiento, no cambia baseline, no recalibra umbrales y no altera resultados del pipeline.
+
+## Comando rápido de estado
+
+Cuando la terminal quede en duda, ejecuta:
+
+make eco-status
+
+Lectura esperada:
+
+- Estado green: puedes detenerte o iniciar un nuevo sprint desde main.
+- Estado attention: revisa cambios pendientes antes de seguir.
+- Estado unknown o error: no hagas commit ni push hasta diagnosticar.
+
+Este comando solo inspecciona el repositorio. No modifica archivos, no entrena modelos, no cambia baseline y no recalibra umbrales.
+
