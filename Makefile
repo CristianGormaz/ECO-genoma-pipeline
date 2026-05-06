@@ -468,3 +468,7 @@ eco-signal-balance-demo:
 eco-validate-signal-balance-demo: eco-signal-balance-demo
 	$(PYTHON) scripts/validate_eco_synthetic_contract.py results/eco_signal_balance_demo.json
 
+# E.C.O. synthetic demos validation
+.PHONY: eco-validate-synthetic-demos
+eco-validate-synthetic-demos:
+	$(PYTHON) scripts/validate_eco_synthetic_demos.py
