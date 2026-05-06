@@ -58,3 +58,10 @@ El validador global debe leer el registro operativo para evitar duplicar listas 
 - Validador: `make eco-validate-synthetic-demos`
 - Límite: datos sintéticos; sin datos sensibles; sin entrenamiento.
 
+## Demo: absorption threshold
+
+- Runner: `scripts/run_eco_absorption_threshold_demo.py`
+- JSON: `results/eco_absorption_threshold_demo.json`
+- Markdown: `results/eco_absorption_threshold_demo.md`
+- Validación: `scripts/validate_eco_synthetic_contract.py results/eco_absorption_threshold_demo.json`
+- Sentido operativo: simula absorción de señal útil frente a ruido, residuo y estabilidad.

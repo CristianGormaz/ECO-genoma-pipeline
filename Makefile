@@ -477,3 +477,7 @@ eco-validate-synthetic-demos:
 eco-waste-pressure-demo:
 	$(PYTHON) scripts/run_eco_waste_pressure_demo.py
 
+# E.C.O. absorption threshold synthetic demo
+.PHONY: eco-absorption-threshold-demo
+eco-absorption-threshold-demo:
+	$(PYTHON) scripts/run_eco_absorption_threshold_demo.py

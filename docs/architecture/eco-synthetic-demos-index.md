@@ -67,3 +67,9 @@ Uso: validar todas las demos sintéticas registradas sin usar datos sensibles, s
 Uso: ubicar demos oficiales, comandos, salidas esperadas y validadores asociados.
 
 - Waste pressure: demo sintética de presión residual y estabilidad.
+
+## Demo: absorption threshold
+
+- Comando: `make eco-absorption-threshold-demo`
+- Runner: `scripts/run_eco_absorption_threshold_demo.py`
+- Salidas: `results/eco_absorption_threshold_demo.json` y `results/eco_absorption_threshold_demo.md`
