@@ -42,3 +42,11 @@ make eco-validate-synthetic-demos
 ## Límite responsable
 
 Este registro es documental y operativo. no usa datos sensibles, no entrena modelos, no modifica baseline, no recalibra umbrales y no convierte metáforas simbólicas en conclusiones científicas.
+
+## Fuente operativa del registro
+
+- Manifest JSON: `docs/architecture/eco-synthetic-demo-registry.json`
+- Validador global: `scripts/validate_eco_synthetic_demos.py`
+- Comando recomendado: `make eco-validate-synthetic-demos`
+
+El validador global debe leer el registro operativo para evitar duplicar listas de demos dentro del código.

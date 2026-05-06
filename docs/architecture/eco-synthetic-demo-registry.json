@@ -1,0 +1,25 @@
+{
+  "title": "E.C.O. synthetic demo registry",
+  "classification": "allowed",
+  "data_policy": "synthetic_only",
+  "training": false,
+  "sensitive_data": false,
+  "baseline_changed": false,
+  "threshold_recalibrated": false,
+  "demos": [
+    {
+      "id": "minimal_simulation",
+      "name": "minimal simulation",
+      "runner": "scripts/run_eco_minimal_simulation.py",
+      "json_output": "results/eco_minimal_simulation_demo.json",
+      "markdown_output": "results/eco_minimal_simulation_demo.md"
+    },
+    {
+      "id": "signal_balance",
+      "name": "signal balance",
+      "runner": "scripts/run_eco_signal_balance_demo.py",
+      "json_output": "results/eco_signal_balance_demo.json",
+      "markdown_output": "results/eco_signal_balance_demo.md"
+    }
+  ]
+}
