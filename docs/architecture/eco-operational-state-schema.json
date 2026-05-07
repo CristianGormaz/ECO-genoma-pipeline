@@ -1,0 +1,58 @@
+{
+  "schema_id": "eco_operational_state_schema_v1",
+  "version": "0.1.0",
+  "classification": "permitido",
+  "scope": "synthetic_operational_states",
+  "required_fields": [
+    "state_id",
+    "state_kind",
+    "classification",
+    "status",
+    "inputs",
+    "outputs",
+    "validation",
+    "responsible_limits"
+  ],
+  "allowed_values": {
+    "classification": [
+      "permitido",
+      "condicional",
+      "bloqueado"
+    ],
+    "state_kind": [
+      "defined",
+      "registered",
+      "executable",
+      "validated",
+      "compared",
+      "matrixed",
+      "observed",
+      "indexed"
+    ],
+    "status": [
+      "experimental",
+      "running",
+      "passed",
+      "attention",
+      "green",
+      "blocked"
+    ]
+  },
+  "field_definitions": {
+    "state_id": "Identificador estable del estado operativo sintético.",
+    "state_kind": "Tipo de estado dentro de la secuencia operativa.",
+    "classification": "Clasificación responsable del estado.",
+    "status": "Estado de ejecución u observación.",
+    "inputs": "Entradas sintéticas o documentales esperadas.",
+    "outputs": "Salidas sintéticas o documentales esperadas.",
+    "validation": "Comandos o pruebas que resguardan el estado.",
+    "responsible_limits": "Límites explícitos de seguridad y alcance."
+  },
+  "responsible_limits": {
+    "uses_sensitive_data": false,
+    "trains_model": false,
+    "modifies_baseline": false,
+    "recalibrates_thresholds": false,
+    "makes_applied_biomedical_claims": false
+  }
+}
