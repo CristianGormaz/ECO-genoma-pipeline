@@ -11,6 +11,7 @@ Su objetivo es facilitar la navegación técnica sin modificar código, baseline
 - [Synthetic demo registry](eco-synthetic-demo-registry.json)
 - [Synthetic signal matrix](eco-synthetic-signal-matrix.md)
 - [Synthetic operational dashboard](eco-synthetic-operational-dashboard.md)
+- [Synthetic state timeline](eco-synthetic-state-timeline.md)
 
 ## Límite responsable
 
