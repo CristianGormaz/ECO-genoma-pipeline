@@ -492,6 +492,11 @@ eco-synthetic-demos-suite-report:
 eco-synthetic-signal-matrix-report:
 	$(PYTHON) scripts/run_eco_synthetic_signal_matrix_report.py
 
+# E.C.O. synthetic operational dashboard
+.PHONY: eco-synthetic-operational-dashboard
+eco-synthetic-operational-dashboard:
+	$(PYTHON) scripts/run_eco_synthetic_operational_dashboard.py
+
 # E.C.O. operational full check
 .PHONY: eco-check
 eco-check:
@@ -500,6 +505,7 @@ eco-check:
 	$(MAKE) eco-synthetic-demos-suite-report
 	$(MAKE) eco-synthetic-demo-comparison-report
 	$(MAKE) eco-synthetic-signal-matrix-report
+	$(MAKE) eco-synthetic-operational-dashboard
 	$(PYTHON) -m pytest -q
 
 # E.C.O. generated results cleanup
@@ -519,6 +525,8 @@ eco-clean-results:
 	rm -f results/eco_synthetic_demo_comparison_report.md
 	rm -f results/eco_synthetic_signal_matrix_report.json
 	rm -f results/eco_synthetic_signal_matrix_report.md
+	rm -f results/eco_synthetic_operational_dashboard.json
+	rm -f results/eco_synthetic_operational_dashboard.md
 
 # E.C.O. check and cleanup
 .PHONY: eco-check-clean
