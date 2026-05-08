@@ -67,3 +67,8 @@ No ingiere datos reales, no usa datos sensibles, no entrena modelos, no modifica
 ## Explicación simple
 
 Esta política define cómo una fuente detenida puede volver a revisión sin saltarse controles. No abre la puerta de golpe: solo permite volver a mirar la fuente con más evidencia y mejores límites.
+
+## Evidencia de smoke test
+
+- Comando: `scripts/run_smoke_eco_real_data_reactivation_policy.sh`
+- Última evidencia: `results/smoke-eco-real-data-reactivation-policy-20260508T203907Z.log`
