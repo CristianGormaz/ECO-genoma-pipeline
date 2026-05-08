@@ -538,3 +538,7 @@ eco-check-clean:
 .PHONY: eco-synthetic-demo-comparison-report
 eco-synthetic-demo-comparison-report:
 	$(PYTHON) scripts/run_eco_synthetic_demo_comparison_report.py
+
+.PHONY: eco-validate-operational-state-examples
+eco-validate-operational-state-examples:
+	python3 scripts/validate_eco_operational_state_examples.py
