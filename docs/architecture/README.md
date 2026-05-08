@@ -18,6 +18,7 @@ Su objetivo es facilitar la navegación técnica sin modificar código, baseline
 - [Operational block bitacora PR 131-136](eco-operational-block-bitacora-131-136.md)
 - [Real data readiness gate](eco-real-data-readiness-gate.md)
 - [Real data source manifest](eco-real-data-source-manifest.md)
+- [Real data source manifest validator](eco-real-data-source-manifest-validator.md)
 
 ## Límite responsable
 
