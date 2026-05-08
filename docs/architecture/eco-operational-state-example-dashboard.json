@@ -1,0 +1,28 @@
+{
+  "state_id": "eco_synthetic_operational_dashboard_v1",
+  "state_kind": "observed",
+  "classification": "permitido",
+  "status": "passed",
+  "inputs": [
+    "eco_synthetic_demos_suite_report",
+    "eco_synthetic_demo_comparison_report",
+    "eco_synthetic_signal_matrix_report"
+  ],
+  "outputs": [
+    "results/eco_synthetic_operational_dashboard.json",
+    "results/eco_synthetic_operational_dashboard.md"
+  ],
+  "validation": [
+    "make eco-status",
+    "make eco-synthetic-operational-dashboard",
+    "python3 -m pytest -q",
+    "make eco-check-clean"
+  ],
+  "responsible_limits": {
+    "uses_sensitive_data": false,
+    "trains_model": false,
+    "modifies_baseline": false,
+    "recalibrates_thresholds": false,
+    "makes_applied_biomedical_claims": false
+  }
+}

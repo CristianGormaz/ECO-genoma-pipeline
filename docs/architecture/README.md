@@ -13,6 +13,7 @@ Su objetivo es facilitar la navegación técnica sin modificar código, baseline
 - [Synthetic operational dashboard](eco-synthetic-operational-dashboard.md)
 - [Synthetic state timeline](eco-synthetic-state-timeline.md)
 - [Operational state schema](eco-operational-state-schema.md)
+- [Operational state example](eco-operational-state-example.md)
 
 ## Límite responsable
 
