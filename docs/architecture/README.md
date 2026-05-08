@@ -28,6 +28,7 @@ Su objetivo es facilitar la navegación técnica sin modificar código, baseline
 - [Real data candidate example decision record](eco-real-data-candidate-example-decision-record.md)
 - [Real data candidate manifest example](eco-real-data-candidate-manifest-example.md)
 - [Real data manifest activation gate](eco-real-data-manifest-activation-gate.md)
+- [Real data activation rollback policy](eco-real-data-activation-rollback-policy.md)
 
 ## Límite responsable
 
