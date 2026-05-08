@@ -25,6 +25,7 @@ Su objetivo es facilitar la navegación técnica sin modificar código, baseline
 - [Real data candidate manifest template](eco-real-data-candidate-manifest-template.md)
 - [Real data candidate lifecycle](eco-real-data-candidate-lifecycle.md)
 - [Real data candidate decision record](eco-real-data-candidate-decision-record.md)
+- [Real data candidate example decision record](eco-real-data-candidate-example-decision-record.md)
 
 ## Límite responsable
 
