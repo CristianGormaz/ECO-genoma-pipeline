@@ -67,3 +67,8 @@ No ingiere datos reales, no usa datos sensibles, no entrena modelos, no modifica
 ## Explicación simple
 
 Esta política es el freno de emergencia de E.C.O. Si una fuente que parecía segura deja de serlo, el sistema se detiene, registra el motivo y vuelve a un estado seguro.
+
+## Evidencia de smoke test
+
+- Comando: `scripts/run_smoke_eco_real_data_activation_rollback_policy.sh`
+- Última evidencia: `results/smoke-eco-real-data-activation-rollback-policy-20260508T203907Z.log`

@@ -70,3 +70,8 @@ No ingiere datos reales, no usa datos sensibles, no entrena modelos, no modifica
 ## Explicación simple
 
 Antes de que E.C.O. digiera datos reales, elegimos un primer alimento seguro: público, pequeño, no sensible y sin riesgo clínico ni personal.
+
+## Evidencia de smoke test
+
+- Comando: `scripts/run_smoke_eco_real_data_first_safe_candidate_policy.sh`
+- Última evidencia: `results/smoke-eco-real-data-first-safe-candidate-policy-20260508T203911Z.log`

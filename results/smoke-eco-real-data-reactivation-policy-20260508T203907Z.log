@@ -1,0 +1,7 @@
+timestamp=20260508T203907Z
+policy_doc=docs/architecture/eco-real-data-reactivation-policy.md
+smoke_test=eco-real-data-reactivation-policy
+check=pass text=Existe motivo de reactivación documentado.
+check=pass text=Se crea o actualiza un decision record.
+check=pass text=Toda reactivación requiere nuevo PR o registro equivalente.
+status=pass

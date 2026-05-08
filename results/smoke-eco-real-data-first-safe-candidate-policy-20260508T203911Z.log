@@ -1,0 +1,7 @@
+timestamp=20260508T203911Z
+policy_doc=docs/architecture/eco-real-data-first-safe-candidate-policy.md
+smoke_test=eco-real-data-first-safe-candidate-policy
+check=pass text=El primer candidato recomendado para E.C.O. son datos ambientales públicos agregados.
+check=pass text=No contiene datos clínicos.
+check=pass text=No contiene datos genéticos humanos.
+status=pass

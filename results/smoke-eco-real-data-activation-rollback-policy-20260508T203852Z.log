@@ -1,0 +1,7 @@
+timestamp=20260508T203852Z
+policy_doc=docs/architecture/eco-real-data-activation-rollback-policy.md
+smoke_test=eco-real-data-activation-rollback-policy
+check=pass text=Cambiar estado a bloqueado o needs_review.
+check=pass text=Detener cualquier siguiente paso de ingestión, análisis real o automatización.
+check=fail text=No habilita automáticamente la reactivación.
+status=fail
