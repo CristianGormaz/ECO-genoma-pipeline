@@ -1,0 +1,47 @@
+{
+  "schema_id": "eco_real_data_source_manifest_v1",
+  "version": "0.1.0",
+  "purpose": "Describe candidate external data sources before ingestion.",
+  "required_fields": [
+    "source_id",
+    "source_name",
+    "source_kind",
+    "origin",
+    "license_or_permission",
+    "sensitivity_classification",
+    "contains_identifiable_people",
+    "contains_genetic_data",
+    "contains_clinical_data",
+    "allowed_use",
+    "blocked_use",
+    "readiness_decision",
+    "responsible_limits"
+  ],
+  "allowed_values": {
+    "source_kind": [
+      "synthetic",
+      "public_aggregate",
+      "public_non_sensitive",
+      "private",
+      "sensitive"
+    ],
+    "sensitivity_classification": [
+      "permitido",
+      "condicional",
+      "bloqueado"
+    ],
+    "readiness_decision": [
+      "allow",
+      "review",
+      "block"
+    ]
+  },
+  "responsible_limits": {
+    "ingests_real_data": false,
+    "uses_sensitive_data": false,
+    "trains_model": false,
+    "modifies_baseline": false,
+    "recalibrates_thresholds": false,
+    "makes_applied_biomedical_claims": false
+  }
+}
