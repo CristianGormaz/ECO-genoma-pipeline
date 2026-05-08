@@ -550,3 +550,7 @@ eco-validate-operational-state-examples:
 .PHONY: eco-operational-state-examples-report
 eco-operational-state-examples-report:
 	python3 scripts/run_eco_operational_state_examples_report.py
+
+.PHONY: eco-validate-real-data-source-manifest
+eco-validate-real-data-source-manifest:
+	python3 scripts/validate_eco_real_data_source_manifest.py
