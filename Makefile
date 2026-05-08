@@ -564,3 +564,9 @@ eco-operational-state-examples-report:
 .PHONY: eco-validate-real-data-source-manifest
 eco-validate-real-data-source-manifest:
 	python3 scripts/validate_eco_real_data_source_manifest.py
+
+
+# E.C.O. operational panel index
+.PHONY: eco-operational-panel-index
+eco-operational-panel-index:
+	@sed -n '1,220p' docs/operations/eco-operational-panel-index.md
