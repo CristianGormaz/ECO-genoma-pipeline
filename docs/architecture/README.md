@@ -14,6 +14,7 @@ Su objetivo es facilitar la navegación técnica sin modificar código, baseline
 - [Synthetic state timeline](eco-synthetic-state-timeline.md)
 - [Operational state schema](eco-operational-state-schema.md)
 - [Operational state example](eco-operational-state-example.md)
+- [Operational state validator](eco-operational-state-validator.md)
 
 ## Límite responsable
 
