@@ -21,6 +21,7 @@ Su objetivo es facilitar la navegación técnica sin modificar código, baseline
 - [Real data source manifest validator](eco-real-data-source-manifest-validator.md)
 - [Real data interpretation boundary](eco-real-data-interpretation-boundary.md)
 - [Real data first safe candidate policy](eco-real-data-first-safe-candidate-policy.md)
+- [Real data candidate review checklist](eco-real-data-candidate-review-checklist.md)
 
 ## Límite responsable
 
