@@ -528,6 +528,8 @@ eco-clean-results:
 	rm -f results/eco_synthetic_signal_matrix_report.md
 	rm -f results/eco_synthetic_operational_dashboard.json
 	rm -f results/eco_synthetic_operational_dashboard.md
+	rm -f results/eco_operational_state_examples_report.json
+	rm -f results/eco_operational_state_examples_report.md
 
 # E.C.O. check and cleanup
 .PHONY: eco-check-clean
@@ -543,3 +545,7 @@ eco-synthetic-demo-comparison-report:
 .PHONY: eco-validate-operational-state-examples
 eco-validate-operational-state-examples:
 	python3 scripts/validate_eco_operational_state_examples.py
+
+.PHONY: eco-operational-state-examples-report
+eco-operational-state-examples-report:
+	python3 scripts/run_eco_operational_state_examples_report.py
