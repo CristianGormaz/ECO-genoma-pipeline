@@ -118,8 +118,25 @@ Lectura breve:
 git clone https://github.com/CristianGormaz/ECO-genoma-pipeline.git
 cd ECO-genoma-pipeline
 make install-dev
+make check-fast
+# o, para validación integral
 make check
 ```
+
+### ¿Cuándo usar `check-fast` vs `check`?
+
+- `make check-fast`: para iteración diaria/local antes de commitear; ejecuta el subconjunto crítico (tests unitarios + validación S.N.E. mínima + estado clave de rutas confundidas).
+- `make check`: para validación integral del pipeline y generación de reportes completos antes de demo/release.
+
+### Tiempos esperados por target
+
+| Target | Alcance | Tiempo esperado* |
+|---|---|---:|
+| `make test` | Tests unitarios (`pytest -q`) | 10–40 s |
+| `make check-fast` | Tests + `sne-validation` + `sne-state-confusion` | 1–3 min |
+| `make check` | Validación integral del pipeline | 8–20 min |
+
+\*Los tiempos pueden variar según CPU, I/O y estado de cache del entorno local.
 
 Validación unitaria esperada en la fase S.N.E.-E.C.O. estabilizada:
 
