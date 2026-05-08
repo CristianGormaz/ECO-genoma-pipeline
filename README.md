@@ -112,6 +112,14 @@ Lectura breve:
 
 > E.C.O. funciona como un intestino informacional. No solo revisa si un dato entra o no entra; observa cómo ese dato afecta el equilibrio del sistema. Si el dato es útil, lo absorbe. Si es ambiguo, lo pone en cuarentena. Si es inválido, lo rechaza. Si es repetido, lo reconoce. Y si la repetición no es peligrosa, no sobrerreacciona.
 
+## Onboarding técnico (30 min)
+
+Si te integras por primera vez al proyecto, sigue la guía rápida:
+
+- `docs/operations/onboarding-tecnico-30min.md`
+
+Incluye preparación de entorno, validación mínima, demo S.N.E.-E.C.O., ubicación de módulos núcleo en `src/eco_core` y checklist de PR.
+
 ## Quickstart
 
 ```bash
