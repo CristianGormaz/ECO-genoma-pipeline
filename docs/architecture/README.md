@@ -23,6 +23,7 @@ Su objetivo es facilitar la navegación técnica sin modificar código, baseline
 - [Real data first safe candidate policy](eco-real-data-first-safe-candidate-policy.md)
 - [Real data candidate review checklist](eco-real-data-candidate-review-checklist.md)
 - [Real data candidate manifest template](eco-real-data-candidate-manifest-template.md)
+- [Real data candidate lifecycle](eco-real-data-candidate-lifecycle.md)
 
 ## Límite responsable
 
