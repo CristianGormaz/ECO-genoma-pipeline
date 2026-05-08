@@ -501,6 +501,7 @@ eco-synthetic-operational-dashboard:
 .PHONY: eco-check
 eco-check:
 	$(MAKE) eco-status
+	$(MAKE) eco-validate-operational-state-examples
 	$(MAKE) eco-validate-synthetic-demos
 	$(MAKE) eco-synthetic-demos-suite-report
 	$(MAKE) eco-synthetic-demo-comparison-report

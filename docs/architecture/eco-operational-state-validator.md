@@ -15,3 +15,7 @@ make eco-validate-operational-state-examples
 
 Este validador trabaja solo con documentación y JSON sintéticos.
 No usa datos sensibles, no entrena modelos, no modifica baseline, no recalibra umbrales y no realiza afirmaciones biomédicas aplicadas.
+
+## Integración operativa
+
+`make eco-check` ejecuta este validador para resguardar que los ejemplos de estados operativos sintéticos mantengan contrato, clasificación y límites responsables.
