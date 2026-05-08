@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Índice operativo de comandos y estados E.C.O.](docs/operations/eco-operational-panel-index.md)
 - [Cuándo detenerse en terminal](docs/operations/terminal-stop-guide.md)
 - [Mapa operativo del proyecto](docs/operations/project-map.md)
 - [Índice de demos sintéticas E.C.O.](docs/architecture/eco-synthetic-demos-index.md)
