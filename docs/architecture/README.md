@@ -19,6 +19,7 @@ Su objetivo es facilitar la navegación técnica sin modificar código, baseline
 - [Real data readiness gate](eco-real-data-readiness-gate.md)
 - [Real data source manifest](eco-real-data-source-manifest.md)
 - [Real data source manifest validator](eco-real-data-source-manifest-validator.md)
+- [Real data interpretation boundary](eco-real-data-interpretation-boundary.md)
 
 ## Límite responsable
 
