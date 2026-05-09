@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Matriz de decisión de ramas E.C.O.](docs/operations/eco-branch-decision-matrix.md)
 - [Índice operativo de comandos y estados E.C.O.](docs/operations/eco-operational-panel-index.md)
 - [Cuándo detenerse en terminal](docs/operations/terminal-stop-guide.md)
 - [Mapa operativo del proyecto](docs/operations/project-map.md)

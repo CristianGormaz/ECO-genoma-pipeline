@@ -570,3 +570,9 @@ eco-validate-real-data-source-manifest:
 .PHONY: eco-operational-panel-index
 eco-operational-panel-index:
 	@sed -n '1,220p' docs/operations/eco-operational-panel-index.md
+
+
+# E.C.O. branch decision matrix
+.PHONY: eco-branch-decision-matrix
+eco-branch-decision-matrix:
+	@sed -n '1,260p' docs/operations/eco-branch-decision-matrix.md
