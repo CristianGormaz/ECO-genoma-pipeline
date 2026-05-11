@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Revisión de gobernanza y evidencia externa E.C.O.](docs/operations/eco-governance-evidence-review.md)
 - [Índice de rescate de ramas prioritarias E.C.O.](docs/operations/eco-branch-rescue-index.md)
 - [Matriz de decisión de ramas E.C.O.](docs/operations/eco-branch-decision-matrix.md)
 - [Índice operativo de comandos y estados E.C.O.](docs/operations/eco-operational-panel-index.md)

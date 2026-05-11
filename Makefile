@@ -581,3 +581,8 @@ eco-branch-decision-matrix:
 .PHONY: eco-branch-rescue-index
 eco-branch-rescue-index:
 	@sed -n '1,220p' docs/operations/eco-branch-rescue-index.md
+
+# E.C.O. governance evidence review
+.PHONY: eco-governance-evidence-review
+eco-governance-evidence-review:
+	@sed -n '1,220p' docs/operations/eco-governance-evidence-review.md
