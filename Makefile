@@ -676,3 +676,8 @@ eco-adaptive-state-foundation-review:
 .PHONY: eco-adaptive-state-foundation
 eco-adaptive-state-foundation:
 	@sed -n '1,260p' docs/architecture/eco-adaptive-state-foundation.md
+
+# E.C.O. operationalize adaptive dataset review
+.PHONY: eco-operationalize-adaptive-dataset-review
+eco-operationalize-adaptive-dataset-review:
+	@sed -n '1,260p' docs/operations/eco-operationalize-adaptive-dataset-review.md
