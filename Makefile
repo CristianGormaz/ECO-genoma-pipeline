@@ -621,3 +621,8 @@ eco-external-evidence-policy:
 .PHONY: eco-external-evidence-checklist
 eco-external-evidence-checklist:
 	@sed -n "1,240p" docs/operations/eco-external-evidence-checklist.md
+
+# E.C.O. external evidence register
+.PHONY: eco-external-evidence-register
+eco-external-evidence-register:
+	@sed -n "1,260p" docs/operations/eco-external-evidence-register.md
