@@ -671,3 +671,8 @@ eco-baseline-change-review-checklist:
 .PHONY: eco-adaptive-state-foundation-review
 eco-adaptive-state-foundation-review:
 	@sed -n '1,260p' docs/operations/eco-adaptive-state-foundation-review.md
+
+# E.C.O. adaptive state foundation
+.PHONY: eco-adaptive-state-foundation
+eco-adaptive-state-foundation:
+	@sed -n '1,260p' docs/architecture/eco-adaptive-state-foundation.md

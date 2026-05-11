@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Fundamentos de estado adaptativo E.C.O.](docs/architecture/eco-adaptive-state-foundation.md)
 - [Revisión de rama eco-adaptive-state-foundation](docs/operations/eco-adaptive-state-foundation-review.md)
 - [Checklist de revisión de cambios de baseline E.C.O.](docs/operations/eco-baseline-change-review-checklist.md)
 - [Revisión de rama eco-adaptive-state-baseline-v0](docs/operations/eco-adaptive-state-baseline-v0-review.md)
