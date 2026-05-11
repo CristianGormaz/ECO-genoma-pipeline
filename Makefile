@@ -596,3 +596,8 @@ eco-stable-admission-plan-review:
 .PHONY: eco-stable-admission-plan
 eco-stable-admission-plan:
 	@sed -n '1,240p' docs/operations/eco-stable-admission-plan.md
+
+# E.C.O. admission review template
+.PHONY: eco-admission-review-template
+eco-admission-review-template:
+	@sed -n '1,220p' docs/operations/eco-admission-review-template.md
