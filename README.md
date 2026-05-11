@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Guía operativa de revisión de evidencia externa E.C.O.](docs/operations/eco-external-evidence-review-guide.md)
 - [Revisión de rama de evidencia externa E.C.O.](docs/operations/eco-external-evidence-review-branch.md)
 - [Ejemplo sintético de registro de evidencia externa E.C.O.](docs/operations/eco-external-evidence-register-example.md)
 - [Registro de evidencia externa E.C.O.](docs/operations/eco-external-evidence-register.md)
