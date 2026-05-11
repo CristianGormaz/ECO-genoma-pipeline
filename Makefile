@@ -576,3 +576,8 @@ eco-operational-panel-index:
 .PHONY: eco-branch-decision-matrix
 eco-branch-decision-matrix:
 	@sed -n '1,260p' docs/operations/eco-branch-decision-matrix.md
+
+# E.C.O. branch rescue index
+.PHONY: eco-branch-rescue-index
+eco-branch-rescue-index:
+	@sed -n '1,220p' docs/operations/eco-branch-rescue-index.md
