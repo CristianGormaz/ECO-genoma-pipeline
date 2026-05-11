@@ -631,3 +631,8 @@ eco-external-evidence-register:
 .PHONY: eco-external-evidence-register-example
 eco-external-evidence-register-example:
 	@sed -n "1,240p" docs/operations/eco-external-evidence-register-example.md
+
+# E.C.O. external evidence review branch
+.PHONY: eco-external-evidence-review-branch
+eco-external-evidence-review-branch:
+	@sed -n "1,260p" docs/operations/eco-external-evidence-review-branch.md
