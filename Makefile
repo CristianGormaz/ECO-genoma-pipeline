@@ -641,3 +641,8 @@ eco-external-evidence-review-branch:
 .PHONY: eco-external-evidence-review-guide
 eco-external-evidence-review-guide:
 	@sed -n "1,260p" docs/operations/eco-external-evidence-review-guide.md
+
+# E.C.O. external scenario expansion review
+.PHONY: eco-external-scenario-expansion-review
+eco-external-scenario-expansion-review:
+	@sed -n "1,260p" docs/operations/eco-external-scenario-expansion-review.md
