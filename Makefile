@@ -666,3 +666,8 @@ eco-adaptive-state-baseline-v0-review:
 .PHONY: eco-baseline-change-review-checklist
 eco-baseline-change-review-checklist:
 	@sed -n '1,260p' docs/operations/eco-baseline-change-review-checklist.md
+
+# E.C.O. adaptive state foundation branch review
+.PHONY: eco-adaptive-state-foundation-review
+eco-adaptive-state-foundation-review:
+	@sed -n '1,260p' docs/operations/eco-adaptive-state-foundation-review.md
