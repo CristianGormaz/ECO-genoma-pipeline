@@ -656,3 +656,8 @@ eco-external-scenario-matrix:
 .PHONY: eco-external-evidence-governance-index
 eco-external-evidence-governance-index:
 	@sed -n "1,260p" docs/operations/eco-external-evidence-governance-index.md
+
+# E.C.O. adaptive state baseline v0 review
+.PHONY: eco-adaptive-state-baseline-v0-review
+eco-adaptive-state-baseline-v0-review:
+	@sed -n '1,260p' docs/operations/eco-adaptive-state-baseline-v0-review.md
