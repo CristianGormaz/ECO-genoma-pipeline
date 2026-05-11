@@ -651,3 +651,8 @@ eco-external-scenario-expansion-review:
 .PHONY: eco-external-scenario-matrix
 eco-external-scenario-matrix:
 	@sed -n "1,260p" docs/operations/eco-external-scenario-matrix.md
+
+# E.C.O. external evidence governance index
+.PHONY: eco-external-evidence-governance-index
+eco-external-evidence-governance-index:
+	@sed -n "1,260p" docs/operations/eco-external-evidence-governance-index.md
