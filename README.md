@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Plantilla de revisión de admisión estable E.C.O.](docs/operations/eco-admission-review-template.md)
 - [Plan de admisión estable E.C.O.](docs/operations/eco-stable-admission-plan.md)
 - [Revisión de rama: eco-sne-stable-admission-plan](docs/operations/eco-stable-admission-plan-review.md)
 - [Revisión de gobernanza y evidencia externa E.C.O.](docs/operations/eco-governance-evidence-review.md)
