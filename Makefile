@@ -586,3 +586,8 @@ eco-branch-rescue-index:
 .PHONY: eco-governance-evidence-review
 eco-governance-evidence-review:
 	@sed -n '1,220p' docs/operations/eco-governance-evidence-review.md
+
+# E.C.O. stable admission plan review
+.PHONY: eco-stable-admission-plan-review
+eco-stable-admission-plan-review:
+	@sed -n '1,220p' docs/operations/eco-stable-admission-plan-review.md
