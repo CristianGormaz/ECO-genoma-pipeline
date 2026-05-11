@@ -681,3 +681,8 @@ eco-adaptive-state-foundation:
 .PHONY: eco-operationalize-adaptive-dataset-review
 eco-operationalize-adaptive-dataset-review:
 	@sed -n '1,260p' docs/operations/eco-operationalize-adaptive-dataset-review.md
+
+# E.C.O. adaptive dataset contract
+.PHONY: eco-adaptive-dataset-contract
+eco-adaptive-dataset-contract:
+	@sed -n '1,260p' docs/architecture/eco-adaptive-dataset-contract.md
