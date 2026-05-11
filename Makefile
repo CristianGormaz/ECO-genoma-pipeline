@@ -591,3 +591,8 @@ eco-governance-evidence-review:
 .PHONY: eco-stable-admission-plan-review
 eco-stable-admission-plan-review:
 	@sed -n '1,220p' docs/operations/eco-stable-admission-plan-review.md
+
+# E.C.O. stable admission plan
+.PHONY: eco-stable-admission-plan
+eco-stable-admission-plan:
+	@sed -n '1,240p' docs/operations/eco-stable-admission-plan.md
