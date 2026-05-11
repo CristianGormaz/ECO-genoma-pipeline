@@ -686,3 +686,10 @@ eco-operationalize-adaptive-dataset-review:
 .PHONY: eco-adaptive-dataset-contract
 eco-adaptive-dataset-contract:
 	@sed -n '1,260p' docs/architecture/eco-adaptive-dataset-contract.md
+
+# E.C.O. adaptive dataset synthetic example
+.PHONY: eco-adaptive-dataset-example
+eco-adaptive-dataset-example:
+	@sed -n '1,220p' docs/architecture/eco-adaptive-dataset-example.md
+	@printf '\n--- JSON ---\n'
+	@sed -n '1,220p' docs/architecture/eco-adaptive-dataset-example.json
