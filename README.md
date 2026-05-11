@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Ejemplo sintético de registro de evidencia externa E.C.O.](docs/operations/eco-external-evidence-register-example.md)
 - [Registro de evidencia externa E.C.O.](docs/operations/eco-external-evidence-register.md)
 - [Checklist de admisión de evidencia externa E.C.O.](docs/operations/eco-external-evidence-checklist.md)
 - [Política mínima de evidencia externa E.C.O.](docs/operations/eco-external-evidence-policy.md)
