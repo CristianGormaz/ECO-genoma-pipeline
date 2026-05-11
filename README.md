@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- Validador del ejemplo sintético de dataset adaptativo: `make eco-validate-adaptive-dataset-example`
 - [Ejemplo sintético de dataset adaptativo E.C.O.](docs/architecture/eco-adaptive-dataset-example.md)
 - [Contrato documental de dataset adaptativo E.C.O.](docs/architecture/eco-adaptive-dataset-contract.md)
 - [Revisión de rama eco-operationalize-adaptive-dataset](docs/operations/eco-operationalize-adaptive-dataset-review.md)

@@ -693,3 +693,8 @@ eco-adaptive-dataset-example:
 	@sed -n '1,220p' docs/architecture/eco-adaptive-dataset-example.md
 	@printf '\n--- JSON ---\n'
 	@sed -n '1,220p' docs/architecture/eco-adaptive-dataset-example.json
+
+# E.C.O. adaptive dataset synthetic example validator
+.PHONY: eco-validate-adaptive-dataset-example
+eco-validate-adaptive-dataset-example:
+	@python3 scripts/validate_eco_adaptive_dataset_example.py
