@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Checklist de revisión de cambios de baseline E.C.O.](docs/operations/eco-baseline-change-review-checklist.md)
 - [Revisión de rama eco-adaptive-state-baseline-v0](docs/operations/eco-adaptive-state-baseline-v0-review.md)
 - [Índice de gobernanza de evidencia externa E.C.O.](docs/operations/eco-external-evidence-governance-index.md)
 - [Matriz de escenarios externos sintéticos E.C.O.](docs/operations/eco-external-scenario-matrix.md)

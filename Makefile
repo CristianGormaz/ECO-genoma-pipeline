@@ -661,3 +661,8 @@ eco-external-evidence-governance-index:
 .PHONY: eco-adaptive-state-baseline-v0-review
 eco-adaptive-state-baseline-v0-review:
 	@sed -n '1,260p' docs/operations/eco-adaptive-state-baseline-v0-review.md
+
+# E.C.O. baseline change review checklist
+.PHONY: eco-baseline-change-review-checklist
+eco-baseline-change-review-checklist:
+	@sed -n '1,260p' docs/operations/eco-baseline-change-review-checklist.md
