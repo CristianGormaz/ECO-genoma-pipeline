@@ -606,3 +606,8 @@ eco-admission-review-template:
 .PHONY: eco-stable-admission-dry-run-review
 eco-stable-admission-dry-run-review:
 	@sed -n '1,240p' docs/operations/eco-stable-admission-dry-run-review.md
+
+# E.C.O. external evidence policy review
+.PHONY: eco-external-evidence-policy-review
+eco-external-evidence-policy-review:
+	@sed -n '1,240p' docs/operations/eco-external-evidence-policy-review.md
