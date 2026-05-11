@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Plan de admisión estable E.C.O.](docs/operations/eco-stable-admission-plan.md)
 - [Revisión de rama: eco-sne-stable-admission-plan](docs/operations/eco-stable-admission-plan-review.md)
 - [Revisión de gobernanza y evidencia externa E.C.O.](docs/operations/eco-governance-evidence-review.md)
 - [Índice de rescate de ramas prioritarias E.C.O.](docs/operations/eco-branch-rescue-index.md)
