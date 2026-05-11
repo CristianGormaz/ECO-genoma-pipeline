@@ -650,6 +650,7 @@ make eco-status
 
 Guía relacionada:
 
+- [Matriz de escenarios externos sintéticos E.C.O.](docs/operations/eco-external-scenario-matrix.md)
 - [Revisión de rama: expansión de escenarios externos E.C.O.](docs/operations/eco-external-scenario-expansion-review.md)
 - [Guía operativa de revisión de evidencia externa E.C.O.](docs/operations/eco-external-evidence-review-guide.md)
 - [Revisión de rama de evidencia externa E.C.O.](docs/operations/eco-external-evidence-review-branch.md)
