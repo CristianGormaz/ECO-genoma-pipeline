@@ -1,0 +1,39 @@
+{
+  "artifact": "eco-adaptive-dataset-example",
+  "version": "0.1.0",
+  "classification": "permitido",
+  "scope": "synthetic_documental_example",
+  "contract": "docs/architecture/eco-adaptive-dataset-contract.md",
+  "limits": {
+    "synthetic_only": true,
+    "no_real_data": true,
+    "no_sensitive_data": true,
+    "no_private_genetic_data": true,
+    "no_training": true,
+    "no_baseline_change": true,
+    "no_threshold_recalibration": true,
+    "no_biomedical_claims": true
+  },
+  "records": [
+    {
+      "record_id": "eco-synth-adaptive-001",
+      "source_type": "synthetic",
+      "adaptive_state": "balanced_mock_state",
+      "signal_family": "homeostasis_signal",
+      "evidence_level": "documental_mock",
+      "risk_flag": "none",
+      "review_status": "candidate",
+      "notes": "Registro sintético para validar estructura documental, sin datos reales."
+    },
+    {
+      "record_id": "eco-synth-adaptive-002",
+      "source_type": "mock",
+      "adaptive_state": "review_required_mock_state",
+      "signal_family": "external_pressure_signal",
+      "evidence_level": "mock_reference",
+      "risk_flag": "review_needed",
+      "review_status": "review_needed",
+      "notes": "Registro de prueba para representar revisión operativa sin uso de evidencia externa aplicada."
+    }
+  ]
+}
