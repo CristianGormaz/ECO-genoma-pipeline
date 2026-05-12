@@ -756,3 +756,4 @@ Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibr
 - Salida JSON: `results/eco_synthetic_demo_comparison_report.json`
 - Salida Markdown: `results/eco_synthetic_demo_comparison_report.md`
 - Uso: comparar patrones mínimos, lectura operativa y límites responsables de cada demo registrada.
+\n\n## Operación E.C.O.\n\n- [Guía de reporte operativo del dataset adaptativo E.C.O.](docs/operations/eco-adaptive-dataset-report-guide.md)\n
