@@ -29,7 +29,7 @@ def _target_block(name: str) -> str:
 def test_eco_check_runs_adaptive_dataset_example_validator():
     block = _target_block("eco-check")
 
-    assert "make eco-validate-adaptive-dataset-example" in block
+    assert "$(MAKE) eco-validate-adaptive-dataset-example" in block
 
 
 def test_adaptive_dataset_validator_target_still_exists():
