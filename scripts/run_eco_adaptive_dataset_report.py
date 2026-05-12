@@ -73,20 +73,20 @@ def write_markdown(report: dict) -> str:
     lines = [
         "# E.C.O. adaptive dataset operational report",
         "",
-        f"Estado: {report["status"]}",
-        f"Clasificación: {report["classification"]}",
-        f"Registros sintéticos: {report["synthetic_records"]}",
-        f"JSON fuente: `{report["source_json"]}`",
-        f"Markdown fuente: `{report["source_markdown"]}`",
+        f"Estado: {report['status']}",
+        f"Clasificación: {report['classification']}",
+        f"Registros sintéticos: {report['synthetic_records']}",
+        f"JSON fuente: `{report['source_json']}`",
+        f"Markdown fuente: `{report['source_markdown']}`",
         "",
         "## Lectura operativa",
         "",
-        report["operational_reading"],
+        report['operational_reading'],
         "",
         "## Límites responsables",
         "",
     ]
-    lines.extend(f"- {limit}" for limit in report["responsible_limits"])
+    lines.extend(f"- {limit}" for limit in report['responsible_limits'])
     lines.extend([
         "",
         "## Uso recomendado",
@@ -106,9 +106,9 @@ def main() -> int:
     OUTPUT_MD.write_text(write_markdown(report), encoding="utf-8")
 
     print("# E.C.O. adaptive dataset operational report")
-    print(f"Estado: {report["status"]}")
-    print(f"Clasificación: {report["classification"]}")
-    print(f"Registros sintéticos: {report["synthetic_records"]}")
+    print(f"Estado: {report['status']}")
+    print(f"Clasificación: {report['classification']}")
+    print(f"Registros sintéticos: {report['synthetic_records']}")
     print(f"Salida JSON: {OUTPUT_JSON.relative_to(ROOT)}")
     print(f"Salida Markdown: {OUTPUT_MD.relative_to(ROOT)}")
     print("Límite: reporte sintético documental; sin datos reales; sin entrenamiento; sin baseline; sin recalibración.")
