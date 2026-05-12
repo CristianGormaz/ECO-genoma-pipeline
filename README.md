@@ -763,4 +763,5 @@ Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibr
 - Readiness gate del dataset adaptativo: `make eco-adaptive-dataset-readiness-gate`
 
 - [Índice operativo del dataset adaptativo E.C.O.](docs/operations/eco-adaptive-dataset-index.md)
+- [Snapshot operativo del ciclo adaptativo E.C.O.](docs/operations/eco-adaptive-dataset-cycle-snapshot.md)
 - [Guía de reporte operativo del dataset adaptativo E.C.O.](docs/operations/eco-adaptive-dataset-report-guide.md)
