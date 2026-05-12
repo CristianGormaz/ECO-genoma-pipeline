@@ -699,3 +699,9 @@ eco-adaptive-dataset-example:
 .PHONY: eco-validate-adaptive-dataset-example
 eco-validate-adaptive-dataset-example:
 	@python3 scripts/validate_eco_adaptive_dataset_example.py\n\n# E.C.O. adaptive dataset operational report\n.PHONY: eco-adaptive-dataset-report\neco-adaptive-dataset-report:\n\tpython3 scripts/run_eco_adaptive_dataset_report.py\n
+
+# E.C.O. adaptive dataset operational report
+.PHONY: eco-adaptive-dataset-report
+eco-adaptive-dataset-report:
+	python3 scripts/run_eco_adaptive_dataset_report.py
+
