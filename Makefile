@@ -707,3 +707,7 @@ eco-validate-adaptive-dataset-example:
 eco-adaptive-dataset-report:
 	python3 scripts/run_eco_adaptive_dataset_report.py
 
+# E.C.O. adaptive dataset readiness gate
+.PHONY: eco-adaptive-dataset-readiness-gate
+eco-adaptive-dataset-readiness-gate:
+	python3 scripts/run_eco_adaptive_dataset_readiness_gate.py
