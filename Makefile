@@ -510,6 +510,7 @@ eco-synthetic-operational-dashboard:
 .PHONY: eco-check
 eco-check:
 	$(MAKE) eco-validate-adaptive-dataset-example
+	$(MAKE) eco-adaptive-dataset-readiness-gate
 	$(MAKE) eco-status
 	$(MAKE) eco-validate-real-data-source-manifest
 	$(MAKE) eco-validate-operational-state-examples
@@ -542,10 +543,12 @@ eco-clean-results:
 	rm -f results/eco_synthetic_operational_dashboard.md
 	rm -f results/eco_operational_state_examples_report.json
 	rm -f results/eco_operational_state_examples_report.md
-
-# E.C.O. check and cleanup
 	rm -f results/eco_adaptive_dataset_report.json
 	rm -f results/eco_adaptive_dataset_report.md
+	rm -f results/eco_adaptive_dataset_readiness_gate.json
+	rm -f results/eco_adaptive_dataset_readiness_gate.md
+
+# E.C.O. check and cleanup
 .PHONY: eco-check-clean
 eco-check-clean:
 	$(MAKE) eco-check
