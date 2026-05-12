@@ -44,28 +44,34 @@ ALLOWED_REVIEW_STATUSES = {"draft", "review_needed", "candidate", "accepted", "b
 REQUIRED_MARKDOWN_TOKENS = (
     "Ejemplo sintético de dataset adaptativo E.C.O.",
     "No contiene datos reales.",
+    "No contiene datos personales.",
     "No contiene datos sensibles.",
     "No contiene datos genéticos privados.",
     "No entrena modelos.",
     "No modifica baseline.",
     "No recalibra umbrales.",
+    "No genera afirmaciones biomédicas aplicadas.",
     "No usar este ejemplo como fuente de entrenamiento",
 )
 
 
-def load_json(errors: list[str]) -> dict:
+def load_json(errors: list[str]):
     if not JSON_DOC.exists():
         errors.append(f"missing JSON example: {JSON_DOC}")
-        return {}
+        return None
 
     try:
         return json.loads(JSON_DOC.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
         errors.append(f"invalid JSON: {exc}")
-        return {}
+        return None
 
 
 def validate_payload(payload: dict, errors: list[str]) -> None:
+    if not isinstance(payload, dict):
+        errors.append("payload must be an object")
+        return
+
     if payload.get("classification") != "permitido":
         errors.append("classification must be permitido")
 
@@ -133,7 +139,7 @@ def main() -> int:
     errors: list[str] = []
     payload = load_json(errors)
 
-    if payload:
+    if payload is not None:
         validate_payload(payload, errors)
 
     validate_markdown(errors)
@@ -146,7 +152,7 @@ def main() -> int:
             print(f"- {error}")
         return 1
 
-    records = payload.get("records", [])
+    records = payload.get("records", []) if isinstance(payload, dict) else []
     print("Estado: passed")
     print(f"JSON validado: {JSON_DOC.relative_to(ROOT)}")
     print(f"Markdown validado: {MD_DOC.relative_to(ROOT)}")

@@ -509,7 +509,7 @@ eco-synthetic-operational-dashboard:
 # E.C.O. operational full check
 .PHONY: eco-check
 eco-check:
-	make eco-validate-adaptive-dataset-example
+	$(MAKE) eco-validate-adaptive-dataset-example
 	$(MAKE) eco-status
 	$(MAKE) eco-validate-real-data-source-manifest
 	$(MAKE) eco-validate-operational-state-examples
