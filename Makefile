@@ -544,7 +544,9 @@ eco-clean-results:
 	rm -f results/eco_operational_state_examples_report.md
 
 # E.C.O. check and cleanup
-\trm -f results/eco_adaptive_dataset_report.json\n\trm -f results/eco_adaptive_dataset_report.md\n.PHONY: eco-check-clean
+	rm -f results/eco_adaptive_dataset_report.json
+	rm -f results/eco_adaptive_dataset_report.md
+.PHONY: eco-check-clean
 eco-check-clean:
 	$(MAKE) eco-check
 	$(MAKE) eco-clean-results
