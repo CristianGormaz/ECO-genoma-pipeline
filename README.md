@@ -760,4 +760,5 @@ Límite: datos sintéticos; sin entrenamiento; sin datos sensibles; sin recalibr
 
 ## Operación E.C.O.
 
+- [Índice operativo del dataset adaptativo E.C.O.](docs/operations/eco-adaptive-dataset-index.md)
 - [Guía de reporte operativo del dataset adaptativo E.C.O.](docs/operations/eco-adaptive-dataset-report-guide.md)
