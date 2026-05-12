@@ -13,6 +13,13 @@ OK_STATUSES = {"passed", "green", "ok", "success"}
 
 COMPONENTS = [
     {
+        "id": "adaptive_dataset_readiness_gate",
+        "label": "adaptive dataset readiness gate",
+        "script": "scripts/run_eco_adaptive_dataset_readiness_gate.py",
+        "output": Path("results/eco_adaptive_dataset_readiness_gate.json"),
+    },
+
+    {
         "id": "suite_report",
         "label": "synthetic demos suite report",
         "script": "scripts/run_eco_synthetic_demos_suite_report.py",
