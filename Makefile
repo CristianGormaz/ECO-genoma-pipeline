@@ -544,6 +544,8 @@ eco-clean-results:
 	rm -f results/eco_operational_state_examples_report.md
 
 # E.C.O. check and cleanup
+	rm -f results/eco_adaptive_dataset_report.json
+	rm -f results/eco_adaptive_dataset_report.md
 .PHONY: eco-check-clean
 eco-check-clean:
 	$(MAKE) eco-check
@@ -699,3 +701,9 @@ eco-adaptive-dataset-example:
 .PHONY: eco-validate-adaptive-dataset-example
 eco-validate-adaptive-dataset-example:
 	@python3 scripts/validate_eco_adaptive_dataset_example.py
+
+# E.C.O. adaptive dataset operational report
+.PHONY: eco-adaptive-dataset-report
+eco-adaptive-dataset-report:
+	python3 scripts/run_eco_adaptive_dataset_report.py
+
