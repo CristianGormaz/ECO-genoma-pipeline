@@ -14,7 +14,7 @@ def test_synthetic_operational_dashboard_runs():
     payload = json.loads(JSON_OUTPUT.read_text(encoding="utf-8"))
     assert payload["status"] == "passed"
     assert payload["classification"] == "allowed"
-    assert payload["component_count"] == 3
+    assert payload["component_count"] == 4
     assert "datos sintéticos" in payload["limit"]
     assert "sin entrenamiento" in payload["limit"]
     assert "sin datos sensibles" in payload["limit"]
@@ -22,8 +22,10 @@ def test_synthetic_operational_dashboard_runs():
     assert "synthetic demos suite report" in labels
     assert "synthetic demo comparison report" in labels
     assert "synthetic signal matrix report" in labels
+    assert "adaptive dataset operational report" in labels
     statuses = {component["status"] for component in payload["components"]}
     assert statuses == {"passed"}
     md = MD_OUTPUT.read_text(encoding="utf-8")
     assert "E.C.O. synthetic operational dashboard" in md
     assert "synthetic signal matrix report" in md
+    assert "adaptive dataset operational report" in md

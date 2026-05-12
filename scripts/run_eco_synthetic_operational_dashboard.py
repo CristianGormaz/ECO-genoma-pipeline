@@ -30,6 +30,12 @@ COMPONENTS = [
         "script": "scripts/run_eco_synthetic_signal_matrix_report.py",
         "output": Path("results/eco_synthetic_signal_matrix_report.json"),
     },
+    {
+        "id": "adaptive_dataset_report",
+        "label": "adaptive dataset operational report",
+        "script": "scripts/run_eco_adaptive_dataset_report.py",
+        "output": Path("results/eco_adaptive_dataset_report.json"),
+    },
 ]
 
 
