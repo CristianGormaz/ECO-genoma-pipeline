@@ -18,7 +18,12 @@ COMPONENTS = [
         "script": "scripts/run_eco_adaptive_dataset_readiness_gate.py",
         "output": Path("results/eco_adaptive_dataset_readiness_gate.json"),
     },
-
+    {
+        "id": "source_admission_decision_summary",
+        "label": "source admission decision summary",
+        "script": "scripts/run_eco_source_admission_decision_summary.py",
+        "output": Path("results/eco_source_admission_decision_summary.json"),
+    },
     {
         "id": "suite_report",
         "label": "synthetic demos suite report",

@@ -16,12 +16,13 @@ def test_synthetic_operational_dashboard_runs():
     payload = json.loads(JSON_OUTPUT.read_text(encoding="utf-8"))
     assert payload["status"] == "passed"
     assert payload["classification"] == "allowed"
-    assert payload["component_count"] == 5
+    assert payload["component_count"] == 6
     assert "datos sintéticos" in payload["limit"]
     assert "sin entrenamiento" in payload["limit"]
     assert "sin datos sensibles" in payload["limit"]
     labels = {component["label"] for component in payload["components"]}
     assert "adaptive dataset readiness gate" in labels
+    assert "source admission decision summary" in labels
     assert "synthetic demos suite report" in labels
     assert "synthetic demo comparison report" in labels
     assert "synthetic signal matrix report" in labels
@@ -30,9 +31,11 @@ def test_synthetic_operational_dashboard_runs():
     assert statuses == {"passed"}
     md = MD_OUTPUT.read_text(encoding="utf-8")
     assert "E.C.O. synthetic operational dashboard" in md
+    assert "source admission decision summary" in md
     assert "synthetic signal matrix report" in md
     assert "adaptive dataset operational report" in md
     assert "adaptive dataset readiness gate" in md
+
 
 def test_synthetic_operational_dashboard_includes_adaptive_dataset_readiness_gate():
     script = SCRIPT
@@ -43,3 +46,11 @@ def test_synthetic_operational_dashboard_includes_adaptive_dataset_readiness_gat
     assert "eco_adaptive_dataset_readiness_gate.json" in text
     assert 'Path("results/eco_adaptive_dataset_readiness_gate.json")' in text
 
+
+def test_synthetic_operational_dashboard_includes_source_admission_summary():
+    text = SCRIPT.read_text(encoding="utf-8")
+
+    assert "source_admission_decision_summary" in text
+    assert "scripts/run_eco_source_admission_decision_summary.py" in text
+    assert "eco_source_admission_decision_summary.json" in text
+    assert 'Path("results/eco_source_admission_decision_summary.json")' in text
