@@ -506,6 +506,11 @@ eco-synthetic-signal-matrix-report:
 eco-synthetic-operational-dashboard:
 	$(PYTHON) scripts/run_eco_synthetic_operational_dashboard.py
 
+# E.C.O. LAOS synthetic agency demo
+.PHONY: eco-laos-agency-demo
+eco-laos-agency-demo:
+	$(PYTHON) scripts/run_eco_laos_agency_demo.py
+
 # E.C.O. governance panel (synthetic/documentary)
 .PHONY: eco-governance-panel
 eco-governance-panel:
@@ -552,6 +557,8 @@ eco-clean-results:
 	rm -f results/eco_synthetic_signal_matrix_report.md
 	rm -f results/eco_synthetic_operational_dashboard.json
 	rm -f results/eco_synthetic_operational_dashboard.md
+	rm -f results/eco_laos_agency_demo.json
+	rm -f results/eco_laos_agency_demo.md
 	rm -f results/eco_operational_state_examples_report.json
 	rm -f results/eco_operational_state_examples_report.md
 	rm -f results/eco_adaptive_dataset_report.json
