@@ -49,7 +49,7 @@ Estado esperado del panel operativo:
 - dashboard sintético operativo con **7 componentes**;
 - governance panel integrado;
 - autodesarrollo gobernado activo;
-- suite esperada actual: **510 passed**.
+- suite esperada actual: **511 passed**.
 
 Este snapshot mantiene límites responsables: sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
 

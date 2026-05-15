@@ -21,7 +21,7 @@ def test_operational_panel_index_mentions_snapshot_and_governance_state():
         "7 componentes",
         "governance panel integrado",
         "autodesarrollo gobernado activo",
-        "510 passed",
+        "511 passed",
     ]
 
     for token in required_tokens:
