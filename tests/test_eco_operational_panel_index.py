@@ -61,3 +61,24 @@ def test_operational_panel_index_links_release_checklist_and_timeline():
 
     for token in required_tokens:
         assert token in content
+
+
+def test_operational_panel_index_links_current_capabilities_map():
+    content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
+        encoding="utf-8"
+    )
+
+    required_tokens = [
+        "docs/operations/eco-current-capabilities-map.md",
+        "mapa de capacidades actuales",
+        "capacidades existentes",
+        "cómo se validan",
+        "qué falta",
+        "pytest passing",
+        "docs/operations/eco-post-governance-snapshot.md",
+        "docs/operations/eco-sprint-release-checklist.md",
+        "Límites responsables",
+    ]
+
+    for token in required_tokens:
+        assert token in content
