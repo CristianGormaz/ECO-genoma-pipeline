@@ -50,13 +50,20 @@ Este mapa de capacidades actuales sirve para revisar:
 - cómo se validan en el estado operativo actual;
 - qué falta para avanzar al siguiente salto operativo sin romper trazabilidad.
 
+
+## Contrato LAOS para agencia simulada
+
+Referencia: `docs/operations/eco-laos-agency-formula.md`.
+
+LAOS (Libre Albedrío Operativo Simulado) se mantiene como contrato conceptual para futura **agencia simulada** y futura compuerta de **autodesarrollo gobernado** en entorno sintético, sin implicar libre albedrío real ni conciencia.
+
 ## Snapshot estable actual
 
 Referencia operativa estable del sprint: `docs/operations/eco-post-governance-snapshot.md`.
 
 Estado esperado del panel operativo:
 
-- dashboard sintético operativo con **7 componentes**;
+- dashboard sintético operativo con **8 componentes**;
 - governance panel integrado;
 - autodesarrollo gobernado activo;
 - Suite esperada: **pytest passing**.

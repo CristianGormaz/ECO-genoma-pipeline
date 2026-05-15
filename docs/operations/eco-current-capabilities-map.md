@@ -6,7 +6,7 @@ E.C.O. se encuentra en estado operativo documental y sintético estable, con `py
 
 El panel operativo vigente mantiene como referencia explícita:
 
-- dashboard sintético operativo con 7 componentes;
+- dashboard sintético operativo con 8 componentes;
 - governance panel integrado;
 - checklist de liberación enlazada para pre-PR, pre-merge y post-merge;
 - snapshot post-governance como referencia del estado estable.
@@ -45,6 +45,15 @@ Estas demos permiten observar el flujo de validación y reporte sin depender de 
 S.N.E.-E.C.O. está presente como subsistema operativo para estructurar validaciones del estado entérico computacional y su trazabilidad.
 
 Su capacidad actual se centra en evaluación experimental controlada, reportes verificables y consistencia de suite en entorno sintético.
+
+
+## Capacidad conceptual LAOS (documental/sintética)
+
+E.C.O. incorpora LAOS — **Libre Albedrío Operativo Simulado** — como capacidad conceptual y documental, definida en `docs/operations/eco-laos-agency-formula.md`.
+
+LAOS se trata como métrica de **agencia simulada** para control operativo en entorno sintético y para uso futuro como gate de **autodesarrollo gobernado**.
+
+Aclaración explícita: LAOS no representa libre albedrío real ni conciencia; es un contrato documental/sintético de evaluación operativa.
 
 ## Validaciones disponibles
 
