@@ -21,7 +21,7 @@ def test_operational_panel_index_mentions_snapshot_and_governance_state():
         "7 componentes",
         "governance panel integrado",
         "autodesarrollo gobernado activo",
-        "511 passed",
+        "pytest passing",
     ]
 
     for token in required_tokens:
@@ -55,7 +55,7 @@ def test_operational_panel_index_links_release_checklist_and_timeline():
         "antes de abrir PR",
         "antes de mergear",
         "después de mergear",
-        "511 passed",
+        "pytest passing",
         "Límites responsables",
     ]
 
