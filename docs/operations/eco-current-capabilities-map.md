@@ -1,0 +1,88 @@
+# Mapa de capacidades actuales de E.C.O.
+
+## Estado operativo actual
+
+E.C.O. se encuentra en estado operativo documental y sintético estable, con `pytest passing` como criterio estable de suite para validar regresión en sprint.
+
+El panel operativo vigente mantiene como referencia explícita:
+
+- dashboard sintético operativo con 7 componentes;
+- governance panel integrado;
+- checklist de liberación enlazada para pre-PR, pre-merge y post-merge;
+- snapshot post-governance como referencia del estado estable.
+
+## Capacidades documentales
+
+E.C.O. dispone de una base documental operacional activa para:
+
+- onboarding técnico;
+- snapshots de estado;
+- guías de validación;
+- registro de decisiones y protocolos de operación.
+
+Esta capacidad permite distinguir qué piezas existen y cómo se deben operar sin ambigüedad durante un sprint.
+
+## Capacidades de gobernanza
+
+El repositorio integra governance panel y pautas explícitas de control operativo para mantener trazabilidad y límites responsables.
+
+También cuenta con checklist de liberación para controlar hitos antes de abrir PR, antes de mergear y después de mergear.
+
+## Capacidades de dashboard/reportes
+
+El dashboard sintético operativo con 7 componentes está establecido como vista de control del estado operativo.
+
+Además, E.C.O. cuenta con reportes y snapshots (incluyendo snapshot post-governance) para auditar consistencia entre documentación, estado de pruebas y gobernanza.
+
+## Capacidades de demos sintéticas
+
+E.C.O. dispone de demos sintéticas para validar comportamiento del pipeline en condiciones controladas con datos sintéticos.
+
+Estas demos permiten observar el flujo de validación y reporte sin depender de datos reales.
+
+## Capacidades S.N.E.-E.C.O.
+
+S.N.E.-E.C.O. está presente como subsistema operativo para estructurar validaciones del estado entérico computacional y su trazabilidad.
+
+Su capacidad actual se centra en evaluación experimental controlada, reportes verificables y consistencia de suite en entorno sintético.
+
+## Validaciones disponibles
+
+Validaciones disponibles recomendadas para estado de sprint:
+
+- `python3 -m pytest -q` como validación general;
+- `make eco-status` para lectura de estado operativo;
+- `make eco-check-clean` para verificación operativa con limpieza de residuos sintéticos.
+
+En este marco, `pytest passing` se utiliza como criterio estable de aceptación técnica del sprint.
+
+## Límites responsables
+
+Límites responsables vigentes:
+
+- uso de datos sintéticos;
+- sin datos reales;
+- sin entrenamiento;
+- sin modificación de baseline;
+- sin recalibración de umbrales;
+- sin afirmaciones biomédicas aplicadas.
+
+## Qué NO hace todavía E.C.O.
+
+Actualmente E.C.O. NO hace todavía:
+
+- operación con datos reales en este marco de sprint;
+- entrenamiento productivo de modelos;
+- recalibración de baseline o umbrales fuera de control de gobernanza;
+- generación de afirmaciones biomédicas aplicadas.
+
+## Próximo salto recomendado
+
+Próximo salto recomendado: consolidar una funcionalidad experimental útil mediante un paquete reproducible de evaluación sintética-gobernada que conecte:
+
+1. mapa de capacidades;
+2. criterios de validación estable (`pytest passing`);
+3. evidencia de dashboard y governance;
+4. salida resumida para decisión de avance de sprint.
+
+Este salto debe mantener límites responsables y trazabilidad de decisiones sin introducir datos reales ni entrenamiento.
