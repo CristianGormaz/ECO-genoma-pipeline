@@ -54,6 +54,12 @@ COMPONENTS = [
         "script": "scripts/run_eco_governance_panel.py",
         "output": Path("results/eco_governance_panel.json"),
     },
+    {
+        "id": "capabilities_report",
+        "label": "capabilities report",
+        "script": "scripts/run_eco_capabilities_report.py",
+        "output": Path("results/eco_capabilities_report.json"),
+    },
 ]
 
 
