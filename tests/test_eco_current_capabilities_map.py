@@ -10,7 +10,7 @@ def test_eco_current_capabilities_map_exists_and_contains_required_sections() ->
 
     required_phrases = [
         "pytest passing",
-        "dashboard sintético operativo con 7 componentes",
+        "dashboard sintético operativo con 8 componentes",
         "governance panel",
         "checklist de liberación",
         "snapshot post-governance",
@@ -20,6 +20,12 @@ def test_eco_current_capabilities_map_exists_and_contains_required_sections() ->
         "límites responsables",
         "qué no hace todavía e.c.o.",
         "próximo salto recomendado",
+        "eco-laos-agency-formula.md",
+        "laos",
+        "libre albedrío operativo simulado",
+        "agencia simulada",
+        "autodesarrollo gobernado",
+        "no representa libre albedrío real ni conciencia",
     ]
 
     for phrase in required_phrases:

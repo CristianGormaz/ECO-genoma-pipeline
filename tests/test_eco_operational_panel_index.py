@@ -18,7 +18,7 @@ def test_operational_panel_index_mentions_snapshot_and_governance_state():
     required_tokens = [
         "Snapshot estable actual",
         "docs/operations/eco-post-governance-snapshot.md",
-        "7 componentes",
+        "8 componentes",
         "governance panel integrado",
         "autodesarrollo gobernado activo",
         "pytest passing",
@@ -63,7 +63,7 @@ def test_operational_panel_index_links_release_checklist_and_timeline():
         assert token in content
 
 
-def test_operational_panel_index_links_current_capabilities_map():
+def test_operational_panel_index_links_current_capabilities_map_and_laos_contract():
     content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
         encoding="utf-8"
     )
@@ -74,9 +74,13 @@ def test_operational_panel_index_links_current_capabilities_map():
         "capacidades existentes",
         "cómo se validan",
         "qué falta",
+        "docs/operations/eco-laos-agency-formula.md",
+        "LAOS",
+        "Libre Albedrío Operativo Simulado",
+        "agencia simulada",
         "pytest passing",
-        "docs/operations/eco-post-governance-snapshot.md",
-        "docs/operations/eco-sprint-release-checklist.md",
+        "snapshot",
+        "checklist",
         "Límites responsables",
     ]
 
