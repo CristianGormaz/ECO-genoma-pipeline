@@ -12,7 +12,8 @@ def test_post_governance_snapshot_exists_and_mentions_expected_state():
     assert "7 componentes" in text
     assert "governance panel" in text
     assert "autodesarrollo gobernado" in text
-    assert "511 passed" in text
+    assert "pytest passing" in text
+    assert "conteo de referencia reciente" in text
     assert "límites responsables" in text
     assert "sin datos reales" in text
     assert "sin entrenamiento" in text
