@@ -16,7 +16,7 @@ def test_synthetic_operational_dashboard_runs():
     payload = json.loads(JSON_OUTPUT.read_text(encoding="utf-8"))
     assert payload["status"] == "passed"
     assert payload["classification"] == "allowed"
-    assert payload["component_count"] == 7
+    assert payload["component_count"] == 8
     assert "datos sintéticos" in payload["limit"]
     assert "sin entrenamiento" in payload["limit"]
     assert "sin datos sensibles" in payload["limit"]
@@ -28,6 +28,7 @@ def test_synthetic_operational_dashboard_runs():
     assert "synthetic signal matrix report" in labels
     assert "adaptive dataset operational report" in labels
     assert "governance panel" in labels
+    assert "capabilities report" in labels
     statuses = {component["status"] for component in payload["components"]}
     assert statuses == {"passed"}
     md = MD_OUTPUT.read_text(encoding="utf-8")
@@ -37,6 +38,7 @@ def test_synthetic_operational_dashboard_runs():
     assert "adaptive dataset operational report" in md
     assert "adaptive dataset readiness gate" in md
     assert "governance panel" in md
+    assert "capabilities report" in md
 
 
 def test_synthetic_operational_dashboard_includes_adaptive_dataset_readiness_gate():
@@ -65,3 +67,12 @@ def test_synthetic_operational_dashboard_includes_governance_panel():
     assert "scripts/run_eco_governance_panel.py" in text
     assert "eco_governance_panel.json" in text
     assert 'Path("results/eco_governance_panel.json")' in text
+
+
+def test_synthetic_operational_dashboard_includes_capabilities_report():
+    text = SCRIPT.read_text(encoding="utf-8")
+
+    assert "capabilities_report" in text
+    assert "scripts/run_eco_capabilities_report.py" in text
+    assert "eco_capabilities_report.json" in text
+    assert 'Path("results/eco_capabilities_report.json")' in text
