@@ -506,12 +506,18 @@ eco-synthetic-signal-matrix-report:
 eco-synthetic-operational-dashboard:
 	$(PYTHON) scripts/run_eco_synthetic_operational_dashboard.py
 
+# E.C.O. governance panel (synthetic/documentary)
+.PHONY: eco-governance-panel
+eco-governance-panel:
+	$(PYTHON) scripts/run_eco_governance_panel.py
+
 # E.C.O. operational full check
 .PHONY: eco-check
 eco-check:
 	$(MAKE) eco-validate-adaptive-dataset-example
 	$(MAKE) eco-adaptive-dataset-readiness-gate
 	$(MAKE) eco-status
+	$(MAKE) eco-governance-panel
 	$(MAKE) eco-validate-real-data-source-manifest
 	$(MAKE) eco-validate-operational-state-examples
 	$(MAKE) eco-operational-state-examples-report
@@ -547,6 +553,8 @@ eco-clean-results:
 	rm -f results/eco_adaptive_dataset_report.md
 	rm -f results/eco_adaptive_dataset_readiness_gate.json
 	rm -f results/eco_adaptive_dataset_readiness_gate.md
+	rm -f results/eco_governance_panel.json
+	rm -f results/eco_governance_panel.md
 
 # E.C.O. check and cleanup
 .PHONY: eco-check-clean
