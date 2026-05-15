@@ -48,6 +48,12 @@ COMPONENTS = [
         "script": "scripts/run_eco_adaptive_dataset_report.py",
         "output": Path("results/eco_adaptive_dataset_report.json"),
     },
+    {
+        "id": "governance_panel",
+        "label": "governance panel",
+        "script": "scripts/run_eco_governance_panel.py",
+        "output": Path("results/eco_governance_panel.json"),
+    },
 ]
 
 

@@ -16,7 +16,7 @@ def test_synthetic_operational_dashboard_runs():
     payload = json.loads(JSON_OUTPUT.read_text(encoding="utf-8"))
     assert payload["status"] == "passed"
     assert payload["classification"] == "allowed"
-    assert payload["component_count"] == 6
+    assert payload["component_count"] == 7
     assert "datos sintéticos" in payload["limit"]
     assert "sin entrenamiento" in payload["limit"]
     assert "sin datos sensibles" in payload["limit"]
@@ -27,6 +27,7 @@ def test_synthetic_operational_dashboard_runs():
     assert "synthetic demo comparison report" in labels
     assert "synthetic signal matrix report" in labels
     assert "adaptive dataset operational report" in labels
+    assert "governance panel" in labels
     statuses = {component["status"] for component in payload["components"]}
     assert statuses == {"passed"}
     md = MD_OUTPUT.read_text(encoding="utf-8")
@@ -35,6 +36,7 @@ def test_synthetic_operational_dashboard_runs():
     assert "synthetic signal matrix report" in md
     assert "adaptive dataset operational report" in md
     assert "adaptive dataset readiness gate" in md
+    assert "governance panel" in md
 
 
 def test_synthetic_operational_dashboard_includes_adaptive_dataset_readiness_gate():
@@ -54,3 +56,12 @@ def test_synthetic_operational_dashboard_includes_source_admission_summary():
     assert "scripts/run_eco_source_admission_decision_summary.py" in text
     assert "eco_source_admission_decision_summary.json" in text
     assert 'Path("results/eco_source_admission_decision_summary.json")' in text
+
+
+def test_synthetic_operational_dashboard_includes_governance_panel():
+    text = SCRIPT.read_text(encoding="utf-8")
+
+    assert "governance_panel" in text
+    assert "scripts/run_eco_governance_panel.py" in text
+    assert "eco_governance_panel.json" in text
+    assert 'Path("results/eco_governance_panel.json")' in text
