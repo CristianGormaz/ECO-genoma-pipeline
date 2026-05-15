@@ -42,3 +42,22 @@ def test_operational_panel_index_preserves_responsible_limits():
 
     for token in required_limits:
         assert token in content
+
+
+def test_operational_panel_index_links_release_checklist_and_timeline():
+    content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
+        encoding="utf-8"
+    )
+
+    required_tokens = [
+        "docs/operations/eco-sprint-release-checklist.md",
+        "checklist de liberación",
+        "antes de abrir PR",
+        "antes de mergear",
+        "después de mergear",
+        "511 passed",
+        "Límites responsables",
+    ]
+
+    for token in required_tokens:
+        assert token in content
