@@ -39,6 +39,20 @@ Responder rápidamente:
 | `make sne-validation` | Validar el núcleo S.N.E.-E.C.O. | Reporte Markdown/JSON generado. |
 | `make sne-state-confusion` | Revisar rutas confundidas. | Rutas confundidas controladas según política actual. |
 
+
+## Snapshot estable actual
+
+Referencia operativa estable del sprint: `docs/operations/eco-post-governance-snapshot.md`.
+
+Estado esperado del panel operativo:
+
+- dashboard sintético operativo con **7 componentes**;
+- governance panel integrado;
+- autodesarrollo gobernado activo;
+- suite esperada actual: **510 passed**.
+
+Este snapshot mantiene límites responsables: sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
+
 ## Flujo antes de iniciar sprint
 
 ```bash
