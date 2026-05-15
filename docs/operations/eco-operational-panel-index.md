@@ -53,6 +53,17 @@ Estado esperado del panel operativo:
 
 Este snapshot mantiene límites responsables: sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
 
+
+## Checklist de liberación de sprint
+
+Referencia: `docs/operations/eco-sprint-release-checklist.md`.
+
+Usa esta checklist de liberación en tres momentos obligatorios:
+
+- antes de abrir PR;
+- antes de mergear;
+- después de mergear.
+
 ## Flujo antes de iniciar sprint
 
 ```bash
