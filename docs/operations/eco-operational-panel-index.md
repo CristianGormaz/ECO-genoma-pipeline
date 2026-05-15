@@ -40,6 +40,16 @@ Responder rápidamente:
 | `make sne-state-confusion` | Revisar rutas confundidas. | Rutas confundidas controladas según política actual. |
 
 
+## Mapa de capacidades actuales
+
+Referencia: `docs/operations/eco-current-capabilities-map.md`.
+
+Este mapa de capacidades actuales sirve para revisar:
+
+- capacidades existentes;
+- cómo se validan en el estado operativo actual;
+- qué falta para avanzar al siguiente salto operativo sin romper trazabilidad.
+
 ## Snapshot estable actual
 
 Referencia operativa estable del sprint: `docs/operations/eco-post-governance-snapshot.md`.
