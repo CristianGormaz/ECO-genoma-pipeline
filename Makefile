@@ -512,7 +512,12 @@ eco-governance-panel:
 	$(PYTHON) scripts/run_eco_governance_panel.py
 
 # E.C.O. operational full check
-.PHONY: eco-check
+.PHONY: eco-check eco-capabilities-report
+
+# E.C.O. current capabilities report
+eco-capabilities-report:
+	$(PYTHON) scripts/run_eco_capabilities_report.py
+
 eco-check:
 	$(MAKE) eco-validate-adaptive-dataset-example
 	$(MAKE) eco-adaptive-dataset-readiness-gate
@@ -555,6 +560,8 @@ eco-clean-results:
 	rm -f results/eco_adaptive_dataset_readiness_gate.md
 	rm -f results/eco_governance_panel.json
 	rm -f results/eco_governance_panel.md
+	rm -f results/eco_capabilities_report.json
+	rm -f results/eco_capabilities_report.md
 
 # E.C.O. check and cleanup
 .PHONY: eco-check-clean
