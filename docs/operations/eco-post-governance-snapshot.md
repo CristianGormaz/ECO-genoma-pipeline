@@ -8,7 +8,7 @@ E.C.O. se encuentra en un estado operativo estable posterior a la integración d
 - Dashboard sintético operativo con 7 componentes.
 - Governance panel integrado en el dashboard sintético.
 - Autodesarrollo gobernado activo.
-- Suite esperada actual: 509 passed.
+- Suite esperada actual: 511 passed.
 
 ## Límites responsables activos
 
