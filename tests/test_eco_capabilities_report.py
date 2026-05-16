@@ -36,6 +36,16 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
     assert "snapshot post-governance" in payload_text
     assert "checklist de liberación" in payload_text
     assert "mapa de capacidades actuales" in payload_text
+    assert "laos governance gate" in payload_text
+    assert "capacidad operativa sintética" in payload_text
+    assert "compuerta de gobernanza" in payload_text
+    assert "pausar" in payload_text
+    assert "revisión humana" in payload_text
+    assert "avanzar con control" in payload_text
+    assert "sin libre albedrío real" in payload_text
+    assert "sin conciencia" in payload_text
+    assert "laos governance gate" in markdown
+    assert "compuerta de gobernanza" in markdown
     assert "límites responsables" in markdown
     assert "qué no hace todavía e.c.o." in markdown
 
@@ -44,6 +54,9 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
         "sin entrenamiento",
         "sin modificación de baseline",
         "sin recalibración de umbrales",
+        "sin afirmaciones biomédicas aplicadas",
+        "sin libre albedrío real",
+        "sin conciencia",
     ]
     limits_text = " ".join(payload["responsible_limits"]).lower()
     for expected in required_limits:

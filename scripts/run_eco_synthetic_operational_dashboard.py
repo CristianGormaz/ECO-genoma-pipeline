@@ -8,7 +8,7 @@ from pathlib import Path
 JSON_OUTPUT = Path("results/eco_synthetic_operational_dashboard.json")
 MD_OUTPUT = Path("results/eco_synthetic_operational_dashboard.md")
 
-LIMIT = "datos sintéticos; sin entrenamiento; sin datos sensibles; sin modificación de baseline; sin recalibración; sin afirmaciones biomédicas aplicadas"
+LIMIT = "datos sintéticos; sin entrenamiento; sin datos sensibles; sin modificación de baseline; sin recalibración; sin afirmaciones biomédicas aplicadas; sin libre albedrío real; sin conciencia"
 OK_STATUSES = {"passed", "green", "ok", "success"}
 
 COMPONENTS = [
@@ -59,6 +59,12 @@ COMPONENTS = [
         "label": "capabilities report",
         "script": "scripts/run_eco_capabilities_report.py",
         "output": Path("results/eco_capabilities_report.json"),
+    },
+    {
+        "id": "laos_governance_gate",
+        "label": "LAOS Governance Gate",
+        "script": "scripts/run_eco_laos_governance_gate_demo.py",
+        "output": Path("results/eco_laos_governance_gate_demo.json"),
     },
 ]
 
