@@ -5,6 +5,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DASHBOARD_JSON = PROJECT_ROOT / "results" / "sne_eco_observability_dashboard.json"
 DEFAULT_OUTPUT_JSON = PROJECT_ROOT / "results" / "sne_eco_compare_against_rc1.json"
@@ -178,6 +183,7 @@ def write_text(path: Path, content: str) -> None:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     args = parse_args()
     dashboard_payload = load_json(args.dashboard_json)
     payload = build_comparison(dashboard_payload=dashboard_payload, baseline_tag=args.baseline_tag)

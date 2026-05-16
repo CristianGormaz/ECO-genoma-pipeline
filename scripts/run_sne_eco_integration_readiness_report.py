@@ -5,6 +5,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 
 OUTPUT_JSON = Path("results/sne_eco_integration_readiness_report.json")
 OUTPUT_MD = Path("results/sne_eco_integration_readiness_report.md")
@@ -242,6 +247,7 @@ def to_markdown(report: dict) -> str:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     report = build_report(write_outputs=True)
     print(to_markdown(report))
     print("OK: readiness de integración S.N.E.-E.C.O. generado.")

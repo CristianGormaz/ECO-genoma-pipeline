@@ -5,6 +5,11 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -221,6 +226,7 @@ def to_markdown(report: dict) -> str:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     report = build_report(write_outputs=True)
     print(to_markdown(report))
     print("OK: evaluación de desafío ML S.N.E.-E.C.O. generada.")

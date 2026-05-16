@@ -1,5 +1,6 @@
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -8,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_adaptive_dataset_readiness_gate_outputs_passed_report():
     result = subprocess.run(
-        ["python3", "scripts/run_eco_adaptive_dataset_readiness_gate.py"],
+        [sys.executable, "scripts/run_eco_adaptive_dataset_readiness_gate.py"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -41,7 +42,7 @@ def test_adaptive_dataset_readiness_gate_declares_responsible_limits():
     output_json = ROOT / "results" / "eco_adaptive_dataset_readiness_gate.json"
 
     subprocess.run(
-        ["python3", "scripts/run_eco_adaptive_dataset_readiness_gate.py"],
+        [sys.executable, "scripts/run_eco_adaptive_dataset_readiness_gate.py"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -62,7 +63,7 @@ def test_adaptive_dataset_readiness_gate_declares_responsible_limits():
 
 def test_adaptive_dataset_readiness_gate_markdown_is_operational():
     subprocess.run(
-        ["python3", "scripts/run_eco_adaptive_dataset_readiness_gate.py"],
+        [sys.executable, "scripts/run_eco_adaptive_dataset_readiness_gate.py"],
         cwd=ROOT,
         text=True,
         capture_output=True,

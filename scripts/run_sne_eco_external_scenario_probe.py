@@ -6,6 +6,11 @@ import sys
 from pathlib import Path
 from typing import Any, Iterable
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -172,6 +177,7 @@ def write_text(path: Path, content: str) -> None:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     args = parse_args()
     payload = build_external_probe()
     markdown = to_markdown(payload)

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -14,7 +15,7 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
     assert SCRIPT.exists(), "Debe existir scripts/run_eco_capabilities_report.py"
 
     run = subprocess.run(
-        ["python3", str(SCRIPT)],
+        [sys.executable, str(SCRIPT)],
         check=False,
         capture_output=True,
         text=True,

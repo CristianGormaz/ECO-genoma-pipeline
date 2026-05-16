@@ -5,6 +5,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -185,6 +190,7 @@ def to_markdown(manifest: dict) -> str:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     manifest = build_manifest(write_outputs=True)
     print(to_markdown(manifest))
     print("OK: manifiesto responsable de experimento S.N.E.-E.C.O. generado.")
