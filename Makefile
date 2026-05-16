@@ -511,6 +511,11 @@ eco-synthetic-operational-dashboard:
 eco-laos-agency-demo:
 	$(PYTHON) scripts/run_eco_laos_agency_demo.py
 
+# E.C.O. LAOS governance gate synthetic demo
+.PHONY: eco-laos-governance-gate-demo
+eco-laos-governance-gate-demo:
+	$(PYTHON) scripts/run_eco_laos_governance_gate_demo.py
+
 # E.C.O. governance panel (synthetic/documentary)
 .PHONY: eco-governance-panel
 eco-governance-panel:
@@ -541,6 +546,7 @@ eco-check:
 # E.C.O. generated results cleanup
 # Cleaner covers results/eco_adaptive_dataset_report.json and results/eco_adaptive_dataset_report.md.
 # Cleaner covers results/eco_synthetic_demo_comparison_report.json and results/eco_synthetic_demo_comparison_report.md.
+# Cleaner covers results/eco_laos_governance_gate_demo.json and results/eco_laos_governance_gate_demo.md.
 .PHONY: eco-clean-results
 eco-clean-results:
 	python3 scripts/clean_eco_results.py
