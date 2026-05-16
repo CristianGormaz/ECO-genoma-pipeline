@@ -37,6 +37,6 @@ def test_absorption_threshold_demo_is_registered():
     demos = {demo["id"]: demo for demo in data["demos"]}
 
     assert "absorption_threshold" in demos
-    assert demos["absorption_threshold"]["runner"] == str(SCRIPT)
-    assert demos["absorption_threshold"]["json_output"] == str(JSON_OUTPUT)
-    assert demos["absorption_threshold"]["markdown_output"] == str(MD_OUTPUT)
+    assert demos["absorption_threshold"]["runner"] == SCRIPT.as_posix()
+    assert demos["absorption_threshold"]["json_output"] == JSON_OUTPUT.as_posix()
+    assert demos["absorption_threshold"]["markdown_output"] == MD_OUTPUT.as_posix()

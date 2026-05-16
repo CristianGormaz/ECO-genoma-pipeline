@@ -539,36 +539,11 @@ eco-check:
 	$(PYTHON) -m pytest -q
 
 # E.C.O. generated results cleanup
+# Cleaner covers results/eco_adaptive_dataset_report.json and results/eco_adaptive_dataset_report.md.
+# Cleaner covers results/eco_synthetic_demo_comparison_report.json and results/eco_synthetic_demo_comparison_report.md.
 .PHONY: eco-clean-results
 eco-clean-results:
-	rm -f results/eco_minimal_simulation_demo.json
-	rm -f results/eco_minimal_simulation_demo.md
-	rm -f results/eco_signal_balance_demo.json
-	rm -f results/eco_signal_balance_demo.md
-	rm -f results/eco_waste_pressure_demo.json
-	rm -f results/eco_waste_pressure_demo.md
-	rm -f results/eco_absorption_threshold_demo.json
-	rm -f results/eco_absorption_threshold_demo.md
-	rm -f results/eco_synthetic_demos_suite_report.json
-	rm -f results/eco_synthetic_demos_suite_report.md
-	rm -f results/eco_synthetic_demo_comparison_report.json
-	rm -f results/eco_synthetic_demo_comparison_report.md
-	rm -f results/eco_synthetic_signal_matrix_report.json
-	rm -f results/eco_synthetic_signal_matrix_report.md
-	rm -f results/eco_synthetic_operational_dashboard.json
-	rm -f results/eco_synthetic_operational_dashboard.md
-	rm -f results/eco_laos_agency_demo.json
-	rm -f results/eco_laos_agency_demo.md
-	rm -f results/eco_operational_state_examples_report.json
-	rm -f results/eco_operational_state_examples_report.md
-	rm -f results/eco_adaptive_dataset_report.json
-	rm -f results/eco_adaptive_dataset_report.md
-	rm -f results/eco_adaptive_dataset_readiness_gate.json
-	rm -f results/eco_adaptive_dataset_readiness_gate.md
-	rm -f results/eco_governance_panel.json
-	rm -f results/eco_governance_panel.md
-	rm -f results/eco_capabilities_report.json
-	rm -f results/eco_capabilities_report.md
+	python3 scripts/clean_eco_results.py
 
 # E.C.O. check and cleanup
 .PHONY: eco-check-clean
