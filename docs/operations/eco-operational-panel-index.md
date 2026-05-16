@@ -57,6 +57,14 @@ Referencia: `docs/operations/eco-laos-agency-formula.md`.
 
 LAOS (Libre Albedrío Operativo Simulado) se mantiene como contrato conceptual para futura **agencia simulada** y futura compuerta de **autodesarrollo gobernado** en entorno sintético, sin implicar libre albedrío real ni conciencia.
 
+## LAOS Governance Gate
+
+Referencia: `docs/operations/eco-laos-governance-gate.md`.
+
+LAOS Governance Gate funciona como compuerta sintética de gobernanza para decidir pausa, revisión humana o avance controlado dentro de autodesarrollo gobernado; no activa autonomía real y solo documenta una recomendación operativa bajo límites responsables.
+
+Límites preservados: sin libre albedrío real, sin conciencia, sin datos reales, sin entrenamiento, sin modificación de baseline y sin recalibración de umbrales.
+
 ## Snapshot estable actual
 
 Referencia operativa estable del sprint: `docs/operations/eco-post-governance-snapshot.md`.

@@ -26,6 +26,14 @@ def test_eco_current_capabilities_map_exists_and_contains_required_sections() ->
         "agencia simulada",
         "autodesarrollo gobernado",
         "no representa libre albedrío real ni conciencia",
+        "docs/operations/eco-laos-governance-gate.md",
+        "laos governance gate",
+        "compuerta de gobernanza",
+        "pausar",
+        "revisión humana",
+        "avanzar con control",
+        "sin libre albedrío real",
+        "sin conciencia",
     ]
 
     for phrase in required_phrases:

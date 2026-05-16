@@ -55,6 +55,10 @@ LAOS se trata como métrica de **agencia simulada** para control operativo en en
 
 Aclaración explícita: LAOS no representa libre albedrío real ni conciencia; es un contrato documental/sintético de evaluación operativa.
 
+E.C.O. también enlaza **LAOS Governance Gate** como compuerta de gobernanza documental en `docs/operations/eco-laos-governance-gate.md`.
+
+Esta compuerta sintética cruza LAOS con estado de validación para recomendar **pausar**, activar **revisión humana** o **avanzar con control**, preservando límites responsables: sin libre albedrío real y sin conciencia.
+
 ## Validaciones disponibles
 
 Validaciones disponibles recomendadas para estado de sprint:
