@@ -24,6 +24,8 @@ ARTIFACTS = (
     "results/eco_synthetic_operational_dashboard.md",
     "results/eco_laos_agency_demo.json",
     "results/eco_laos_agency_demo.md",
+    "results/eco_laos_governance_gate_demo.json",
+    "results/eco_laos_governance_gate_demo.md",
     "results/eco_operational_state_examples_report.json",
     "results/eco_operational_state_examples_report.md",
     "results/eco_adaptive_dataset_report.json",
