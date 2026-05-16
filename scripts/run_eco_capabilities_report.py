@@ -23,6 +23,15 @@ def build_report() -> dict[str, Any]:
         },
         "synthetic_scope": {
             "synthetic_demos": "demos sintéticas",
+            "laos_governance_gate": {
+                "name": "LAOS Governance Gate",
+                "kind": "capacidad operativa sintética",
+                "description": "compuerta de gobernanza para pausar, activar revisión humana o avanzar con control",
+                "limits": [
+                    "sin libre albedrío real",
+                    "sin conciencia",
+                ],
+            },
             "available_validations": [
                 "python3 -m pytest -q",
                 "make eco-status",
@@ -35,6 +44,8 @@ def build_report() -> dict[str, Any]:
             "sin modificación de baseline",
             "sin recalibración de umbrales",
             "sin afirmaciones biomédicas aplicadas",
+            "sin libre albedrío real",
+            "sin conciencia",
         ],
         "what_eco_does_not_do_yet": [
             "qué NO hace todavía E.C.O.: operación con datos reales en este marco de sprint",
@@ -52,6 +63,7 @@ def build_markdown(payload: dict[str, Any]) -> str:
     validations = "\n".join(
         f"- `{cmd}`" for cmd in payload["synthetic_scope"]["available_validations"]
     )
+    laos_gate = payload["synthetic_scope"]["laos_governance_gate"]
 
     return "\n".join(
         [
@@ -68,6 +80,11 @@ def build_markdown(payload: dict[str, Any]) -> str:
             f"- {payload['operational_snapshot']['release_checklist']}",
             f"- {payload['operational_snapshot']['capabilities_map']}",
             f"- {payload['synthetic_scope']['synthetic_demos']}",
+            "",
+            "## Capacidades operativas sintéticas",
+            f"- {laos_gate['name']}: {laos_gate['description']}.",
+            f"- tipo: {laos_gate['kind']}",
+            f"- límites LAOS: {', '.join(laos_gate['limits'])}",
             "",
             "## Validaciones disponibles",
             validations,

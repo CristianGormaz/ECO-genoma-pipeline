@@ -1,4 +1,6 @@
 import subprocess
+import shutil
+import sys
 from pathlib import Path
 
 
@@ -11,7 +13,12 @@ def test_eco_real_data_source_manifest_validator_passes_contract():
     assert script.exists()
     assert doc.exists()
 
-    result = subprocess.run(["make", "eco-validate-real-data-source-manifest"], cwd=root, text=True, capture_output=True, check=False)
+    command = (
+        ["make", "eco-validate-real-data-source-manifest"]
+        if shutil.which("make")
+        else [sys.executable, "scripts/validate_eco_real_data_source_manifest.py"]
+    )
+    result = subprocess.run(command, cwd=root, text=True, capture_output=True, check=False)
 
     assert result.returncode == 0, result.stdout + result.stderr
     assert "Estado: passed" in result.stdout

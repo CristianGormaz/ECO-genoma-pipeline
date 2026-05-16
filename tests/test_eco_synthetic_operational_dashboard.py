@@ -16,10 +16,15 @@ def test_synthetic_operational_dashboard_runs():
     payload = json.loads(JSON_OUTPUT.read_text(encoding="utf-8"))
     assert payload["status"] == "passed"
     assert payload["classification"] == "allowed"
-    assert payload["component_count"] == 8
+    assert payload["component_count"] == 9
     assert "datos sintéticos" in payload["limit"]
     assert "sin entrenamiento" in payload["limit"]
     assert "sin datos sensibles" in payload["limit"]
+    assert "sin modificación de baseline" in payload["limit"]
+    assert "sin recalibración" in payload["limit"]
+    assert "sin afirmaciones biomédicas aplicadas" in payload["limit"]
+    assert "sin libre albedrío real" in payload["limit"]
+    assert "sin conciencia" in payload["limit"]
     labels = {component["label"] for component in payload["components"]}
     assert "adaptive dataset readiness gate" in labels
     assert "source admission decision summary" in labels
@@ -29,6 +34,7 @@ def test_synthetic_operational_dashboard_runs():
     assert "adaptive dataset operational report" in labels
     assert "governance panel" in labels
     assert "capabilities report" in labels
+    assert "LAOS Governance Gate" in labels
     statuses = {component["status"] for component in payload["components"]}
     assert statuses == {"passed"}
     md = MD_OUTPUT.read_text(encoding="utf-8")
@@ -39,6 +45,9 @@ def test_synthetic_operational_dashboard_runs():
     assert "adaptive dataset readiness gate" in md
     assert "governance panel" in md
     assert "capabilities report" in md
+    assert "LAOS Governance Gate" in md
+    assert "sin libre albedrío real" in md
+    assert "sin conciencia" in md
 
 
 def test_synthetic_operational_dashboard_includes_adaptive_dataset_readiness_gate():
@@ -76,3 +85,13 @@ def test_synthetic_operational_dashboard_includes_capabilities_report():
     assert "scripts/run_eco_capabilities_report.py" in text
     assert "eco_capabilities_report.json" in text
     assert 'Path("results/eco_capabilities_report.json")' in text
+
+
+def test_synthetic_operational_dashboard_includes_laos_governance_gate():
+    text = SCRIPT.read_text(encoding="utf-8")
+
+    assert "laos_governance_gate" in text
+    assert "LAOS Governance Gate" in text
+    assert "scripts/run_eco_laos_governance_gate_demo.py" in text
+    assert "eco_laos_governance_gate_demo.json" in text
+    assert 'Path("results/eco_laos_governance_gate_demo.json")' in text

@@ -1,5 +1,6 @@
 import json
 import subprocess
+import shutil
 import sys
 from pathlib import Path
 
@@ -17,13 +18,23 @@ def test_eco_vacuum_state_make_target_is_declared():
 
 
 def test_eco_vacuum_state_make_target_generates_outputs(tmp_path):
-    result = subprocess.run(
+    command = (
         [
             "make",
             "eco-vacuum-state-demo",
             f"PYTHON={sys.executable}",
             f"ECO_VACUUM_OUTPUT_DIR={tmp_path}",
-        ],
+        ]
+        if shutil.which("make")
+        else [
+            sys.executable,
+            "scripts/run_eco_vacuum_state_demo.py",
+            "--output-dir",
+            str(tmp_path),
+        ]
+    )
+    result = subprocess.run(
+        command,
         check=False,
         capture_output=True,
         text=True,

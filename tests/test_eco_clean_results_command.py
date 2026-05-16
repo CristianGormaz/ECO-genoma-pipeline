@@ -1,4 +1,6 @@
 import subprocess
+import shutil
+import sys
 from pathlib import Path
 
 
@@ -66,7 +68,12 @@ def test_eco_clean_results_removes_generated_artifacts():
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("temporary synthetic artifact", encoding="utf-8")
 
-    result = subprocess.run(["make", "eco-clean-results"], capture_output=True, text=True, check=False)
+    command = (
+        ["make", "eco-clean-results"]
+        if shutil.which("make")
+        else [sys.executable, "scripts/clean_eco_results.py"]
+    )
+    result = subprocess.run(command, capture_output=True, text=True, check=False)
 
     assert result.returncode == 0, result.stdout + result.stderr
     for path in RESULTS:
