@@ -5,6 +5,11 @@ import re
 from collections import Counter
 from pathlib import Path
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 
 TRAIN_PATH = Path("data/training/sne_eco_empirical_train_split.jsonl")
 EVAL_PATH = Path("data/training/sne_eco_empirical_eval_split.jsonl")
@@ -260,6 +265,7 @@ def to_markdown(report: dict) -> str:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     report = build_report(write_outputs=True)
     print(to_markdown(report))
     print("OK: baseline ML experimental S.N.E.-E.C.O. generado.")

@@ -7,6 +7,11 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -217,6 +222,7 @@ def write_text(path: Path, content: str) -> None:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     args = parse_args()
     review_payload = load_review(args.review_json, probe_path=args.probe_json, rebuild_review=args.rebuild_review)
     payload = build_evidence_policy(review_payload)

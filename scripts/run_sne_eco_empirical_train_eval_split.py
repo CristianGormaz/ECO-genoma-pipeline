@@ -4,6 +4,11 @@ import json
 from collections import Counter, defaultdict
 from pathlib import Path
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 
 DATASET_PATH = Path("data/training/sne_eco_empirical_seed_dataset.jsonl")
 TRAIN_PATH = Path("data/training/sne_eco_empirical_train_split.jsonl")
@@ -294,6 +299,7 @@ def to_markdown(report: dict) -> str:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     report = build_report(write_outputs=True)
     print(to_markdown(report))
     print("OK: separación train/eval empírica S.N.E.-E.C.O. generada.")

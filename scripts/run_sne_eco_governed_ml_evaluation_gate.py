@@ -5,6 +5,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 
 OUTPUT_JSON = Path("results/sne_eco_governed_ml_evaluation_gate.json")
 OUTPUT_MD = Path("results/sne_eco_governed_ml_evaluation_gate.md")
@@ -188,6 +193,7 @@ def to_markdown(report: dict) -> str:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     report = build_report(write_outputs=True)
     print(to_markdown(report))
     print("OK: gate de evaluación ML gobernada S.N.E.-E.C.O. generado.")

@@ -1,5 +1,6 @@
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -9,7 +10,7 @@ def test_eco_operational_state_examples_report_outputs_contract():
     json_out = root / "results" / "eco_operational_state_examples_report.json"
     md_out = root / "results" / "eco_operational_state_examples_report.md"
 
-    result = subprocess.run(["python3", str(script)], cwd=root, text=True, capture_output=True, check=True)
+    result = subprocess.run([sys.executable, str(script)], cwd=root, text=True, capture_output=True, check=True)
 
     assert "Estado: passed" in result.stdout
     assert json_out.exists()

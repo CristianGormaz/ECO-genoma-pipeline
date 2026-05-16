@@ -5,6 +5,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts._eco_console import configure_windows_safe_console
+except ModuleNotFoundError:
+    from _eco_console import configure_windows_safe_console
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFUSION_JSON = PROJECT_ROOT / "results" / "sne_eco_state_confusion_report.json"
 DEFAULT_RECURRENCE_JSON = PROJECT_ROOT / "results" / "sne_eco_recurrence_audit.json"
@@ -137,6 +142,7 @@ def write_text(path: Path, content: str) -> None:
 
 
 def main() -> None:
+    configure_windows_safe_console()
     args = parse_args()
     confusion_payload = load_json(args.confusion_json)
     recurrence_payload = load_json(args.recurrence_json)
