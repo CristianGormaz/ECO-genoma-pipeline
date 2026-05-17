@@ -65,6 +65,12 @@ LAOS Governance Gate funciona como compuerta sintética de gobernanza para decid
 
 Límites preservados: sin libre albedrío real, sin conciencia, sin datos reales, sin entrenamiento, sin modificación de baseline y sin recalibración de umbrales.
 
+## Autonomía Variable
+
+Referencia: `docs/operations/eco-variable-autonomy.md`.
+
+Autonomía Variable define un marco documental de gobernanza para ajustar niveles de independencia operativa en E.C.O., sin autonomía humana, conciencia, ejecución autónoma de herramientas ni libre albedrío real.
+
 ## Snapshot estable actual
 
 Referencia operativa estable del sprint: `docs/operations/eco-post-governance-snapshot.md`.
