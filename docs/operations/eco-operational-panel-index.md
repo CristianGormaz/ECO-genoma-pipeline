@@ -93,6 +93,16 @@ Agentic Scaffold Proposal Example complementa la Agentic Scaffold Proposal Templ
 
 El ejemplo es documental, no ejecutable y pendiente de revisión humana. No aprueba integración por sí misma; cualquier incorporación requiere revisión humana y decisión final humana.
 
+## Agentic Scaffold Proposal Registry
+
+Referencia: `docs/operations/eco-agentic-scaffold-proposal-registry.md`.
+
+Agentic Scaffold Proposal Registry funciona como catálogo y listado ordenado de propuestas Agentic Scaffold antes de integrarlas al estado operativo.
+
+El registro conserva estado, clasificación, revisión humana y decisión final humana por propuesta. No aprueba integración por sí mismo; cualquier incorporación requiere revisión humana y decisión final humana.
+
+El primer registro es **ASC-PROP-001**, asociado a **Candidate Module: Governed Operational Trace Scaffold**.
+
 ## Autonomía Variable
 
 Referencia: `docs/operations/eco-variable-autonomy.md`.
