@@ -93,6 +93,20 @@ El registro inicial incluye **ASC-PROP-001** para **Candidate Module: Governed O
 
 El registro preserva límites responsables: sin autonomía real, sin conciencia, sin libre albedrío real, sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
 
+## Agentic Scaffold Proposal Registry Report
+
+E.C.O. enlaza **Agentic Scaffold Proposal Registry Report** como reporte documental de solo lectura sobre el registro Agentic Scaffold Proposal Registry.
+
+El reporte lee `docs/operations/eco-agentic-scaffold-proposal-registry.md` y genera evidencia JSON/Markdown sobre propuestas, `proposal_count`, revisión humana requerida y decisión final humana requerida.
+
+Su operación se ejecuta con el target `eco-agentic-scaffold-proposal-registry-report` y el script `scripts/run_eco_agentic_scaffold_proposal_registry_report.py`.
+
+Las salidas generadas son `results/eco_agentic_scaffold_proposal_registry_report.json` y `results/eco_agentic_scaffold_proposal_registry_report.md`.
+
+Este reporte no aprueba integración por sí mismo ni sustituye revisión humana, decisión final humana o evaluación de gobernanza.
+
+El reporte preserva límites responsables: sin autonomía real, sin conciencia, sin libre albedrío real, sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
+
 ## Validaciones disponibles
 
 Validaciones disponibles recomendadas para estado de sprint:
