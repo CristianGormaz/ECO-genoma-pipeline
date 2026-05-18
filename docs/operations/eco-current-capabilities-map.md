@@ -75,6 +75,14 @@ Esta plantilla sirve para proponer nuevas funciones o módulos candidatos antes 
 
 La plantilla preserva límites responsables: sin autonomía real, sin conciencia, sin libre albedrío real, sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
 
+## Agentic Scaffold Proposal Example
+
+E.C.O. enlaza **Agentic Scaffold Proposal Example** como ejemplo documental rellenado de propuesta Agentic Scaffold en `docs/operations/eco-agentic-scaffold-proposal-example.md`.
+
+El ejemplo documenta el módulo candidato **Candidate Module: Governed Operational Trace Scaffold**. Es un ejemplo documental, no ejecutable y pendiente de revisión humana; no aprueba integración por sí misma ni implementa función ejecutable.
+
+El ejemplo preserva límites responsables: sin autonomía real, sin conciencia, sin libre albedrío real, sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
+
 ## Validaciones disponibles
 
 Validaciones disponibles recomendadas para estado de sprint:

@@ -116,6 +116,32 @@ def test_operational_panel_index_links_agentic_scaffold_proposal_template():
         assert token in content
 
 
+def test_operational_panel_index_links_agentic_scaffold_proposal_example():
+    content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
+        encoding="utf-8"
+    )
+
+    required_tokens = [
+        "docs/operations/eco-agentic-scaffold-proposal-example.md",
+        "Agentic Scaffold Proposal Example",
+        "Agentic Scaffold Proposal Template",
+        "ejemplo rellenado de módulo candidato",
+        "Candidate Module: Governed Operational Trace Scaffold",
+        "ejemplo es documental",
+        "no ejecutable",
+        "pendiente de revisión humana",
+        "revisión humana",
+        "decisión final humana",
+        "No aprueba integración por sí misma",
+        "sin autonomía real",
+        "sin conciencia",
+        "sin libre albedrío real",
+    ]
+
+    for token in required_tokens:
+        assert token in content
+
+
 def test_operational_panel_index_links_current_capabilities_map_and_laos_contract():
     content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
         encoding="utf-8"

@@ -54,6 +54,18 @@ def test_eco_current_capabilities_map_exists_and_contains_required_sections() ->
         "tests contractuales esperados",
         "validaciones requeridas",
         "decisión final humana",
+        "docs/operations/eco-agentic-scaffold-proposal-example.md",
+        "agentic scaffold proposal example",
+        "candidate module: governed operational trace scaffold",
+        "ejemplo documental",
+        "no ejecutable",
+        "pendiente de revisión humana",
+        "revisión humana",
+        "decisión final humana",
+        "no aprueba integración por sí misma",
+        "sin autonomía real",
+        "sin conciencia",
+        "sin libre albedrío real",
     ]
 
     for phrase in required_phrases:

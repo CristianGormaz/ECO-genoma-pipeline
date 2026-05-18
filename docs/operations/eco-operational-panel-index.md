@@ -85,6 +85,14 @@ La plantilla registra clasificación inicial como permitido, requiere revisión 
 
 No aprueba integración por sí misma y preserva límites responsables: sin autonomía real, sin conciencia y sin libre albedrío real.
 
+## Agentic Scaffold Proposal Example
+
+Referencia: `docs/operations/eco-agentic-scaffold-proposal-example.md`.
+
+Agentic Scaffold Proposal Example complementa la Agentic Scaffold Proposal Template mostrando un ejemplo rellenado de módulo candidato: **Candidate Module: Governed Operational Trace Scaffold**.
+
+El ejemplo es documental, no ejecutable y pendiente de revisión humana. No aprueba integración por sí misma; cualquier incorporación requiere revisión humana y decisión final humana.
+
 ## Autonomía Variable
 
 Referencia: `docs/operations/eco-variable-autonomy.md`.
