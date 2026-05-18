@@ -75,6 +75,16 @@ Toda nueva función o módulo candidato debe pasar por documentación, tests, l�
 
 Este protocolo describe autodesarrollo asistido y autodesarrollo gobernado sin autonomía real, sin conciencia y sin libre albedrío real.
 
+## Agentic Scaffold Proposal Template
+
+Referencia: `docs/operations/eco-agentic-scaffold-proposal-template.md`.
+
+Agentic Scaffold Proposal Template complementa el Agentic Scaffold Protocol: ordena propuestas de nuevas funciones o módulos candidatos antes de integrarlas al estado operativo.
+
+La plantilla registra clasificación inicial como permitido, requiere revisión o bloqueado; archivos mínimos sugeridos; tests contractuales esperados; validaciones requeridas; revisión humana y decisión final humana.
+
+No aprueba integración por sí misma y preserva límites responsables: sin autonomía real, sin conciencia y sin libre albedrío real.
+
 ## Autonomía Variable
 
 Referencia: `docs/operations/eco-variable-autonomy.md`.
