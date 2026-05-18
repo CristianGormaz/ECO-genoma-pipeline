@@ -71,6 +71,12 @@ Referencia: `docs/operations/eco-variable-autonomy.md`.
 
 Autonomía Variable define un marco documental de gobernanza para ajustar niveles de independencia operativa en E.C.O., sin autonomía humana, conciencia, ejecución autónoma de herramientas ni libre albedrío real.
 
+## Snapshot de Gobernanza E.C.O.
+
+Referencia: `docs/operations/eco-governance-snapshot.md`.
+
+Snapshot documental, sintético y no clínico del estado actual de gobernanza E.C.O.; resume IAFA, LAOS como alias conceptual/histórico, Autonomía Variable, validación flexible y límites responsables sin implementar lógica funcional.
+
 ## Snapshot estable actual
 
 Referencia operativa estable del sprint: `docs/operations/eco-post-governance-snapshot.md`.
