@@ -83,6 +83,16 @@ El ejemplo documenta el módulo candidato **Candidate Module: Governed Operation
 
 El ejemplo preserva límites responsables: sin autonomía real, sin conciencia, sin libre albedrío real, sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
 
+## Agentic Scaffold Proposal Registry
+
+E.C.O. enlaza **Agentic Scaffold Proposal Registry** como registro documental en `docs/operations/eco-agentic-scaffold-proposal-registry.md`.
+
+El registro sirve como catálogo y listado ordenado de propuestas Agentic Scaffold antes de incorporarlas al estado operativo. Conserva por propuesta su estado, clasificación, revisión humana, decisión final humana, validaciones esperadas y límites responsables.
+
+El registro inicial incluye **ASC-PROP-001** para **Candidate Module: Governed Operational Trace Scaffold** como propuesta documental pendiente de revisión humana y decisión final humana; no aprueba integración por sí mismo ni sustituye evaluación humana.
+
+El registro preserva límites responsables: sin autonomía real, sin conciencia, sin libre albedrío real, sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
+
 ## Validaciones disponibles
 
 Validaciones disponibles recomendadas para estado de sprint:
