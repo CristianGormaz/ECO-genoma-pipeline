@@ -67,6 +67,14 @@ Este protocolo define autodesarrollo asistido y autodesarrollo gobernado como co
 
 El protocolo sirve para estudiar y ordenar nuevas funciones o módulos candidatos sin autonomía real: no implica autonomía real, sin conciencia y sin libre albedrío real.
 
+## Agentic Scaffold Proposal Template
+
+E.C.O. enlaza **Agentic Scaffold Proposal Template** como plantilla operacional en `docs/operations/eco-agentic-scaffold-proposal-template.md`.
+
+Esta plantilla sirve para proponer nuevas funciones o módulos candidatos antes de incorporarlos al estado operativo. Ordena la clasificación inicial como permitido, requiere revisión o bloqueado; archivos mínimos sugeridos; tests contractuales esperados; validaciones requeridas; criterios de revisión humana y decisión final humana.
+
+La plantilla preserva límites responsables: sin autonomía real, sin conciencia, sin libre albedrío real, sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
+
 ## Validaciones disponibles
 
 Validaciones disponibles recomendadas para estado de sprint:

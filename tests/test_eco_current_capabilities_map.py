@@ -43,6 +43,17 @@ def test_eco_current_capabilities_map_exists_and_contains_required_sections() ->
         "nuevas funciones",
         "sin autonomía real",
         "no implica autonomía real",
+        "docs/operations/eco-agentic-scaffold-proposal-template.md",
+        "agentic scaffold proposal template",
+        "nuevas funciones o módulos candidatos",
+        "clasificación inicial",
+        "permitido",
+        "requiere revisión",
+        "bloqueado",
+        "archivos mínimos sugeridos",
+        "tests contractuales esperados",
+        "validaciones requeridas",
+        "decisión final humana",
     ]
 
     for phrase in required_phrases:
