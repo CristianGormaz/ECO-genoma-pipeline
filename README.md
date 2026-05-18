@@ -11,7 +11,8 @@
 La rama **S.N.E.-E.C.O. v1.0** quedó estabilizada y evoluciona como línea **S.N.E.-E.C.O. v1.x** con una suite de regresión:
 
 ```text
-153 tests passing
+Validación rápida local: `make check-fast`
+Pruebas unitarias: pasan en la suite actual
 Rutas confundidas: 0
 Rutas confundidas de recurrencia: 0
 Default_state inesperado: eliminado en rutas confundidas
@@ -149,7 +150,8 @@ make check
 Validación unitaria esperada en la fase S.N.E.-E.C.O. estabilizada:
 
 ```text
-153 passed
+La cantidad exacta de tests puede cambiar por sprint.
+La validación debe pasar con `make test` o `make check-fast`.
 ```
 
 Validación rápida del estado adaptativo:
