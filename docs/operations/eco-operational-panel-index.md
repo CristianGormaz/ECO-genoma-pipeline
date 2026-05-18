@@ -103,6 +103,8 @@ El registro conserva estado, clasificación, revisión humana y decisión final 
 
 El primer registro es **ASC-PROP-001**, asociado a **Candidate Module: Governed Operational Trace Scaffold**.
 
+Comando de reporte de solo lectura: `make eco-agentic-scaffold-proposal-registry-report`.
+
 ## Autonomía Variable
 
 Referencia: `docs/operations/eco-variable-autonomy.md`.

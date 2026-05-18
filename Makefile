@@ -501,6 +501,11 @@ eco-synthetic-demos-suite-report:
 eco-synthetic-signal-matrix-report:
 	$(PYTHON) scripts/run_eco_synthetic_signal_matrix_report.py
 
+# E.C.O. agentic scaffold proposal registry report
+.PHONY: eco-agentic-scaffold-proposal-registry-report
+eco-agentic-scaffold-proposal-registry-report:
+	$(PYTHON) scripts/run_eco_agentic_scaffold_proposal_registry_report.py
+
 # E.C.O. synthetic operational dashboard
 .PHONY: eco-synthetic-operational-dashboard
 eco-synthetic-operational-dashboard:

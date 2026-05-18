@@ -20,6 +20,8 @@ ARTIFACTS = (
     "results/eco_synthetic_demo_comparison_report.md",
     "results/eco_synthetic_signal_matrix_report.json",
     "results/eco_synthetic_signal_matrix_report.md",
+    "results/eco_agentic_scaffold_proposal_registry_report.json",
+    "results/eco_agentic_scaffold_proposal_registry_report.md",
     "results/eco_synthetic_operational_dashboard.json",
     "results/eco_synthetic_operational_dashboard.md",
     "results/eco_laos_agency_demo.json",
