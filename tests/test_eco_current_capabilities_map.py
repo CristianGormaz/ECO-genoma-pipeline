@@ -34,6 +34,15 @@ def test_eco_current_capabilities_map_exists_and_contains_required_sections() ->
         "avanzar con control",
         "sin libre albedrío real",
         "sin conciencia",
+        "docs/operations/eco-agentic-scaffold-protocol.md",
+        "agentic scaffold protocol",
+        "autodesarrollo asistido",
+        "agente generativo",
+        "plantilla",
+        "módulos candidatos",
+        "nuevas funciones",
+        "sin autonomía real",
+        "no implica autonomía real",
     ]
 
     for phrase in required_phrases:

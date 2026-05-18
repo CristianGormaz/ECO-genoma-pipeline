@@ -63,6 +63,31 @@ def test_operational_panel_index_links_release_checklist_and_timeline():
         assert token in content
 
 
+def test_operational_panel_index_links_agentic_scaffold_protocol():
+    content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
+        encoding="utf-8"
+    )
+
+    required_tokens = [
+        "docs/operations/eco-agentic-scaffold-protocol.md",
+        "Agentic Scaffold Protocol",
+        "autodesarrollo asistido",
+        "autodesarrollo gobernado",
+        "agente generativo",
+        "plantillas",
+        "revisión humana",
+        "nuevas funciones",
+        "nueva función",
+        "módulo candidato",
+        "sin autonomía real",
+        "sin conciencia",
+        "sin libre albedrío real",
+    ]
+
+    for token in required_tokens:
+        assert token in content
+
+
 def test_operational_panel_index_links_current_capabilities_map_and_laos_contract():
     content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
         encoding="utf-8"

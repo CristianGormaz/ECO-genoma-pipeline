@@ -59,6 +59,14 @@ E.C.O. también enlaza **LAOS Governance Gate** como compuerta de gobernanza doc
 
 Esta compuerta sintética cruza LAOS con estado de validación para recomendar **pausar**, activar **revisión humana** o **avanzar con control**, preservando límites responsables: sin libre albedrío real y sin conciencia.
 
+## Agentic Scaffold Protocol
+
+E.C.O. enlaza **Agentic Scaffold Protocol** como protocolo documental en `docs/operations/eco-agentic-scaffold-protocol.md`.
+
+Este protocolo define autodesarrollo asistido y autodesarrollo gobernado como construcción de plantilla por un agente generativo bajo revisión humana.
+
+El protocolo sirve para estudiar y ordenar nuevas funciones o módulos candidatos sin autonomía real: no implica autonomía real, sin conciencia y sin libre albedrío real.
+
 ## Validaciones disponibles
 
 Validaciones disponibles recomendadas para estado de sprint:

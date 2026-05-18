@@ -65,6 +65,16 @@ LAOS Governance Gate funciona como compuerta sintética de gobernanza para decid
 
 Límites preservados: sin libre albedrío real, sin conciencia, sin datos reales, sin entrenamiento, sin modificación de baseline y sin recalibración de umbrales.
 
+## Agentic Scaffold Protocol
+
+Referencia: `docs/operations/eco-agentic-scaffold-protocol.md`.
+
+Agentic Scaffold Protocol guía la construcción asistida de plantillas, refinamiento y nuevas funciones o módulos candidatos mediante agente generativo bajo revisión humana.
+
+Toda nueva función o módulo candidato debe pasar por documentación, tests, límites responsables y revisión humana antes de incorporarse al estado operativo.
+
+Este protocolo describe autodesarrollo asistido y autodesarrollo gobernado sin autonomía real, sin conciencia y sin libre albedrío real.
+
 ## Autonomía Variable
 
 Referencia: `docs/operations/eco-variable-autonomy.md`.
