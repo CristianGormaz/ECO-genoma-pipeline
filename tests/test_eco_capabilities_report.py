@@ -32,11 +32,21 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
     assert payload["status"] == "passed"
     assert payload["classification"] == "permitido"
     assert "pytest passing" in payload_text
-    assert "dashboard sintético operativo con 7 componentes" in payload_text
+    assert "dashboard sintético operativo con 9 componentes" in payload_text
     assert "governance panel" in payload_text
     assert "snapshot post-governance" in payload_text
     assert "checklist de liberación" in payload_text
     assert "mapa de capacidades actuales" in payload_text
+    assert "agentic scaffold" in payload_text
+    assert "capacidad documental-operativa" in payload_text
+    assert "agentic scaffold proposal registry" in payload_text
+    assert "agentic scaffold proposal registry report" in payload_text
+    assert "eco-agentic-scaffold-proposal-registry-report" in payload_text
+    assert "scripts/run_eco_agentic_scaffold_proposal_registry_report.py" in payload_text
+    assert "results/eco_agentic_scaffold_proposal_registry_report.json" in payload_text
+    assert "results/eco_agentic_scaffold_proposal_registry_report.md" in payload_text
+    assert "solo lectura" in payload_text
+    assert "no aprueba integración por sí mismo" in payload_text
     assert "laos governance gate" in payload_text
     assert "capacidad operativa sintética" in payload_text
     assert "compuerta de gobernanza" in payload_text
@@ -47,6 +57,16 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
     assert "sin conciencia" in payload_text
     assert "laos governance gate" in markdown
     assert "compuerta de gobernanza" in markdown
+    assert "capacidades documental-operativas" in markdown
+    assert "agentic scaffold" in markdown
+    assert "agentic scaffold proposal registry" in markdown
+    assert "agentic scaffold proposal registry report" in markdown
+    assert "eco-agentic-scaffold-proposal-registry-report" in markdown
+    assert "scripts/run_eco_agentic_scaffold_proposal_registry_report.py" in markdown
+    assert "results/eco_agentic_scaffold_proposal_registry_report.json" in markdown
+    assert "results/eco_agentic_scaffold_proposal_registry_report.md" in markdown
+    assert "solo lectura" in markdown
+    assert "no aprueba integración por sí mismo" in markdown
     assert "límites responsables" in markdown
     assert "qué no hace todavía e.c.o." in markdown
 
@@ -56,6 +76,7 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
         "sin modificación de baseline",
         "sin recalibración de umbrales",
         "sin afirmaciones biomédicas aplicadas",
+        "sin autonomía real",
         "sin libre albedrío real",
         "sin conciencia",
     ]

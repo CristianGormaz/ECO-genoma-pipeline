@@ -15,12 +15,42 @@ def build_report() -> dict[str, Any]:
         "classification": "permitido",
         "stable_criterion": "pytest passing",
         "operational_snapshot": {
-            "synthetic_dashboard": "dashboard sintético operativo con 7 componentes",
+            "synthetic_dashboard": "dashboard sintético operativo con 9 componentes",
             "governance": "governance panel integrado",
             "post_governance_snapshot": "snapshot post-governance",
             "release_checklist": "checklist de liberación",
             "capabilities_map": "mapa de capacidades actuales",
         },
+        "documentary_operational_capabilities": [
+            {
+                "name": "Agentic Scaffold",
+                "kind": "capacidad documental-operativa",
+                "description": "marco documental para ordenar propuestas de autodesarrollo asistido bajo revisión humana",
+                "limits": [
+                    "sin autonomía real",
+                    "sin conciencia",
+                    "sin libre albedrío real",
+                ],
+            },
+            {
+                "name": "Agentic Scaffold Proposal Registry",
+                "kind": "registro documental",
+                "description": "catálogo ordenado de propuestas Agentic Scaffold antes de incorporarlas al estado operativo",
+                "integration_policy": "no aprueba integración por sí mismo",
+            },
+            {
+                "name": "Agentic Scaffold Proposal Registry Report",
+                "kind": "reporte documental-operativo",
+                "target": "eco-agentic-scaffold-proposal-registry-report",
+                "script": "scripts/run_eco_agentic_scaffold_proposal_registry_report.py",
+                "outputs": [
+                    "results/eco_agentic_scaffold_proposal_registry_report.json",
+                    "results/eco_agentic_scaffold_proposal_registry_report.md",
+                ],
+                "scope": "solo lectura",
+                "integration_policy": "no aprueba integración por sí mismo",
+            },
+        ],
         "synthetic_scope": {
             "synthetic_demos": "demos sintéticas",
             "laos_governance_gate": {
@@ -44,6 +74,7 @@ def build_report() -> dict[str, Any]:
             "sin modificación de baseline",
             "sin recalibración de umbrales",
             "sin afirmaciones biomédicas aplicadas",
+            "sin autonomía real",
             "sin libre albedrío real",
             "sin conciencia",
         ],
@@ -52,6 +83,7 @@ def build_report() -> dict[str, Any]:
             "qué NO hace todavía E.C.O.: entrenamiento productivo",
             "qué NO hace todavía E.C.O.: recalibración de baseline o umbrales fuera de gobernanza",
             "qué NO hace todavía E.C.O.: afirmaciones biomédicas aplicadas",
+            "qué NO hace todavía E.C.O.: autonomía real, conciencia o libre albedrío real",
         ],
         "next_recommended_leap": "próximo salto recomendado",
     }
@@ -63,6 +95,26 @@ def build_markdown(payload: dict[str, Any]) -> str:
     validations = "\n".join(
         f"- `{cmd}`" for cmd in payload["synthetic_scope"]["available_validations"]
     )
+    documentary_lines = []
+    for capability in payload["documentary_operational_capabilities"]:
+        line = f"- {capability['name']}: {capability['kind']}"
+        if "description" in capability:
+            line = f"{line}; {capability['description']}"
+        if "scope" in capability:
+            line = f"{line}; {capability['scope']}"
+        if "target" in capability:
+            line = f"{line}; target `{capability['target']}`"
+        if "script" in capability:
+            line = f"{line}; script `{capability['script']}`"
+        if "outputs" in capability:
+            line = (
+                f"{line}; salidas `{capability['outputs'][0]}` y "
+                f"`{capability['outputs'][1]}`"
+            )
+        if "integration_policy" in capability:
+            line = f"{line}; {capability['integration_policy']}"
+        documentary_lines.append(f"{line}.")
+    documentary_capabilities = "\n".join(documentary_lines)
     laos_gate = payload["synthetic_scope"]["laos_governance_gate"]
 
     return "\n".join(
@@ -80,6 +132,9 @@ def build_markdown(payload: dict[str, Any]) -> str:
             f"- {payload['operational_snapshot']['release_checklist']}",
             f"- {payload['operational_snapshot']['capabilities_map']}",
             f"- {payload['synthetic_scope']['synthetic_demos']}",
+            "",
+            "## Capacidades documental-operativas",
+            documentary_capabilities,
             "",
             "## Capacidades operativas sintéticas",
             f"- {laos_gate['name']}: {laos_gate['description']}.",
