@@ -202,3 +202,24 @@ def test_operational_panel_index_links_current_capabilities_map_and_laos_contrac
 
     for token in required_tokens:
         assert token in content
+
+
+def test_operational_panel_index_links_real_biological_data_maturity_manual():
+    content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
+        encoding="utf-8"
+    )
+
+    required_tokens = [
+        "Manual de Madurez para Datos Reales Biológicos",
+        "eco-real-biological-data-maturity-manual.md",
+        "Real Biological Data Manifest Schema",
+        "Real Biological Data Admission Dry-Run Gate",
+        "Real Biological Data Rollback Report",
+        "no habilita uso de datos reales",
+        "no aprueba procesamiento de datos reales por sí mismo",
+        "revisión humana",
+        "evidencia auditable",
+    ]
+
+    for token in required_tokens:
+        assert token in content
