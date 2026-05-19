@@ -223,3 +223,29 @@ def test_operational_panel_index_links_real_biological_data_maturity_manual():
 
     for token in required_tokens:
         assert token in content
+
+
+def test_operational_panel_index_links_real_biological_data_admission_protocol():
+    content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
+        encoding="utf-8"
+    )
+
+    required_tokens = [
+        "Protocolo de Admisión de Datos Reales Biológicos",
+        "eco-real-biological-data-admission-protocol.md",
+        "Manual de Madurez para Datos Reales Biológicos",
+        "Real Biological Data Admission Template",
+        "Real Biological Data Admission Example",
+        "Real Biological Data Manifest Schema",
+        "Real Biological Data Admission Dry-Run Gate",
+        "Real Biological Data Rollback Report",
+        "no habilita uso de datos reales",
+        "no aprueba procesamiento de datos reales por sí mismo",
+        "no reemplaza revisión humana",
+        "evidencia auditable",
+        "rollback",
+        "revisión humana",
+    ]
+
+    for token in required_tokens:
+        assert token in content

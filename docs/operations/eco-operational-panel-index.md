@@ -64,6 +64,19 @@ Sirve como base documental para futuras fases separadas: Real Biological Data Ma
 Estas fases futuras no quedan aprobadas por este enlace.
 
 
+## Protocolo de Admisión de Datos Reales Biológicos
+
+Referencia: `docs/operations/eco-real-biological-data-admission-protocol.md`.
+
+Protocolo de Admisión de Datos Reales Biológicos funciona como documento operativo de gobernanza para ordenar solicitudes futuras antes de cualquier uso de datos reales biológicos.
+
+Se relaciona con el Manual de Madurez para Datos Reales Biológicos: el manual define el punto de madurez esperado y el protocolo registra la ruta documental de revisión humana, evidencia auditable, decisión, rollback o rechazo.
+
+Sirve como base documental para futuras fases separadas: Real Biological Data Admission Template, Real Biological Data Admission Example, Real Biological Data Manifest Schema, Real Biological Data Admission Dry-Run Gate y Real Biological Data Rollback Report.
+
+Esas fases futuras no quedan aprobadas por este enlace. El protocolo no habilita uso de datos reales, no aprueba procesamiento de datos reales por sí mismo y no reemplaza revisión humana.
+
+
 ## Contrato LAOS para agencia simulada
 
 Referencia: `docs/operations/eco-laos-agency-formula.md`.
