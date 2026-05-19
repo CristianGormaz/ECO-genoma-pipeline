@@ -29,6 +29,8 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
     markdown = OUTPUT_MD.read_text(encoding="utf-8").lower()
     payload_text = json.dumps(payload, ensure_ascii=False).lower()
 
+    assert isinstance(payload, dict)
+    assert markdown.startswith("# e.c.o.")
     assert payload["status"] == "passed"
     assert payload["classification"] == "permitido"
     assert "pytest passing" in payload_text
@@ -47,6 +49,27 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
     assert "results/eco_agentic_scaffold_proposal_registry_report.md" in payload_text
     assert "solo lectura" in payload_text
     assert "no aprueba integración por sí mismo" in payload_text
+    real_biological_data_maturity_terms = [
+        "Manual de Madurez para Datos Reales Biológicos",
+        "docs/operations/eco-real-biological-data-maturity-manual.md",
+        "docs/operations/eco-current-capabilities-map.md",
+        "docs/operations/eco-operational-panel-index.md",
+        "capacidad documental de gobernanza",
+        "punto de madurez",
+        "rechazar, pausar, auditar y explicar",
+        "semáforo de madurez",
+        "ocho compuertas de madurez",
+        "revisión humana",
+        "rollback",
+        "evidencia auditable",
+        "límites interpretativos",
+        "no habilita uso de datos reales",
+        "no aprueba procesamiento de datos reales por sí mismo",
+    ]
+    for expected in real_biological_data_maturity_terms:
+        assert expected.lower() in payload_text
+        assert expected.lower() in markdown
+
     assert "laos governance gate" in payload_text
     assert "capacidad operativa sintética" in payload_text
     assert "compuerta de gobernanza" in payload_text
@@ -71,15 +94,19 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
     assert "qué no hace todavía e.c.o." in markdown
 
     required_limits = [
-        "sin datos reales",
+        "sin datos reales en esta fase",
         "sin entrenamiento",
         "sin modificación de baseline",
         "sin recalibración de umbrales",
+        "sin diagnóstico",
+        "sin interpretación clínica",
+        "sin riesgo genético individual",
         "sin afirmaciones biomédicas aplicadas",
         "sin autonomía real",
-        "sin libre albedrío real",
         "sin conciencia",
+        "sin libre albedrío real",
     ]
     limits_text = " ".join(payload["responsible_limits"]).lower()
     for expected in required_limits:
         assert expected in limits_text
+        assert expected in markdown
