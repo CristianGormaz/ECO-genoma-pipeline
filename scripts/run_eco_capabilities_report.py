@@ -50,6 +50,36 @@ def build_report() -> dict[str, Any]:
                 "scope": "solo lectura",
                 "integration_policy": "no aprueba integración por sí mismo",
             },
+            {
+                "name": "Manual de Madurez para Datos Reales Biológicos",
+                "kind": "capacidad documental de gobernanza",
+                "document": "docs/operations/eco-real-biological-data-maturity-manual.md",
+                "linked_in": [
+                    "docs/operations/eco-current-capabilities-map.md",
+                    "docs/operations/eco-operational-panel-index.md",
+                ],
+                "description": (
+                    "define el punto de madurez antes de implementar reglas de "
+                    "admisión de datos reales biológicos"
+                ),
+                "maturity_principle": (
+                    "E.C.O. no está maduro cuando puede leer datos reales. "
+                    "E.C.O. está maduro cuando puede rechazar, pausar, auditar "
+                    "y explicar cualquier intento antes de procesarlo."
+                ),
+                "governance_controls": [
+                    "semáforo de madurez",
+                    "ocho compuertas de madurez",
+                    "revisión humana",
+                    "rollback",
+                    "evidencia auditable",
+                    "límites interpretativos",
+                ],
+                "integration_policy": (
+                    "no habilita uso de datos reales; no aprueba procesamiento "
+                    "de datos reales por sí mismo"
+                ),
+            },
         ],
         "synthetic_scope": {
             "synthetic_demos": "demos sintéticas",
@@ -69,14 +99,17 @@ def build_report() -> dict[str, Any]:
             ],
         },
         "responsible_limits": [
-            "sin datos reales",
+            "sin datos reales en esta fase",
             "sin entrenamiento",
             "sin modificación de baseline",
             "sin recalibración de umbrales",
+            "sin diagnóstico",
+            "sin interpretación clínica",
+            "sin riesgo genético individual",
             "sin afirmaciones biomédicas aplicadas",
             "sin autonomía real",
-            "sin libre albedrío real",
             "sin conciencia",
+            "sin libre albedrío real",
         ],
         "what_eco_does_not_do_yet": [
             "qué NO hace todavía E.C.O.: operación con datos reales en este marco de sprint",
@@ -106,11 +139,21 @@ def build_markdown(payload: dict[str, Any]) -> str:
             line = f"{line}; target `{capability['target']}`"
         if "script" in capability:
             line = f"{line}; script `{capability['script']}`"
+        if "document" in capability:
+            line = f"{line}; documento `{capability['document']}`"
+        if "linked_in" in capability:
+            links = " y ".join(f"`{path}`" for path in capability["linked_in"])
+            line = f"{line}; enlazado en {links}"
         if "outputs" in capability:
             line = (
                 f"{line}; salidas `{capability['outputs'][0]}` y "
                 f"`{capability['outputs'][1]}`"
             )
+        if "maturity_principle" in capability:
+            line = f"{line}; {capability['maturity_principle']}"
+        if "governance_controls" in capability:
+            controls = ", ".join(capability["governance_controls"])
+            line = f"{line}; controles: {controls}"
         if "integration_policy" in capability:
             line = f"{line}; {capability['integration_policy']}"
         documentary_lines.append(f"{line}.")
