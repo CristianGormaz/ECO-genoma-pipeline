@@ -28,6 +28,16 @@ El repositorio integra governance panel y pautas explícitas de control operativ
 
 También cuenta con checklist de liberación para controlar hitos antes de abrir PR, antes de mergear y después de mergear.
 
+## Manual de Madurez para Datos Reales Biológicos
+
+E.C.O. enlaza **Manual de Madurez para Datos Reales Biológicos** como capacidad documental de gobernanza en `docs/operations/eco-real-biological-data-maturity-manual.md`.
+
+El manual define el punto de madurez requerido antes de implementar reglas de admisión para datos reales biológicos. Su principio central es: E.C.O. no está maduro cuando puede leer datos reales. E.C.O. está maduro cuando puede rechazar, pausar, auditar y explicar cualquier intento antes de procesarlo.
+
+Esta capacidad ordena criterios de semáforo de madurez, ocho compuertas de madurez, revisión humana, rollback, evidencia auditable y límites interpretativos para futuras fases separadas.
+
+El manual no habilita uso de datos reales y no aprueba procesamiento de datos reales por sí mismo. En esta fase preserva límites responsables: sin datos reales en esta fase, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales, sin diagnóstico, sin interpretación clínica, sin riesgo genético individual, sin afirmaciones biomédicas aplicadas, sin autonomía real, sin conciencia y sin libre albedrío real.
+
 ## Capacidades de dashboard/reportes
 
 El dashboard sintético operativo con 7 componentes está establecido como vista de control del estado operativo.

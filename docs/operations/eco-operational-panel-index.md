@@ -51,6 +51,19 @@ Este mapa de capacidades actuales sirve para revisar:
 - qué falta para avanzar al siguiente salto operativo sin romper trazabilidad.
 
 
+## Manual de Madurez para Datos Reales Biológicos
+
+Referencia: `docs/operations/eco-real-biological-data-maturity-manual.md`.
+
+Manual de Madurez para Datos Reales Biológicos funciona como documento operativo de gobernanza para definir el punto previo a futuras reglas de admisión de datos reales biológicos.
+
+El manual no habilita uso de datos reales y no aprueba procesamiento de datos reales por sí mismo. Cualquier avance futuro requiere revisión humana y evidencia auditable.
+
+Sirve como base documental para futuras fases separadas: Real Biological Data Manifest Schema, Real Biological Data Admission Dry-Run Gate y Real Biological Data Rollback Report.
+
+Estas fases futuras no quedan aprobadas por este enlace.
+
+
 ## Contrato LAOS para agencia simulada
 
 Referencia: `docs/operations/eco-laos-agency-formula.md`.
