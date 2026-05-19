@@ -80,6 +80,51 @@ def build_report() -> dict[str, Any]:
                     "de datos reales por sí mismo"
                 ),
             },
+            {
+                "name": "Protocolo de Admisión de Datos Reales Biológicos",
+                "kind": "capacidad documental de gobernanza",
+                "document": (
+                    "docs/operations/"
+                    "eco-real-biological-data-admission-protocol.md"
+                ),
+                "linked_in": [
+                    "docs/operations/eco-current-capabilities-map.md",
+                    "docs/operations/eco-operational-panel-index.md",
+                ],
+                "related_document": (
+                    "docs/operations/"
+                    "eco-real-biological-data-maturity-manual.md"
+                ),
+                "description": (
+                    "define una ruta documental previa para evaluar solicitudes "
+                    "futuras de admisión de datos reales biológicos"
+                ),
+                "governance_route": [
+                    "solicitud de admisión",
+                    "identificación de fuente",
+                    "clasificación de sensibilidad",
+                    "revisión de licencia o permiso",
+                    "revisión técnica previa",
+                    "revisión ética",
+                    "revisión interpretativa",
+                    "revisión humana",
+                    "decisión registrada",
+                    "evidencia auditable",
+                    "rollback",
+                    "rechazo",
+                ],
+                "minimum_governance_requirements": [
+                    "compuertas mínimas",
+                    "estados de decisión permitidos",
+                    "evidencia mínima requerida",
+                    "condiciones de rechazo obligatorio",
+                    "validación técnica limitada futura",
+                ],
+                "integration_policy": (
+                    "no habilita uso de datos reales; no aprueba procesamiento "
+                    "de datos reales por sí mismo; no reemplaza revisión humana"
+                ),
+            },
         ],
         "synthetic_scope": {
             "synthetic_demos": "demos sintéticas",
@@ -100,6 +145,7 @@ def build_report() -> dict[str, Any]:
         },
         "responsible_limits": [
             "sin datos reales en esta fase",
+            "sin ingestión de datos reales",
             "sin entrenamiento",
             "sin modificación de baseline",
             "sin recalibración de umbrales",
@@ -144,6 +190,11 @@ def build_markdown(payload: dict[str, Any]) -> str:
         if "linked_in" in capability:
             links = " y ".join(f"`{path}`" for path in capability["linked_in"])
             line = f"{line}; enlazado en {links}"
+        if "related_document" in capability:
+            line = (
+                f"{line}; relacionado con "
+                f"`{capability['related_document']}`"
+            )
         if "outputs" in capability:
             line = (
                 f"{line}; salidas `{capability['outputs'][0]}` y "
@@ -154,6 +205,12 @@ def build_markdown(payload: dict[str, Any]) -> str:
         if "governance_controls" in capability:
             controls = ", ".join(capability["governance_controls"])
             line = f"{line}; controles: {controls}"
+        if "governance_route" in capability:
+            route = ", ".join(capability["governance_route"])
+            line = f"{line}; ruta documental previa: {route}"
+        if "minimum_governance_requirements" in capability:
+            requirements = ", ".join(capability["minimum_governance_requirements"])
+            line = f"{line}; requisitos de gobernanza: {requirements}"
         if "integration_policy" in capability:
             line = f"{line}; {capability['integration_policy']}"
         documentary_lines.append(f"{line}.")
