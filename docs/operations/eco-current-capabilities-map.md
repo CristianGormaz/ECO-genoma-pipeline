@@ -38,6 +38,20 @@ Esta capacidad ordena criterios de semáforo de madurez, ocho compuertas de madu
 
 El manual no habilita uso de datos reales y no aprueba procesamiento de datos reales por sí mismo. En esta fase preserva límites responsables: sin datos reales en esta fase, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales, sin diagnóstico, sin interpretación clínica, sin riesgo genético individual, sin afirmaciones biomédicas aplicadas, sin autonomía real, sin conciencia y sin libre albedrío real.
 
+## Protocolo de Admisión de Datos Reales Biológicos
+
+E.C.O. enlaza **Protocolo de Admisión de Datos Reales Biológicos** como capacidad documental de gobernanza en `docs/operations/eco-real-biological-data-admission-protocol.md`.
+
+El protocolo define una ruta documental previa para evaluar solicitudes futuras de admisión de datos reales biológicos antes de cualquier procesamiento. Opera en relación directa con `docs/operations/eco-real-biological-data-maturity-manual.md`: el Manual de Madurez fija el punto de madurez esperado y el protocolo ordena cómo registrar, revisar, pausar o rechazar una solicitud futura.
+
+La ruta documental contempla solicitud de admisión, identificación de fuente, clasificación de sensibilidad, revisión de licencia o permiso, revisión técnica previa, revisión ética, revisión interpretativa, revisión humana, decisión registrada, evidencia auditable, rollback y rechazo.
+
+El protocolo documenta compuertas mínimas, estados de decisión permitidos, evidencia mínima requerida, condiciones de rechazo obligatorio y validación técnica limitada futura para fases separadas.
+
+Este protocolo no habilita uso de datos reales, no aprueba procesamiento de datos reales por sí mismo y no reemplaza revisión humana.
+
+En esta fase preserva límites responsables: sin datos reales en esta fase, sin ingestión de datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales, sin diagnóstico, sin interpretación clínica, sin riesgo genético individual, sin afirmaciones biomédicas aplicadas, sin autonomía real, sin conciencia y sin libre albedrío real.
+
 ## Capacidades de dashboard/reportes
 
 El dashboard sintético operativo con 7 componentes está establecido como vista de control del estado operativo.
