@@ -70,6 +70,39 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
         assert expected.lower() in payload_text
         assert expected.lower() in markdown
 
+    real_biological_data_admission_terms = [
+        "Protocolo de Admisión de Datos Reales Biológicos",
+        "docs/operations/eco-real-biological-data-admission-protocol.md",
+        "docs/operations/eco-current-capabilities-map.md",
+        "docs/operations/eco-operational-panel-index.md",
+        "docs/operations/eco-real-biological-data-maturity-manual.md",
+        "capacidad documental de gobernanza",
+        "ruta documental previa",
+        "solicitud de admisión",
+        "identificación de fuente",
+        "clasificación de sensibilidad",
+        "revisión de licencia o permiso",
+        "revisión técnica previa",
+        "revisión ética",
+        "revisión interpretativa",
+        "revisión humana",
+        "decisión registrada",
+        "evidencia auditable",
+        "rollback",
+        "rechazo",
+        "compuertas mínimas",
+        "estados de decisión permitidos",
+        "evidencia mínima requerida",
+        "condiciones de rechazo obligatorio",
+        "validación técnica limitada",
+        "no habilita uso de datos reales",
+        "no aprueba procesamiento de datos reales por sí mismo",
+        "no reemplaza revisión humana",
+    ]
+    for expected in real_biological_data_admission_terms:
+        assert expected.lower() in payload_text
+        assert expected.lower() in markdown
+
     assert "laos governance gate" in payload_text
     assert "capacidad operativa sintética" in payload_text
     assert "compuerta de gobernanza" in payload_text
@@ -95,6 +128,7 @@ def test_eco_capabilities_report_script_generates_expected_outputs() -> None:
 
     required_limits = [
         "sin datos reales en esta fase",
+        "sin ingestión de datos reales",
         "sin entrenamiento",
         "sin modificación de baseline",
         "sin recalibración de umbrales",
