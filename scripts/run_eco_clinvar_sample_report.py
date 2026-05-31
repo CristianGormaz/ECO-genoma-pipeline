@@ -26,6 +26,7 @@ if str(PROJECT_ROOT) not in sys.path:
 if str(PROJECT_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
+from scripts.eco_public_source_guard import open_public_source_url, validate_public_source_url  # noqa: E402
 from src.eco_variant_interpretation import (  # noqa: E402
     VariantRecord,
     build_report,
@@ -50,17 +51,19 @@ CATEGORY_PRIORITY = [
 ]
 
 
-def download_file(url: str, destination: Path, force: bool = False) -> str:
+def download_file(url: str, destination: Path, force: bool = False, allow_custom_url: bool = False) -> str:
     """Descarga archivo con cache local simple."""
+    validate_public_source_url(url, allow_custom_url=allow_custom_url)
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists() and not force:
         return "cache"
 
-    request = urllib.request.Request(
+    with open_public_source_url(
         url,
+        timeout=120,
         headers={"User-Agent": "ECO-genoma-pipeline/0.1 (+https://github.com/CristianGormaz/ECO-genoma-pipeline)"},
-    )
-    with urllib.request.urlopen(request, timeout=120) as response:  # noqa: S310 - URL pública configurable por CLI
+        allow_custom_url=allow_custom_url,
+    ) as response:
         with destination.open("wb") as handle:
             shutil.copyfileobj(response, handle)
     return "downloaded"
@@ -309,6 +312,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Estrategia: gene-balanced equilibra genes y categorías; balanced equilibra categorías; first toma primeras coincidencias.",
     )
     parser.add_argument("--force-download", action="store_true", help="Descarga ClinVar aunque exista cache local.")
+    parser.add_argument(
+        "--allow-custom-url",
+        action="store_true",
+        help="Permite una URL https pública no allowlisted tras revisión explícita.",
+    )
     return parser
 
 
@@ -325,7 +333,12 @@ def main() -> int:
     output_md = args.output_dir / f"{args.prefix}_report.md"
 
     try:
-        download_state = download_file(args.source_url, clinvar_gz, force=args.force_download)
+        download_state = download_file(
+            args.source_url,
+            clinvar_gz,
+            force=args.force_download,
+            allow_custom_url=args.allow_custom_url,
+        )
         if args.sampling == "first":
             records = collect_records(clinvar_gz, genes=args.genes, max_records=args.max_records)
         elif args.sampling == "balanced":
