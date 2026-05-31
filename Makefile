@@ -546,7 +546,8 @@ eco-check:
 	$(MAKE) eco-synthetic-demo-comparison-report
 	$(MAKE) eco-synthetic-signal-matrix-report
 	$(MAKE) eco-synthetic-operational-dashboard
-	$(PYTHON) -m pytest -q
+	# pytest inline anterior: $(PYTHON) -m pytest -q
+	$(MAKE) test
 
 # E.C.O. generated results cleanup
 # Cleaner covers results/eco_adaptive_dataset_report.json and results/eco_adaptive_dataset_report.md.
