@@ -35,6 +35,7 @@ if str(PROJECT_ROOT / "scripts") not in sys.path:
 if str(PROJECT_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
+from scripts.eco_public_source_guard import open_public_source_url, validate_public_source_url  # noqa: E402
 from run_eco_demo_pipeline import run_demo_pipeline  # noqa: E402
 from src.eco_motif_analysis import MotifHit, parse_fasta, scan_sequence  # noqa: E402
 
@@ -56,17 +57,19 @@ MOTIF_PRIORITY = [
 ]
 
 
-def download_file(url: str, destination: Path, force: bool = False) -> str:
+def download_file(url: str, destination: Path, force: bool = False, allow_custom_url: bool = False) -> str:
     """Descarga un archivo externo con cache local simple."""
+    validate_public_source_url(url, allow_custom_url=allow_custom_url)
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists() and not force:
         return "cache"
 
-    request = urllib.request.Request(
+    with open_public_source_url(
         url,
+        timeout=60,
         headers={"User-Agent": "ECO-genoma-pipeline/0.1 (+https://github.com/CristianGormaz/ECO-genoma-pipeline)"},
-    )
-    with urllib.request.urlopen(request, timeout=60) as response:  # noqa: S310 - URL controlada por CLI/usuario
+        allow_custom_url=allow_custom_url,
+    ) as response:
         with destination.open("wb") as handle:
             shutil.copyfileobj(response, handle)
     return "downloaded"
@@ -281,6 +284,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-regions", type=int, default=12, help="Número máximo de regiones BED generadas.")
     parser.add_argument("--flank", type=int, default=12, help="Bases alrededor del motivo al crear regiones BED.")
     parser.add_argument("--force-download", action="store_true", help="Descarga y descomprime aunque existan archivos locales.")
+    parser.add_argument(
+        "--allow-custom-url",
+        action="store_true",
+        help="Permite una URL https pública no allowlisted tras revisión explícita.",
+    )
     return parser
 
 
@@ -296,7 +304,12 @@ def main() -> int:
     output_markdown = args.output_dir / f"{args.prefix}_interpretive_report.md"
 
     try:
-        download_state = download_file(args.source_url, gz_path, force=args.force_download)
+        download_state = download_file(
+            args.source_url,
+            gz_path,
+            force=args.force_download,
+            allow_custom_url=args.allow_custom_url,
+        )
         decompress_state = decompress_gzip(gz_path, fasta_path, force=args.force_download)
         chrom, sequence = load_single_sequence(fasta_path)
         regions = select_interpretable_regions(chrom, sequence, max_regions=args.max_regions, flank=args.flank)
