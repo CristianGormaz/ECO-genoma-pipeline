@@ -3,7 +3,7 @@
 PYTHON ?= python3
 VENV ?= .venv
 PIP := $(VENV)/bin/pip
-PY := $(VENV)/bin/python
+PY := $(if $(wildcard $(VENV)/bin/python),$(VENV)/bin/python,$(PYTHON))
 
 SEQUENCE ?=
 SEQUENCE_ID ?= custom_adaptive_router
@@ -546,7 +546,8 @@ eco-check:
 	$(MAKE) eco-synthetic-demo-comparison-report
 	$(MAKE) eco-synthetic-signal-matrix-report
 	$(MAKE) eco-synthetic-operational-dashboard
-	$(PYTHON) -m pytest -q
+	# pytest inline anterior: $(PYTHON) -m pytest -q
+	$(MAKE) test
 
 # E.C.O. generated results cleanup
 # Cleaner covers results/eco_adaptive_dataset_report.json and results/eco_adaptive_dataset_report.md.
