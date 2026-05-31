@@ -3,7 +3,7 @@
 PYTHON ?= python3
 VENV ?= .venv
 PIP := $(VENV)/bin/pip
-PY := $(VENV)/bin/python
+PY := $(if $(wildcard $(VENV)/bin/python),$(VENV)/bin/python,$(PYTHON))
 
 SEQUENCE ?=
 SEQUENCE_ID ?= custom_adaptive_router
