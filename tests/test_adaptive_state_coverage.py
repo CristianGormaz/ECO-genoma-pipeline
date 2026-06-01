@@ -11,13 +11,18 @@ def test_coverage_diagnostics_counts_extended_routes():
     rows = build_adaptive_state_rows(EXTENDED_TRANSITION_PACKETS)
     evaluation = evaluate_state_transition_holdout(rows)
     diagnostics = build_coverage_diagnostics(rows, evaluation=evaluation)
+    expected_fallback = sum(
+        prediction.matched_rule in {"default_state", "homeostasis_projection"}
+        for prediction in evaluation.predictions
+    )
 
     assert diagnostics.row_count == len(EXTENDED_TRANSITION_PACKETS)
     assert diagnostics.unique_feature_routes >= 6
     assert diagnostics.state_counts["stable"] >= 3
     assert diagnostics.state_counts["watch"] >= 2
     assert diagnostics.state_counts["attention"] >= 3
-    assert diagnostics.fallback_predictions == 0
+    assert diagnostics.fallback_predictions == expected_fallback
+    assert diagnostics.fallback_predictions >= 1
     assert diagnostics.incorrect_predictions == 0
 
 
@@ -27,7 +32,11 @@ def test_coverage_diagnostics_reports_current_risk_or_clean_state():
     diagnostics = build_coverage_diagnostics(rows, evaluation=evaluation)
 
     assert isinstance(diagnostics.coverage_warnings, tuple)
-    assert all("predictions" not in warning for warning in diagnostics.coverage_warnings)
+    if diagnostics.fallback_predictions > 0:
+        assert any(
+            "fallback_predictions_present" in warning
+            for warning in diagnostics.coverage_warnings
+        )
     assert "no representa desempeño general" in diagnostics.responsible_limit
 
 

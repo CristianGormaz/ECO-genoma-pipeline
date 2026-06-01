@@ -58,7 +58,7 @@ def build_coverage_diagnostics(
     fallback_predictions = 0
     incorrect_predictions = 0
     if evaluation:
-        fallback_predictions = sum(pred.matched_rule == "default_state" for pred in evaluation.predictions)
+        fallback_predictions = sum(_is_fallback_rule(pred.matched_rule) for pred in evaluation.predictions)
         incorrect_predictions = sum(not pred.correct for pred in evaluation.predictions)
 
     warnings = build_coverage_warnings(
@@ -105,7 +105,10 @@ def build_coverage_warnings(
             warnings.append(f"decision_underrepresented:{decision}")
 
     if fallback_predictions > 0:
-        warnings.append("fallback_predictions_present: el baseline encontró rutas no vistas y usó estado por defecto")
+        warnings.append(
+            "fallback_predictions_present: el baseline encontró rutas no vistas o "
+            "resueltas por fallback homeostático"
+        )
 
     if incorrect_predictions > 0:
         warnings.append("incorrect_predictions_present: revisar rutas confundidas en matriz de confusión")
@@ -122,7 +125,7 @@ def coverage_report_to_markdown(diagnostics: CoverageDiagnostics) -> str:
         "",
         f"Filas: {diagnostics.row_count}",
         f"Rutas categóricas únicas: {diagnostics.unique_feature_routes}",
-        f"Predicciones por defecto en holdout: {diagnostics.fallback_predictions}",
+        f"Predicciones fallback en holdout: {diagnostics.fallback_predictions}",
         f"Predicciones incorrectas en holdout: {diagnostics.incorrect_predictions}",
         "",
         "## Estados",
@@ -155,3 +158,7 @@ def coverage_report_to_markdown(diagnostics: CoverageDiagnostics) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def _is_fallback_rule(matched_rule: str) -> bool:
+    return matched_rule in {"default_state", "homeostasis_projection"}

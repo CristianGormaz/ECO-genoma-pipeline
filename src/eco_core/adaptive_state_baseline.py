@@ -158,7 +158,7 @@ def project_homeostatic_state(row: AdaptiveStateRow) -> str:
     immune = _count_from_ratio(row.immune_load_before, total_before)
     quarantined = _count_from_ratio(row.quarantine_ratio_before, total_before)
 
-    if row.final_decision == "absorb":
+    if row.final_decision in {"absorb", "batch_absorb"}:
         absorbed += 1
     elif row.final_decision == "quarantine":
         quarantined += 1

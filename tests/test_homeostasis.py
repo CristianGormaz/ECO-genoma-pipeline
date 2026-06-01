@@ -44,6 +44,17 @@ def test_homeostasis_snapshot_reports_attention_for_quarantine_load():
     assert snapshot.needs_attention is True
 
 
+def test_homeostasis_snapshot_counts_defense_alerts_from_should_alert_signal():
+    system = EntericSystem(min_length=6)
+    system.process_dna_sequence("ACG", source="short_one")
+
+    snapshot = build_homeostasis_snapshot(system.processed_packets)
+
+    assert snapshot.defense_alerts == 1
+    assert snapshot.quarantined_packets == 1
+    assert snapshot.state == "attention"
+
+
 def test_homeostasis_snapshot_reports_overload_for_invalid_flow():
     system = EntericSystem()
     system.process_dna_sequence("ACGTXYZ", source="bad_one")

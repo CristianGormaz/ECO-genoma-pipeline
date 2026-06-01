@@ -64,9 +64,13 @@ def build_homeostasis_snapshot(packets: Sequence[EcoPacket] | Iterable[EcoPacket
         if packet.metadata.get("enteric_decision", {}).get("action") == "discard_duplicate"
     )
     defense_alerts = sum(_has_defense_alert(packet) for packet in packet_list)
+    immune_alerts = sum(
+        _has_immune_alert(packet) and not _has_status(packet, "rejected")
+        for packet in packet_list
+    )
 
     absorption_ratio = safe_ratio(absorbed, total)
-    immune_load = safe_ratio(rejected + defense_alerts, total)
+    immune_load = safe_ratio(rejected + immune_alerts, total)
     quarantine_ratio = safe_ratio(quarantined, total)
     recurrence_ratio = safe_ratio(duplicates, total)
 
@@ -144,4 +148,11 @@ def _has_status(packet: EcoPacket, status: str) -> bool:
 
 def _has_defense_alert(packet: EcoPacket) -> bool:
     signal = packet.metadata.get("enteric_defense_signal", {})
-    return signal.get("severity") in {"warning", "critical"}
+    severity = str(signal.get("severity", "")).lower()
+    return bool(signal.get("should_alert")) or severity in {"medium", "high", "warning", "critical"}
+
+
+def _has_immune_alert(packet: EcoPacket) -> bool:
+    signal = packet.metadata.get("enteric_defense_signal", {})
+    severity = str(signal.get("severity", "")).lower()
+    return severity in {"high", "warning", "critical"}
