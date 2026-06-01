@@ -193,19 +193,23 @@ def build_dimensions() -> list[MaturityDimension]:
             purpose="Evaluar visibilidad operacional de componentes clave en un panel único.",
             evidence_expected=[
                 "dashboard operativo con componentes múltiples",
-                "estado agregado del panel",
+                "estado repo / eco-status",
+                "score de madurez integrado",
+                "gates relevantes + riesgos + decisión final",
+                "evidencia de rollback o attention explícito",
             ],
             checks=[
                 _check_file("scripts/run_eco_synthetic_operational_dashboard.py"),
                 _check_token("scripts/run_eco_synthetic_operational_dashboard.py", "component_count"),
                 _check_token("scripts/run_eco_synthetic_operational_dashboard.py", "components"),
+                _check_token("scripts/run_eco_synthetic_operational_dashboard.py", "repo_status"),
+                _check_token("scripts/run_eco_synthetic_operational_dashboard.py", "maturity_score"),
+                _check_token("scripts/run_eco_synthetic_operational_dashboard.py", "relevant_gates"),
+                _check_token("scripts/run_eco_synthetic_operational_dashboard.py", "current_risks"),
+                _check_token("scripts/run_eco_synthetic_operational_dashboard.py", "final_decision"),
+                _check_token("scripts/run_eco_synthetic_operational_dashboard.py", "rollback_evidence"),
             ],
             responsible_limit="panel sintético; no habilita decisiones clínicas o de datos reales.",
-            forced_state="attention",
-            forced_explanation=(
-                "Existe panel sintético trazable, pero la integración end-to-end completa con decisiones reales de avance/pausa "
-                "aún es parcial y requiere fases adicionales."
-            ),
         ),
         _build_dimension(
             dimension_id="phase_maturity",
@@ -270,19 +274,16 @@ def build_dimensions() -> list[MaturityDimension]:
             evidence_expected=[
                 "dry-run de admisión estable con candados explícitos",
                 "protocolo documental con rollback",
+                "panel end-to-end que muestra evidencia de rollback",
             ],
             checks=[
                 _check_file("scripts/run_sne_eco_stable_admission_dry_run.py"),
                 _check_file("tests/test_sne_eco_stable_admission_dry_run.py"),
-                _check_token("scripts/run_sne_eco_stable_admission_dry_run.py", "rollback"),
+                _check_token("scripts/run_sne_eco_stable_admission_dry_run.py", "stability_locks"),
                 _check_token("docs/operations/eco-real-biological-data-admission-protocol.md", "rollback"),
+                _check_token("scripts/run_eco_synthetic_operational_dashboard.py", "rollback_evidence"),
             ],
             responsible_limit="rollback de gobernanza, no rollback clínico ni de datos reales en producción.",
-            forced_state="attention",
-            forced_explanation=(
-                "El rollback es visible en dry-run y documentación, pero aún falta visibilidad consolidada "
-                "en un panel único de operación completa."
-            ),
         ),
         _build_dimension(
             dimension_id="governed_admission",
