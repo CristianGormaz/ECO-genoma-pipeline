@@ -21,7 +21,12 @@ def test_operational_panel_index_mentions_snapshot_and_governance_state():
         "8 componentes",
         "governance panel integrado",
         "autodesarrollo gobernado activo",
+        "public-source-url-admission-guard registrado",
+        "main green",
+        "HEAD = origin/main",
+        "sin PR abiertos",
         "pytest passing",
+        "588 passed",
     ]
 
     for token in required_tokens:
