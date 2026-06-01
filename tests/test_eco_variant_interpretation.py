@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from src.eco_variant_interpretation import (
     VariantRecord,
     build_report,
@@ -93,3 +95,20 @@ def test_parse_variant_demo_dataset():
     assert report["summary"]["category_counts"]["alerta_clinica_alta"] == 1
     assert report["summary"]["category_counts"]["incertidumbre_clinica"] == 1
     assert report["summary"]["category_counts"]["probablemente_no_patogenica"] == 1
+
+
+def test_parse_variant_tsv_rejects_missing_required_columns(tmp_path: Path):
+    incomplete = tmp_path / "incomplete.tsv"
+    incomplete.write_text(
+        "variant_id\tgene\tclinical_significance\n"
+        "DEMO-001\tBRCA1\tPathogenic\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError) as excinfo:
+        parse_variant_tsv(incomplete)
+
+    message = str(excinfo.value)
+    assert "faltan columnas requeridas" in message
+    assert "variant_name" in message
+    assert "review_status" in message
