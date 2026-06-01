@@ -11,6 +11,15 @@ El panel operativo vigente mantiene como referencia explícita:
 - checklist de liberación enlazada para pre-PR, pre-merge y post-merge;
 - snapshot post-governance como referencia del estado estable.
 
+Snapshot operativo actual:
+
+- main green;
+- HEAD = origin/main;
+- PR abiertos: ninguno;
+- pytest passing como criterio estable;
+- conteo de snapshot actual: 588 passed;
+- public-source-url-admission-guard registrado como capacidad operacional.
+
 ## Capacidades documentales
 
 E.C.O. dispone de una base documental operacional activa para:

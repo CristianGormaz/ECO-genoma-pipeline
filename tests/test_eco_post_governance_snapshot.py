@@ -9,11 +9,14 @@ def test_post_governance_snapshot_exists_and_mentions_expected_state():
     text = SNAPSHOT.read_text(encoding="utf-8").lower()
 
     assert "dashboard sintético" in text
-    assert "7 componentes" in text
+    assert "8 componentes" in text
     assert "governance panel" in text
     assert "autodesarrollo gobernado" in text
+    assert "public-source-url-admission-guard" in text
+    assert "head = origin/main" in text
+    assert "sin pr abiertos" in text
     assert "pytest passing" in text
-    assert "conteo de referencia reciente" in text
+    assert "conteo de snapshot actual: 588 passed" in text
     assert "límites responsables" in text
     assert "sin datos reales" in text
     assert "sin entrenamiento" in text

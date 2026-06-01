@@ -169,8 +169,12 @@ Estado esperado del panel operativo:
 - dashboard sintético operativo con **8 componentes**;
 - governance panel integrado;
 - autodesarrollo gobernado activo;
+- public-source-url-admission-guard registrado;
+- main green;
+- HEAD = origin/main;
+- sin PR abiertos;
 - Suite esperada: **pytest passing**.
-- Conteo de referencia reciente: **512 passed** (informativo, no criterio rígido).
+- Conteo de snapshot actual: **588 passed** (informativo, no criterio rígido).
 
 Este snapshot mantiene límites responsables: sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
 
