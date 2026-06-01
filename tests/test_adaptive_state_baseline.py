@@ -1,11 +1,15 @@
 from src.eco_core import (
     DEFAULT_TRANSITION_PACKETS,
+    EntericSystem,
     baseline_report_to_markdown,
     build_adaptive_state_rows,
     evaluate_state_transition_baseline,
     feature_key,
     train_state_transition_baseline,
 )
+from src.eco_core.adaptive_state_baseline import project_homeostatic_state
+from src.eco_core.adaptive_state_dataset import build_adaptive_state_row
+from src.eco_core.packet_trace import build_packet_trace
 
 
 def test_state_transition_baseline_trains_from_adaptive_rows():
@@ -56,3 +60,18 @@ def test_state_transition_baseline_markdown_mentions_limits():
     assert "Accuracy demostrativa" in markdown
     assert "valid_sequence" in markdown
     assert "no representa desempeño general" in markdown
+
+
+def test_project_homeostatic_state_treats_batch_absorb_as_absorption():
+    system = EntericSystem(heavy_payload_threshold=1)
+    before = system.homeostasis_snapshot()
+    packet = system.process_dna_sequence("ACGTCCAATGGTATAAA", source="heavy_valid")
+    after = system.homeostasis_snapshot()
+    row = build_adaptive_state_row(
+        trace=build_packet_trace(packet),
+        before=before,
+        after=after,
+    )
+
+    assert row.final_decision == "batch_absorb"
+    assert project_homeostatic_state(row) == "stable"
