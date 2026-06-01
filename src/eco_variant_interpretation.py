@@ -53,6 +53,18 @@ VUS_TERMS = {"uncertain significance", "vus", "uncertain", "variant of uncertain
 CONFLICT_TERMS = {"conflicting classifications", "conflicting interpretations of pathogenicity"}
 RISK_TERMS = {"risk factor", "association", "protective"}
 DRUG_TERMS = {"drug response", "affects"}
+REQUIRED_VARIANT_COLUMNS = (
+    "variant_id",
+    "gene",
+    "variant_name",
+    "hgvs",
+    "condition",
+    "clinical_significance",
+    "review_status",
+    "evidence_origin",
+    "last_evaluated",
+    "source_url",
+)
 
 
 def normalize_text(value: str) -> str:
@@ -163,6 +175,13 @@ def parse_variant_tsv(path: Path) -> List[VariantRecord]:
     """Lee un TSV con columnas estilo ClinVar reducido."""
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle, delimiter="\t")
+        fieldnames = set(reader.fieldnames or [])
+        missing = sorted(set(REQUIRED_VARIANT_COLUMNS) - fieldnames)
+        if missing:
+            raise ValueError(
+                "TSV incompleto: faltan columnas requeridas: "
+                + ", ".join(missing)
+            )
         records = []
         for row in reader:
             records.append(
