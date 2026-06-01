@@ -53,9 +53,9 @@ def test_operational_maturity_score_v1_current_decision_is_attention() -> None:
     states = {item["dimension_id"]: item["state"] for item in report["dimensions"]}
 
     assert states["maturity_score"] == "passed"
-    assert states["end_to_end_panel"] == "attention"
+    assert states["end_to_end_panel"] == "passed"
     assert states["phase_maturity"] == "future"
-    assert states["visible_rollback"] == "attention"
+    assert states["visible_rollback"] == "passed"
     assert states["governed_admission"] == "attention"
     assert report["global_decision"] == "attention"
     assert report["classification"] == "attention_required"

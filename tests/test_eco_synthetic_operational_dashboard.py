@@ -14,9 +14,13 @@ def test_synthetic_operational_dashboard_runs():
     result = subprocess.run([sys.executable, str(SCRIPT)], capture_output=True, text=True, check=False)
     assert result.returncode == 0, result.stdout + result.stderr
     payload = json.loads(JSON_OUTPUT.read_text(encoding="utf-8"))
-    assert payload["status"] == "passed"
-    assert payload["classification"] == "allowed"
+    assert payload["panel_kind"] == "end_to_end_operational_panel_v1"
+    assert payload["status"] in {"passed", "attention", "red"}
+    assert payload["classification"] in {"allowed", "conditional", "attention_required", "blocked"}
+    assert payload["final_decision"] in {"advance", "pause", "review", "reject"}
     assert payload["component_count"] == 9
+    assert isinstance(payload["components_all_passed"], bool)
+    assert payload["components_all_passed"] is True
     assert "datos sintéticos" in payload["limit"]
     assert "sin entrenamiento" in payload["limit"]
     assert "sin datos sensibles" in payload["limit"]
@@ -25,6 +29,23 @@ def test_synthetic_operational_dashboard_runs():
     assert "sin afirmaciones biomédicas aplicadas" in payload["limit"]
     assert "sin libre albedrío real" in payload["limit"]
     assert "sin conciencia" in payload["limit"]
+    assert payload["repo_status"]["state"] in {"green", "attention"}
+    assert isinstance(payload["repo_status"]["tree_clean"], bool)
+    assert "branch" in payload["repo_status"]
+    assert payload["maturity_score"]["global_decision"] in {"passed", "attention"}
+    assert payload["maturity_score"]["score_v1"] >= 0.0
+    assert payload["maturity_score"]["score_v1"] <= 1.0
+    gate_ids = {item["id"] for item in payload["relevant_gates"]}
+    assert "source_admission_decision_summary" in gate_ids
+    assert "sensitive_intake_gate" in gate_ids
+    assert "governed_ml_evaluation_gate" in gate_ids
+    for gate in payload["relevant_gates"]:
+        assert gate["status"] in {"passed", "attention", "red"}
+    assert payload["rollback_evidence"]["status"] in {"passed", "attention"}
+    assert isinstance(payload["rollback_evidence"]["evidence_available"], bool)
+    assert payload["current_risks"]
+    assert payload["decision_reason"]
+    assert payload["responsible_limits"]
     labels = {component["label"] for component in payload["components"]}
     assert "adaptive dataset readiness gate" in labels
     assert "source admission decision summary" in labels
@@ -39,6 +60,13 @@ def test_synthetic_operational_dashboard_runs():
     assert statuses == {"passed"}
     md = MD_OUTPUT.read_text(encoding="utf-8")
     assert "E.C.O. synthetic operational dashboard" in md
+    assert "Repo / eco-status" in md
+    assert "Score de madurez" in md
+    assert "Gates relevantes" in md
+    assert "Riesgos actuales" in md
+    assert "Evidencia de rollback" in md
+    assert "Límites responsables" in md
+    assert "Decisión final" in md
     assert "source admission decision summary" in md
     assert "synthetic signal matrix report" in md
     assert "adaptive dataset operational report" in md
@@ -46,6 +74,10 @@ def test_synthetic_operational_dashboard_runs():
     assert "governance panel" in md
     assert "capabilities report" in md
     assert "LAOS Governance Gate" in md
+    assert "advance" in md
+    assert "pause" in md
+    assert "review" in md
+    assert "reject" in md
     assert "sin libre albedrío real" in md
     assert "sin conciencia" in md
 
@@ -95,3 +127,18 @@ def test_synthetic_operational_dashboard_includes_laos_governance_gate():
     assert "scripts/run_eco_laos_governance_gate_demo.py" in text
     assert "eco_laos_governance_gate_demo.json" in text
     assert 'Path("results/eco_laos_governance_gate_demo.json")' in text
+
+
+def test_synthetic_operational_dashboard_includes_end_to_end_operational_fields():
+    text = SCRIPT.read_text(encoding="utf-8")
+
+    assert "repo_status" in text
+    assert "maturity_score" in text
+    assert "relevant_gates" in text
+    assert "current_risks" in text
+    assert "rollback_evidence" in text
+    assert "final_decision" in text
+    assert "advance" in text
+    assert "pause" in text
+    assert "review" in text
+    assert "reject" in text
