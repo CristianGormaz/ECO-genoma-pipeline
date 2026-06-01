@@ -51,6 +51,23 @@ Este mapa de capacidades actuales sirve para revisar:
 - qué falta para avanzar al siguiente salto operativo sin romper trazabilidad.
 
 
+## Public Source URL Admission Guard
+
+Referencia funcional: `scripts/eco_public_source_guard.py`.
+
+Referencia de tests: `tests/test_eco_public_source_url_admission_guard.py`.
+
+public-source-url-admission-guard funciona como compuerta de seguridad operacional para URLs públicas externas configurables antes de descargar datos desde internet.
+
+La compuerta protege esquema, dominio, fuente esperada y redirecciones. Por defecto solo admite fuentes públicas allowlisted y exige `--allow-custom-url` para una URL pública personalizada revisada.
+
+No equivale a `real-biological-data-admission-gate`: esta compuerta protege la fuente de descarga, no aprueba el uso ético, técnico o interpretativo de datos biológicos reales.
+
+Límites preservados: no autoriza procesamiento de datos reales, no habilita entrenamiento, no habilita diagnóstico, no habilita interpretación clínica, no modifica baseline y no recalibra umbrales.
+
+Toda ampliación de allowlist o cambio de política requiere revisión humana.
+
+
 ## Manual de Madurez para Datos Reales Biológicos
 
 Referencia: `docs/operations/eco-real-biological-data-maturity-manual.md`.

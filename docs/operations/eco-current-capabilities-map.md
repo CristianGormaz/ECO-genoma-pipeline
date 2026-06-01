@@ -28,6 +28,20 @@ El repositorio integra governance panel y pautas explícitas de control operativ
 
 También cuenta con checklist de liberación para controlar hitos antes de abrir PR, antes de mergear y después de mergear.
 
+## Public Source URL Admission Guard
+
+E.C.O. integra **public-source-url-admission-guard** como capacidad de seguridad operacional en `scripts/eco_public_source_guard.py`.
+
+Esta compuerta valida URLs públicas externas antes de que E.C.O. descargue una fuente configurable. Protege la puerta de descarga revisando esquema, dominio, fuente esperada y redirecciones antes de seguirlas.
+
+La política actual permite por defecto solo fuentes públicas esperadas y requiere autorización explícita mediante `--allow-custom-url` para una URL pública no allowlisted.
+
+Esta compuerta no equivale a `real-biological-data-admission-gate`: public-source-url-admission-guard pregunta si la URL externa es pública, permitida, segura y esperada; una compuerta de admisión de datos reales biológicos preguntaría si el dato biológico real puede usarse ética, técnica y responsablemente.
+
+Esta capacidad no autoriza procesamiento de datos reales, no habilita entrenamiento, no habilita diagnóstico, no habilita interpretación clínica, no modifica baseline y no recalibra umbrales.
+
+Toda ampliación de allowlist o cambio de política requiere revisión humana y evidencia auditable.
+
 ## Manual de Madurez para Datos Reales Biológicos
 
 E.C.O. enlaza **Manual de Madurez para Datos Reales Biológicos** como capacidad documental de gobernanza en `docs/operations/eco-real-biological-data-maturity-manual.md`.
