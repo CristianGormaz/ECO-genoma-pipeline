@@ -30,11 +30,22 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 
 - docs/operations/terminal-stop-guide.md: guía para saber cuándo detenerse.
 - docs/operations/project-map.md: este mapa operativo.
+- docs/operations/eco-technical-blueprint.md: plano técnico de orientación para entender arquitectura, capas, inspiración S.N.E., componentes y límites.
+- docs/operations/eco-operational-blueprint.md: plano operativo de orientación para entrar, entender, avanzar, pausar, validar, recuperar y cerrar ciclos sin romper E.C.O.
 - docs/operations/eco-real-biological-data-maturity-manual.md: documento de frontera para definir madurez futura antes de cualquier regla de admisión de datos reales biológicos.
 - docs/research/eco-research-index.md: índice de investigación E.C.O.
 - docs/architecture/eco-synthetic-demos-index.md: índice de demos sintéticas y sus validaciones.
 - docs/architecture/eco-synthetic-data-contract.md: contrato mínimo para datos sintéticos y trazas de simulación.
 - scripts/run_eco_status.py: inspección rápida del estado del repositorio.
+
+## Planos oficiales de orientación
+
+- Plano Técnico: docs/operations/eco-technical-blueprint.md.
+- Plano Operativo: docs/operations/eco-operational-blueprint.md.
+- Tipo: documentos de orientación documental y operacional.
+- Alcance: ayudan a entender cómo está construido E.C.O. y cómo trabajar con el repositorio sin romperlo.
+- Límite: no son ejecutables, no son scripts, no son compuertas funcionales y no habilitan datos reales.
+- Control: no reemplazan tests, reportes, dashboard ni validaciones reales.
 
 ## Frontera para datos reales biológicos
 
