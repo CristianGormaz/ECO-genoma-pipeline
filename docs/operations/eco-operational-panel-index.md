@@ -105,6 +105,21 @@ Sirve como base documental para futuras fases separadas: Real Biological Data Ad
 
 Esas fases futuras no quedan aprobadas por este enlace. El protocolo no habilita uso de datos reales, no aprueba procesamiento de datos reales por sí mismo y no reemplaza revisión humana.
 
+## Real Biological Data Admission Dry-Run Gate
+
+Referencia funcional: `scripts/run_eco_real_biological_data_admission_dry_run.py`.
+
+Referencia documental: `docs/operations/eco-real-biological-data-admission-dry-run.md`.
+
+Real Biological Data Admission Dry-Run Gate evalúa manifiestos descriptivos y genera reporte auditable antes de cualquier contacto con datos reales.
+
+Salidas:
+
+- `results/eco_real_biological_data_admission_dry_run_report.json`;
+- `results/eco_real_biological_data_admission_dry_run_report.md`.
+
+La compuerta no lee, no descarga, no procesa y no interpreta datos reales. No aprueba admisión real y cualquier avance posterior requiere revisión humana, rollback y evidencia auditable.
+
 
 ## Contrato LAOS para agencia simulada
 
