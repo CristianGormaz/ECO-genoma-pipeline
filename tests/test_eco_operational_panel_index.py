@@ -26,7 +26,7 @@ def test_operational_panel_index_mentions_snapshot_and_governance_state():
         "HEAD = origin/main",
         "sin PR abiertos",
         "pytest passing",
-        "588 passed",
+        "no usar conteo rígido como criterio de aceptación",
     ]
 
     for token in required_tokens:
@@ -203,6 +203,35 @@ def test_operational_panel_index_links_current_capabilities_map_and_laos_contrac
         "snapshot",
         "checklist",
         "Límites responsables",
+    ]
+
+    for token in required_tokens:
+        assert token in content
+
+
+def test_operational_panel_index_links_dual_blueprints():
+    content = (ROOT / "docs" / "operations" / "eco-operational-panel-index.md").read_text(
+        encoding="utf-8"
+    )
+
+    required_tokens = [
+        "Planos oficiales de orientación",
+        "docs/operations/eco-technical-blueprint.md",
+        "docs/operations/eco-operational-blueprint.md",
+        "Plano Técnico",
+        "Plano Operativo",
+        "entender la construcción",
+        "entrar",
+        "avanzar",
+        "pausar",
+        "validar",
+        "recuperar",
+        "cerrar",
+        "No son ejecutables",
+        "no son scripts",
+        "no son compuertas funcionales",
+        "no reemplazan comandos reales",
+        "validaciones reales",
     ]
 
     for token in required_tokens:

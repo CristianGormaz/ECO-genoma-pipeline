@@ -50,6 +50,18 @@ Este mapa de capacidades actuales sirve para revisar:
 - cómo se validan en el estado operativo actual;
 - qué falta para avanzar al siguiente salto operativo sin romper trazabilidad.
 
+## Planos oficiales de orientación
+
+Referencia técnica: `docs/operations/eco-technical-blueprint.md`.
+
+Referencia operativa: `docs/operations/eco-operational-blueprint.md`.
+
+El Plano Técnico sirve para entender la construcción de E.C.O.: capas, límites, componentes y relación bioinspirada.
+
+El Plano Operativo sirve para decidir cómo entrar, avanzar, pausar, validar, recuperar y cerrar ciclos de trabajo sin romper el sistema.
+
+Estos planos son documentos de orientación. No son ejecutables, no son scripts, no son compuertas funcionales y no reemplazan comandos reales ni validaciones reales.
+
 
 ## Public Source URL Admission Guard
 
@@ -174,7 +186,7 @@ Estado esperado del panel operativo:
 - HEAD = origin/main;
 - sin PR abiertos;
 - Suite esperada: **pytest passing**.
-- Conteo de snapshot actual: **588 passed** (informativo, no criterio rígido).
+- Criterio de suite: **pytest passing**; no usar conteo rígido como criterio de aceptación.
 
 Este snapshot mantiene límites responsables: sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
 

@@ -17,7 +17,7 @@ Snapshot operativo actual:
 - HEAD = origin/main;
 - PR abiertos: ninguno;
 - pytest passing como criterio estable;
-- conteo de snapshot actual: 588 passed;
+- criterio de suite: pytest passing, sin conteo rígido como criterio de aceptación;
 - public-source-url-admission-guard registrado como capacidad operacional.
 
 ## Capacidades documentales
@@ -30,6 +30,23 @@ E.C.O. dispone de una base documental operacional activa para:
 - registro de decisiones y protocolos de operación.
 
 Esta capacidad permite distinguir qué piezas existen y cómo se deben operar sin ambigüedad durante un sprint.
+
+## Planos oficiales de orientación E.C.O.
+
+E.C.O. registra dos planos oficiales como capacidades documentales de orientación:
+
+- Plano Técnico: `docs/operations/eco-technical-blueprint.md`.
+- Plano Operativo: `docs/operations/eco-operational-blueprint.md`.
+
+El Plano Técnico muestra cómo está construido E.C.O.: arquitectura general, capas, relación bioinspirada, componentes documentales y límites técnicos.
+
+El Plano Operativo muestra cómo trabajar con E.C.O. sin romperlo: entrar, entender, avanzar, pausar, validar, recuperar y cerrar ciclos con trazabilidad.
+
+Ambos planos son capacidades documentales de orientación. No son scripts, no son ejecutables y no son compuertas funcionales.
+
+Estos planos no habilitan datos reales, no entrenan modelos, no modifican baseline, no recalibran umbrales y no hacen afirmaciones biomédicas aplicadas.
+
+También mantienen límites explícitos de agencia: no afirman conciencia, no afirman autonomía real y no afirman libre albedrío real.
 
 ## Capacidades de gobernanza
 
