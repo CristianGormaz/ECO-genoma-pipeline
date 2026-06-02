@@ -113,12 +113,18 @@ Referencia documental: `docs/operations/eco-real-biological-data-admission-dry-r
 
 Real Biological Data Admission Dry-Run Gate evalúa manifiestos descriptivos y genera reporte auditable antes de cualquier contacto con datos reales.
 
+Comando operativo:
+
+- `make eco-real-biological-data-admission-dry-run`
+
+Uso: ejecutar la compuerta dry-run de admisión sobre manifiestos descriptivos.
+
 Salidas:
 
 - `results/eco_real_biological_data_admission_dry_run_report.json`;
 - `results/eco_real_biological_data_admission_dry_run_report.md`.
 
-La compuerta no lee, no descarga, no procesa y no interpreta datos reales. No aprueba admisión real y cualquier avance posterior requiere revisión humana, rollback y evidencia auditable.
+La compuerta no lee, no descarga, no procesa y no interpreta datos reales. No entrena modelos, no modifica baseline y no recalibra umbrales. No aprueba admisión real y cualquier avance posterior requiere revisión humana, rollback y evidencia auditable.
 
 
 ## Contrato LAOS para agencia simulada

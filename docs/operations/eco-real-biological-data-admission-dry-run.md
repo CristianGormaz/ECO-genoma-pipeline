@@ -62,6 +62,18 @@ La compuerta aplica reglas mínimas de admisión dry-run:
 - `results/eco_real_biological_data_admission_dry_run_report.json`.
 - `results/eco_real_biological_data_admission_dry_run_report.md`.
 
+## Comando operativo
+
+El comando operativo estándar es:
+
+`make eco-real-biological-data-admission-dry-run`
+
+Este comando ejecuta solo el dry-run sobre un manifiesto descriptivo seguro por defecto, genera JSON/Markdown en `results/` y no requiere argumentos obligatorios.
+
+El comando no lee datos reales, no descarga datos reales, no procesa secuencias, no interpreta datos biológicos y no aprueba admisión real.
+
+Cualquier avance posterior requiere revisión humana explícita y un sprint separado.
+
 ## Límites responsables
 
 - sin lectura de datos reales;

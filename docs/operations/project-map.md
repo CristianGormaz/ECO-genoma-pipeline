@@ -17,6 +17,7 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 
 - make eco-status: revisa rama, HEAD, origin/main y limpieza del árbol.
 - make eco-vacuum-state-demo: genera la demo educativa de Vacuum State.
+- make eco-real-biological-data-admission-dry-run: ejecuta la compuerta dry-run sobre manifiestos descriptivos sin leer, descargar, procesar ni interpretar datos reales.
 
 ## Carpetas principales
 
@@ -57,6 +58,7 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 - Límite: no habilita uso de datos reales y no autoriza procesamiento de datos reales por sí mismo.
 - Control: cualquier avance futuro requiere revisión humana, evidencia auditable y rollback.
 - Dry-run: Real Biological Data Admission Dry-Run Gate evalúa manifiestos descriptivos y genera reporte auditable.
+- Comando: make eco-real-biological-data-admission-dry-run.
 - Manual: no es una compuerta funcional activa.
 - Siguiente avance posible de frontera: schema o dry-run gate; no datos reales.
 - Estado: no lee, no descarga, no procesa y no interpreta datos reales; no aprueba admisión real.
