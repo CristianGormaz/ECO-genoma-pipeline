@@ -15,6 +15,7 @@ ATTENTION_STATUSES = {"attention", "yellow", "conditional", "warning"}
 RED_STATUSES = {"red", "blocked", "reject", "error", "failed"}
 
 MATURITY_OUTPUT = Path("results/eco_operational_maturity_score.json")
+GOVERNED_CYCLE_OUTPUT = Path("results/eco_governed_experimental_cycle.json")
 
 RELEVANT_GATES = [
     {
@@ -106,6 +107,12 @@ COMPONENTS = [
         "label": "LAOS Governance Gate",
         "script": "scripts/run_eco_laos_governance_gate_demo.py",
         "output": Path("results/eco_laos_governance_gate_demo.json"),
+    },
+    {
+        "id": "governed_experimental_cycle",
+        "label": "governed experimental cycle",
+        "script": "scripts/run_eco_governed_experimental_cycle.py",
+        "output": Path("results/eco_governed_experimental_cycle.json"),
     },
 ]
 
@@ -204,6 +211,30 @@ def collect_maturity_score() -> dict[str, Any]:
     }
 
 
+def collect_governed_experimental_cycle() -> dict[str, Any]:
+    if not GOVERNED_CYCLE_OUTPUT.exists():
+        return {
+            "status": "missing",
+            "final_decision": "review",
+            "phase_maturity_status": "missing",
+            "governed_admission_status": "missing",
+            "output": str(GOVERNED_CYCLE_OUTPUT),
+            "risk_count": 0,
+            "recommendations": ["Ejecutar scripts/run_eco_governed_experimental_cycle.py."],
+        }
+
+    payload = _read_json(GOVERNED_CYCLE_OUTPUT)
+    return {
+        "status": normalize_status(payload.get("status")),
+        "final_decision": payload.get("final_decision", "review"),
+        "phase_maturity_status": payload.get("phase_maturity", {}).get("status", "missing"),
+        "governed_admission_status": payload.get("governed_admission", {}).get("status", "missing"),
+        "output": str(GOVERNED_CYCLE_OUTPUT),
+        "risk_count": len(payload.get("risks", [])),
+        "recommendations": payload.get("recommendations", []),
+    }
+
+
 def collect_relevant_gates() -> list[dict[str, Any]]:
     gates: list[dict[str, Any]] = []
     for gate in RELEVANT_GATES:
@@ -291,6 +322,7 @@ def collect_rollback_evidence() -> dict[str, Any]:
 def build_current_risks(
     repo_status: dict[str, Any],
     maturity_score: dict[str, Any],
+    governed_experimental_cycle: dict[str, Any],
     relevant_gates: list[dict[str, Any]],
     rollback_evidence: dict[str, Any],
 ) -> list[str]:
@@ -301,6 +333,11 @@ def build_current_risks(
         risks.append(
             "El score de madurez sigue en attention; faltan integraciones completas en "
             f"{len(maturity_score['attention_dimensions'])} dimensiones."
+        )
+    if governed_experimental_cycle["final_decision"] != "advance":
+        risks.append(
+            "El ciclo experimental gobernado no recomienda advance: "
+            f"{governed_experimental_cycle['final_decision']}."
         )
     for gate in relevant_gates:
         if gate["status"] == "red":
@@ -317,9 +354,13 @@ def build_current_risks(
 def decide_final_action(
     repo_status: dict[str, Any],
     maturity_score: dict[str, Any],
+    governed_experimental_cycle: dict[str, Any],
     relevant_gates: list[dict[str, Any]],
     rollback_evidence: dict[str, Any],
 ) -> tuple[str, str]:
+    if governed_experimental_cycle["final_decision"] == "reject":
+        return "reject", "El ciclo experimental gobernado rechazó el avance."
+
     if any(gate["status"] == "red" for gate in relevant_gates):
         return "reject", "Hay gates críticos en rojo."
 
@@ -336,11 +377,17 @@ def decide_final_action(
     if lock_breach:
         return "reject", "Se detectó breach en candados de estabilidad del rollback."
 
-    if repo_status["state"] != "green" or not rollback_evidence["evidence_available"]:
+    if (
+        repo_status["state"] != "green"
+        or not rollback_evidence["evidence_available"]
+        or governed_experimental_cycle["final_decision"] == "pause"
+    ):
         return "pause", "Se requiere pausa: árbol no limpio o evidencia de rollback no disponible."
 
-    if maturity_score["global_decision"] != "passed" or any(
-        gate["status"] == "attention" for gate in relevant_gates
+    if (
+        maturity_score["global_decision"] != "passed"
+        or governed_experimental_cycle["final_decision"] == "review"
+        or any(gate["status"] == "attention" for gate in relevant_gates)
     ):
         return "review", "Persisten señales de attention que requieren revisión antes de avanzar."
 
@@ -381,17 +428,20 @@ def build_dashboard() -> dict:
     component_passed = all(component["status"] == "passed" for component in components)
     repo_status = collect_repo_status()
     maturity_score = collect_maturity_score()
+    governed_experimental_cycle = collect_governed_experimental_cycle()
     relevant_gates = collect_relevant_gates()
     rollback_evidence = collect_rollback_evidence()
     current_risks = build_current_risks(
         repo_status=repo_status,
         maturity_score=maturity_score,
+        governed_experimental_cycle=governed_experimental_cycle,
         relevant_gates=relevant_gates,
         rollback_evidence=rollback_evidence,
     )
     final_decision, decision_reason = decide_final_action(
         repo_status=repo_status,
         maturity_score=maturity_score,
+        governed_experimental_cycle=governed_experimental_cycle,
         relevant_gates=relevant_gates,
         rollback_evidence=rollback_evidence,
     )
@@ -418,6 +468,7 @@ def build_dashboard() -> dict:
         "components_all_passed": component_passed,
         "repo_status": repo_status,
         "maturity_score": maturity_score,
+        "governed_experimental_cycle": governed_experimental_cycle,
         "relevant_gates": relevant_gates,
         "current_risks": current_risks,
         "rollback_evidence": rollback_evidence,
@@ -456,6 +507,16 @@ def write_outputs(dashboard: dict) -> None:
     md.append("- Score v1: `{}`".format(maturity["score_v1"]))
     md.append("- Dimensiones en attention/future/missing: `{}`".format(len(maturity["attention_dimensions"])))
     md.append("- Fuente: `{}`".format(maturity["output"]))
+    md.append("")
+    md.append("## Ciclo experimental gobernado")
+    md.append("")
+    cycle = dashboard["governed_experimental_cycle"]
+    md.append("- Estado: `{}`".format(cycle["status"]))
+    md.append("- Decisión final: `{}`".format(cycle["final_decision"]))
+    md.append("- Madurez por fase: `{}`".format(cycle["phase_maturity_status"]))
+    md.append("- Admisión gobernada: `{}`".format(cycle["governed_admission_status"]))
+    md.append("- Riesgos registrados: `{}`".format(cycle["risk_count"]))
+    md.append("- Fuente: `{}`".format(cycle["output"]))
     md.append("")
     md.append("## Gates relevantes")
     md.append("")

@@ -6,6 +6,7 @@ Traducir gobernanza, madurez experimental y operación completa de E.C.O. a un m
 ## Alcance
 - Auditoría técnica-operativa sintética.
 - Evidencia documental y de scripts existentes.
+- Integración del ciclo experimental gobernado.
 - Decisión global de estado: `passed` o `attention`.
 
 ## Qué no evalúa
@@ -28,9 +29,34 @@ Cada dimensión debe declarar:
 - nombre;
 - propósito;
 - evidencia esperada;
-- estado (`passed | attention | missing | future`);
+- estado (`passed | attention | missing | future | blocked`);
 - explicación breve;
 - límite responsable asociado.
+
+## Ciclo experimental gobernado
+
+El score reconoce como evidencia operacional el runner:
+
+```text
+scripts/run_eco_governed_experimental_cycle.py
+```
+
+Este runner conecta:
+
+- madurez por fase;
+- admisión gobernada;
+- gates evaluados;
+- riesgos;
+- rollback visible;
+- límites responsables;
+- decisión final `advance | pause | review | reject`.
+
+Salidas:
+
+```text
+results/eco_governed_experimental_cycle.json
+results/eco_governed_experimental_cycle.md
+```
 
 ## Criterio de decisión global
 - `passed`: todas las dimensiones en `passed`.

@@ -179,6 +179,26 @@ Estado esperado del panel operativo:
 Este snapshot mantiene límites responsables: sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales y sin afirmaciones biomédicas aplicadas.
 
 
+## Ciclo experimental gobernado
+
+Referencia: `docs/operations/eco-governed-experimental-cycle.md`.
+
+Runner:
+
+```bash
+.venv/bin/python scripts/run_eco_governed_experimental_cycle.py
+```
+
+Salidas:
+
+- `results/eco_governed_experimental_cycle.json`
+- `results/eco_governed_experimental_cycle.md`
+
+El ciclo conecta madurez por fase, admisión gobernada, gates, riesgos, rollback visible, límites responsables y decisión final `advance | pause | review | reject`.
+
+Límites preservados: sin datos reales, sin entrenamiento, sin datos sensibles, sin diagnóstico, sin interpretación clínica, sin cambios de baseline, sin recalibración de umbrales, sin conciencia y sin libre albedrío real.
+
+
 ## Checklist de liberación de sprint
 
 Referencia: `docs/operations/eco-sprint-release-checklist.md`.
