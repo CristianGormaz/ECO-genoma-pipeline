@@ -30,10 +30,21 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 
 - docs/operations/terminal-stop-guide.md: guía para saber cuándo detenerse.
 - docs/operations/project-map.md: este mapa operativo.
+- docs/operations/eco-real-biological-data-maturity-manual.md: documento de frontera para definir madurez futura antes de cualquier regla de admisión de datos reales biológicos.
 - docs/research/eco-research-index.md: índice de investigación E.C.O.
 - docs/architecture/eco-synthetic-demos-index.md: índice de demos sintéticas y sus validaciones.
 - docs/architecture/eco-synthetic-data-contract.md: contrato mínimo para datos sintéticos y trazas de simulación.
 - scripts/run_eco_status.py: inspección rápida del estado del repositorio.
+
+## Frontera para datos reales biológicos
+
+- Manual: docs/operations/eco-real-biological-data-maturity-manual.md.
+- Tipo: capacidad documental de frontera.
+- Alcance: define condiciones futuras de madurez antes de implementar reglas de admisión.
+- Límite: no habilita uso de datos reales y no autoriza procesamiento de datos reales por sí mismo.
+- Control: cualquier avance futuro requiere revisión humana, evidencia auditable y rollback.
+- Siguiente avance posible: schema o dry-run gate documental/técnico; no datos reales.
+- Estado: no es una compuerta funcional activa.
 
 ## Límite responsable
 
