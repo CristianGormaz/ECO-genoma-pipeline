@@ -24,6 +24,8 @@ ARTIFACTS = (
     "results/eco_agentic_scaffold_proposal_registry_report.md",
     "results/eco_synthetic_operational_dashboard.json",
     "results/eco_synthetic_operational_dashboard.md",
+    "results/eco_governed_experimental_cycle.json",
+    "results/eco_governed_experimental_cycle.md",
     "results/eco_laos_agency_demo.json",
     "results/eco_laos_agency_demo.md",
     "results/eco_laos_governance_gate_demo.json",

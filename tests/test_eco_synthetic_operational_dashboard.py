@@ -18,7 +18,7 @@ def test_synthetic_operational_dashboard_runs():
     assert payload["status"] in {"passed", "attention", "red"}
     assert payload["classification"] in {"allowed", "conditional", "attention_required", "blocked"}
     assert payload["final_decision"] in {"advance", "pause", "review", "reject"}
-    assert payload["component_count"] == 9
+    assert payload["component_count"] == 10
     assert isinstance(payload["components_all_passed"], bool)
     assert payload["components_all_passed"] is True
     assert "datos sintéticos" in payload["limit"]
@@ -35,6 +35,10 @@ def test_synthetic_operational_dashboard_runs():
     assert payload["maturity_score"]["global_decision"] in {"passed", "attention"}
     assert payload["maturity_score"]["score_v1"] >= 0.0
     assert payload["maturity_score"]["score_v1"] <= 1.0
+    assert payload["governed_experimental_cycle"]["status"] in {"passed", "attention", "missing", "red"}
+    assert payload["governed_experimental_cycle"]["final_decision"] in {"advance", "pause", "review", "reject"}
+    assert payload["governed_experimental_cycle"]["phase_maturity_status"] == "passed"
+    assert payload["governed_experimental_cycle"]["governed_admission_status"] == "passed"
     gate_ids = {item["id"] for item in payload["relevant_gates"]}
     assert "source_admission_decision_summary" in gate_ids
     assert "sensitive_intake_gate" in gate_ids
@@ -56,12 +60,14 @@ def test_synthetic_operational_dashboard_runs():
     assert "governance panel" in labels
     assert "capabilities report" in labels
     assert "LAOS Governance Gate" in labels
+    assert "governed experimental cycle" in labels
     statuses = {component["status"] for component in payload["components"]}
     assert statuses == {"passed"}
     md = MD_OUTPUT.read_text(encoding="utf-8")
     assert "E.C.O. synthetic operational dashboard" in md
     assert "Repo / eco-status" in md
     assert "Score de madurez" in md
+    assert "Ciclo experimental gobernado" in md
     assert "Gates relevantes" in md
     assert "Riesgos actuales" in md
     assert "Evidencia de rollback" in md
@@ -74,6 +80,7 @@ def test_synthetic_operational_dashboard_runs():
     assert "governance panel" in md
     assert "capabilities report" in md
     assert "LAOS Governance Gate" in md
+    assert "governed experimental cycle" in md
     assert "advance" in md
     assert "pause" in md
     assert "review" in md
@@ -142,3 +149,14 @@ def test_synthetic_operational_dashboard_includes_end_to_end_operational_fields(
     assert "pause" in text
     assert "review" in text
     assert "reject" in text
+
+
+def test_synthetic_operational_dashboard_includes_governed_experimental_cycle():
+    text = SCRIPT.read_text(encoding="utf-8")
+
+    assert "governed_experimental_cycle" in text
+    assert "scripts/run_eco_governed_experimental_cycle.py" in text
+    assert "eco_governed_experimental_cycle.json" in text
+    assert 'Path("results/eco_governed_experimental_cycle.json")' in text
+    assert "phase_maturity_status" in text
+    assert "governed_admission_status" in text

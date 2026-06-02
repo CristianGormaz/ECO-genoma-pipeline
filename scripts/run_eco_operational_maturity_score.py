@@ -16,8 +16,14 @@ RESULTS_DIR = Path("results")
 OUTPUT_JSON = RESULTS_DIR / "eco_operational_maturity_score.json"
 OUTPUT_MD = RESULTS_DIR / "eco_operational_maturity_score.md"
 
-ALLOWED_STATES = {"passed", "attention", "missing", "future"}
-STATE_POINTS = {"passed": 1.0, "attention": 0.5, "missing": 0.0, "future": 0.25}
+ALLOWED_STATES = {"passed", "attention", "missing", "future", "blocked"}
+STATE_POINTS = {
+    "passed": 1.0,
+    "attention": 0.5,
+    "missing": 0.0,
+    "future": 0.25,
+    "blocked": 0.0,
+}
 
 GLOBAL_LIMIT = (
     "evaluación sintética de madurez operativa; sin datos reales; sin entrenamiento; "
@@ -216,21 +222,23 @@ def build_dimensions() -> list[MaturityDimension]:
             name="Madurez por fase",
             purpose="Revisar si hay criterios por fase para detener, pausar o permitir evolución controlada.",
             evidence_expected=[
-                "manual de madurez con semáforo",
-                "protocolo de admisión por fases y compuertas",
+                "matriz operacional por fase",
+                "fases draft/synthetic/governed_experimental/stable_candidate/blocked",
+                "runner del ciclo experimental gobernado",
             ],
             checks=[
                 _check_file("docs/operations/eco-real-biological-data-maturity-manual.md"),
                 _check_token("docs/operations/eco-real-biological-data-maturity-manual.md", "semáforo de madurez"),
                 _check_file("docs/operations/eco-real-biological-data-admission-protocol.md"),
                 _check_token("docs/operations/eco-real-biological-data-admission-protocol.md", "compuertas mínimas"),
+                _check_file("scripts/run_eco_governed_experimental_cycle.py"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "draft"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "synthetic"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "governed_experimental"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "stable_candidate"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "blocked"),
             ],
             responsible_limit="criterios de fase documentales; no implican habilitación de datos reales.",
-            forced_state="future",
-            forced_explanation=(
-                "La base documental por fases existe, pero aún falta convertirla en score de fase integrado "
-                "al flujo operativo automatizado."
-            ),
         ),
         _build_dimension(
             dimension_id="robust_simulation",
@@ -301,13 +309,16 @@ def build_dimensions() -> list[MaturityDimension]:
                 _check_file("tests/test_eco_source_admission_decision_summary.py"),
                 _check_token("scripts/run_eco_source_admission_decision_summary.py", "paused_until_explicit_review"),
                 _check_file("docs/architecture/eco-real-data-readiness-gate.md"),
+                _check_file("scripts/run_eco_governed_experimental_cycle.py"),
+                _check_file("tests/test_eco_governed_experimental_cycle.py"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "governed_admission"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "intake_gate"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "source_guard"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "rollback_visibility"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "responsible_limits"),
+                _check_token("scripts/run_eco_governed_experimental_cycle.py", "final_decision"),
             ],
             responsible_limit="admisión condicionada y bloqueada por defecto; sin uso real aplicado.",
-            forced_state="attention",
-            forced_explanation=(
-                "La admisión gobernada existe y está trazada, pero la conexión directa a decisiones "
-                "operativas de avance/pausa en todo el flujo aún es parcial."
-            ),
         ),
     ]
 
@@ -360,7 +371,7 @@ def to_markdown(report: dict[str, Any]) -> str:
         "## Conteo por estado",
         "",
     ]
-    for state in ("passed", "attention", "missing", "future"):
+    for state in ("passed", "attention", "missing", "future", "blocked"):
         lines.append(f"- `{state}`: {report['state_counts'].get(state, 0)}")
 
     lines.extend(

@@ -37,7 +37,7 @@ def test_operational_maturity_score_contract_v1() -> None:
     assert ids == expected_ids
 
     for item in report["dimensions"]:
-        assert item["state"] in {"passed", "attention", "missing", "future"}
+        assert item["state"] in {"passed", "attention", "missing", "future", "blocked"}
         assert item["purpose"]
         assert item["evidence_expected"]
         assert item["responsible_limit"]
@@ -48,17 +48,18 @@ def test_operational_maturity_score_contract_v1() -> None:
     assert boundary["biomedical_applied_claims_evaluated"] is False
 
 
-def test_operational_maturity_score_v1_current_decision_is_attention() -> None:
+def test_operational_maturity_score_v1_current_decision_is_passed() -> None:
     report = build_report()
     states = {item["dimension_id"]: item["state"] for item in report["dimensions"]}
 
     assert states["maturity_score"] == "passed"
     assert states["end_to_end_panel"] == "passed"
-    assert states["phase_maturity"] == "future"
+    assert states["phase_maturity"] == "passed"
     assert states["visible_rollback"] == "passed"
-    assert states["governed_admission"] == "attention"
-    assert report["global_decision"] == "attention"
-    assert report["classification"] == "attention_required"
+    assert states["governed_admission"] == "passed"
+    assert report["global_decision"] == "passed"
+    assert report["classification"] == "allowed"
+    assert report["maturity_score_v1"] == 1.0
 
 
 def test_operational_maturity_score_script_writes_outputs() -> None:
@@ -81,6 +82,9 @@ def test_operational_maturity_score_script_writes_outputs() -> None:
     assert payload["global_decision"] in {"passed", "attention"}
     assert payload["status"] == payload["global_decision"]
     assert payload["classification"] in {"allowed", "attention_required"}
+    assert payload["global_decision"] == "passed"
+    assert payload["classification"] == "allowed"
+    assert payload["maturity_score_v1"] == 1.0
     assert payload["maturity_score_v1"] >= 0.0
     assert payload["maturity_score_v1"] <= 1.0
     assert "matriz de madurez" in markdown
