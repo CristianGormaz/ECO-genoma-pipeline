@@ -1,92 +1,95 @@
 # E.C.O. — Real Biological Data Admission Dry-Run Gate
 
-## Qué es
+## Estado del documento
 
-La compuerta dry-run de admisión para datos reales biológicos evalúa manifiestos descriptivos de intención antes de cualquier procesamiento.
+- Documental y técnico dry-run.
+- No habilita datos reales.
+- No aprueba procesamiento real.
+- No reemplaza revisión humana.
+- No descarga ni lee datos reales.
 
-Su función es verificar si E.C.O. puede rechazar, pausar, auditar y explicar un intento de uso antes de exponer el sistema a datos reales.
+## Propósito
 
-## Qué evalúa
+Esta compuerta evalúa manifiestos descriptivos antes de cualquier contacto con datos reales biológicos.
 
-- manifiesto de fuente;
-- clasificación de sensibilidad;
-- licencia o permiso;
-- decisión humana;
-- límites interpretativos;
-- rollback;
-- evidencia auditable;
-- criterios estrictos para una validación técnica limitada futura.
+Su objetivo es producir una decisión auditable desde intención, evidencia y límites responsables, sin abrir archivos de datos, sin descargar fuentes externas y sin interpretar contenido biológico.
 
-## Qué NO hace
+## Principio central
 
-- No lee datos reales.
-- No descarga URLs.
-- No abre archivos de secuencias, variantes, BED, FASTA o VCF.
-- No parsea contenido biológico.
-- No interpreta variantes.
-- No entrena modelos.
-- No modifica baseline.
-- No recalibra umbrales.
-- No habilita uso clínico.
+E.C.O. no está maduro cuando puede leer datos reales.
 
-## Relación con el Manual de Madurez
+E.C.O. está maduro cuando puede rechazar, pausar, auditar y explicar cualquier intento antes de procesarlo.
 
-Esta compuerta implementa una primera fase técnica limitada derivada del Manual de Madurez para Datos Reales Biológicos.
+## Entradas permitidas
 
-El manual define el principio: E.C.O. no está maduro cuando puede leer datos reales; E.C.O. está maduro cuando puede rechazar, pausar, auditar y explicar cualquier intento de uso antes de procesarlo.
-
-El dry-run no reemplaza revisión humana, no autoriza procesamiento por sí mismo y no declara que E.C.O. esté listo para datos reales.
+- Solo manifiestos JSON descriptivos.
+- No datasets.
+- No FASTA.
+- No BED.
+- No archivos genómicos.
+- No datos clínicos.
+- No URLs descargadas.
+- No fuentes externas leídas.
 
 ## Estados de decisión
 
-- `blocked`: existe una condición que impide avanzar.
-- `paused`: falta evidencia crítica no humana.
-- `requires_human_review`: falta revisión o decisión humana.
-- `limited_allowed`: el manifiesto cumple criterios de validación técnica limitada futura.
-- `rejected`: falta base mínima de manifiesto o el manifiesto no es válido.
+- `blocked`.
+- `paused`.
+- `requires_human_review`.
+- `limited_allowed`.
+- `rejected`.
 
-## Evidencia mínima
+## Reglas de decisión
 
-- manifiesto de fuente;
-- clasificación de sensibilidad;
-- licencia o permiso;
-- decisión humana;
-- límites interpretativos;
-- rollback;
-- evidencia auditable.
+La compuerta aplica reglas mínimas de admisión dry-run:
 
-## Criterios para `limited_allowed`
+- si faltan campos requeridos del schema, la decisión es `rejected`;
+- si `readiness_decision` es `block`, la decisión es `blocked`;
+- si `sensitivity_classification` es `bloqueado`, la decisión es `blocked`;
+- si `source_kind` es `private` o `sensitive`, la decisión es `blocked`;
+- si `contains_identifiable_people` es `true`, la decisión es `blocked`;
+- si `contains_clinical_data` es `true`, la decisión es `blocked`;
+- si cualquier límite responsable inseguro aparece en `true`, la decisión es `blocked`;
+- si `readiness_decision` es `review`, la decisión es `requires_human_review`;
+- si `sensitivity_classification` es `condicional`, la decisión es `requires_human_review`;
+- si `contains_genetic_data` es `true`, la decisión es `requires_human_review`, salvo que otra regla más estricta bloquee;
+- si todo está permitido, público o no sensible, sin identificadores, sin clínica, sin datos genéticos, con límites seguros, revisión humana, rollback, límites interpretativos, evidencia auditable y validación técnica limitada, la decisión es `limited_allowed`.
 
-`limited_allowed` solo puede aparecer si el manifiesto declara:
+`limited_allowed` significa solo: manifiesto descriptivo elegible para revisión técnica limitada futura. No significa permiso para leer, descargar, procesar ni interpretar datos reales.
 
-- fuente pública;
-- no humano o de bajo riesgo;
-- licencia clara;
-- sin identificadores personales;
-- sin finalidad clínica;
-- revisión humana;
-- rollback;
-- límites interpretativos;
-- validación técnica limitada;
-- evidencia auditable.
+## Reportes generados
 
-Esta decisión no autoriza uso clínico, interpretación biomédica aplicada, entrenamiento ni procesamiento general de datos reales.
+- `results/eco_real_biological_data_admission_dry_run_report.json`.
+- `results/eco_real_biological_data_admission_dry_run_report.md`.
 
 ## Límites responsables
 
-- sin datos reales;
+- sin lectura de datos reales;
+- sin descarga de datos reales;
+- sin ingestión de datos reales;
+- sin procesamiento de secuencias;
 - sin entrenamiento;
-- sin datos sensibles;
+- sin modificación de baseline;
+- sin recalibración de umbrales;
 - sin diagnóstico;
 - sin interpretación clínica;
 - sin riesgo genético individual;
-- sin baseline changes;
-- sin threshold recalibration;
+- sin afirmaciones biomédicas aplicadas;
+- sin autonomía real;
 - sin conciencia;
 - sin libre albedrío real.
 
-## Siguiente fase futura posible
+## Relación con documentos existentes
 
-Una fase futura podría conectar este dry-run con un schema de manifiesto más estricto o con reportes operativos adicionales.
+- Manual de Madurez: `docs/operations/eco-real-biological-data-maturity-manual.md`.
+- Protocolo de Admisión: `docs/operations/eco-real-biological-data-admission-protocol.md`.
+- Real Data Source Manifest Schema: `docs/architecture/eco-real-data-source-manifest-schema.json`.
+- Real Data Source Manifest Validator: `scripts/validate_eco_real_data_source_manifest.py`.
 
-Esa fase futura seguiría sin habilitar datos reales por sí misma y requeriría revisión humana, evidencia auditable y rollback.
+## Uso futuro
+
+Este dry-run sirve solo como evidencia previa de revisión.
+
+No aprueba admisión real. No habilita ingestión, descarga, lectura, procesamiento, entrenamiento ni interpretación de datos reales.
+
+Cualquier avance posterior requiere revisión humana explícita y un sprint separado.

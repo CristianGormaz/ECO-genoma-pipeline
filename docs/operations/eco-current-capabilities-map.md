@@ -92,6 +92,23 @@ Este protocolo no habilita uso de datos reales, no aprueba procesamiento de dato
 
 En esta fase preserva límites responsables: sin datos reales en esta fase, sin ingestión de datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales, sin diagnóstico, sin interpretación clínica, sin riesgo genético individual, sin afirmaciones biomédicas aplicadas, sin autonomía real, sin conciencia y sin libre albedrío real.
 
+## Real Biological Data Admission Dry-Run Gate
+
+E.C.O. enlaza **Real Biological Data Admission Dry-Run Gate** como compuerta técnica dry-run en `scripts/run_eco_real_biological_data_admission_dry_run.py`.
+
+La compuerta evalúa manifiestos descriptivos, usa el schema de manifiesto de fuente como referencia estructural y genera reporte auditable en JSON/Markdown.
+
+Documentación operativa: `docs/operations/eco-real-biological-data-admission-dry-run.md`.
+
+Salidas generadas:
+
+- `results/eco_real_biological_data_admission_dry_run_report.json`;
+- `results/eco_real_biological_data_admission_dry_run_report.md`.
+
+Esta capacidad no lee, no descarga, no procesa y no interpreta datos reales. Tampoco aprueba admisión real, entrenamiento, cambios de baseline, recalibración de umbrales ni afirmaciones biomédicas aplicadas.
+
+Cualquier avance posterior requiere revisión humana, evidencia auditable, rollback y sprint separado.
+
 ## Capacidades de dashboard/reportes
 
 El dashboard sintético operativo con 7 componentes está establecido como vista de control del estado operativo.

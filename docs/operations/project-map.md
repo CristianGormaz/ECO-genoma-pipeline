@@ -33,6 +33,7 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 - docs/operations/eco-technical-blueprint.md: plano técnico de orientación para entender arquitectura, capas, inspiración S.N.E., componentes y límites.
 - docs/operations/eco-operational-blueprint.md: plano operativo de orientación para entrar, entender, avanzar, pausar, validar, recuperar y cerrar ciclos sin romper E.C.O.
 - docs/operations/eco-real-biological-data-maturity-manual.md: documento de frontera para definir madurez futura antes de cualquier regla de admisión de datos reales biológicos.
+- docs/operations/eco-real-biological-data-admission-dry-run.md: compuerta dry-run para evaluar manifiestos descriptivos sin leer, descargar, procesar ni interpretar datos reales.
 - docs/research/eco-research-index.md: índice de investigación E.C.O.
 - docs/architecture/eco-synthetic-demos-index.md: índice de demos sintéticas y sus validaciones.
 - docs/architecture/eco-synthetic-data-contract.md: contrato mínimo para datos sintéticos y trazas de simulación.
@@ -50,12 +51,15 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 ## Frontera para datos reales biológicos
 
 - Manual: docs/operations/eco-real-biological-data-maturity-manual.md.
+- Dry-run gate: docs/operations/eco-real-biological-data-admission-dry-run.md.
 - Tipo: capacidad documental de frontera.
 - Alcance: define condiciones futuras de madurez antes de implementar reglas de admisión.
 - Límite: no habilita uso de datos reales y no autoriza procesamiento de datos reales por sí mismo.
 - Control: cualquier avance futuro requiere revisión humana, evidencia auditable y rollback.
-- Siguiente avance posible: schema o dry-run gate documental/técnico; no datos reales.
-- Estado: no es una compuerta funcional activa.
+- Dry-run: Real Biological Data Admission Dry-Run Gate evalúa manifiestos descriptivos y genera reporte auditable.
+- Manual: no es una compuerta funcional activa.
+- Siguiente avance posible de frontera: schema o dry-run gate; no datos reales.
+- Estado: no lee, no descarga, no procesa y no interpreta datos reales; no aprueba admisión real.
 
 ## Límite responsable
 
