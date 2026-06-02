@@ -13,6 +13,9 @@ def test_real_biological_data_maturity_manual_exists_and_states_status():
         "Manual de Madurez para Datos Reales Biológicos",
         "no habilita uso de datos reales",
         "no aprueba procesamiento de datos reales por sí mismo",
+        "No incluye instrucciones para procesar datos reales",
+        "No sugiere datasets reales concretos",
+        "No crea endpoints, scripts, schemas ni validadores funcionales",
         "rechazar, pausar, auditar y explicar",
         "dato real biológico",
     ]
@@ -114,6 +117,7 @@ def test_real_biological_data_maturity_manual_has_no_executable_code_blocks():
     content = DOC.read_text(encoding="utf-8")
 
     forbidden_tokens = [
+        "```",
         "```python",
         "```bash",
         "```sh",

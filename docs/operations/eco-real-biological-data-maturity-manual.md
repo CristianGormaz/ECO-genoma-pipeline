@@ -9,6 +9,9 @@ Este manual define un criterio documental de madurez para evaluar cuándo E.C.O.
 - no habilita uso de datos reales.
 - no aprueba procesamiento de datos reales por sí mismo.
 - Pendiente de futuras fases técnicas.
+- No incluye instrucciones para procesar datos reales.
+- No sugiere datasets reales concretos.
+- No crea endpoints, scripts, schemas ni validadores funcionales.
 
 ## Propósito
 
