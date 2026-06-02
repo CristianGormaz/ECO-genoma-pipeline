@@ -59,6 +59,7 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 - Control: cualquier avance futuro requiere revisión humana, evidencia auditable y rollback.
 - Dry-run: Real Biological Data Admission Dry-Run Gate evalúa manifiestos descriptivos y genera reporte auditable.
 - Comando: make eco-real-biological-data-admission-dry-run.
+- Chequeo operativo: integrado en make eco-check.
 - Manual: no es una compuerta funcional activa.
 - Siguiente avance posible de frontera: schema o dry-run gate; no datos reales.
 - Estado: no lee, no descarga, no procesa y no interpreta datos reales; no aprueba admisión real.

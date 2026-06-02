@@ -104,6 +104,10 @@ Comando operativo estándar:
 
 - `make eco-real-biological-data-admission-dry-run`.
 
+Integración operacional:
+
+- Forma parte de `make eco-check` como validación seca de manifiestos descriptivos.
+
 Salidas generadas:
 
 - `results/eco_real_biological_data_admission_dry_run_report.json`;

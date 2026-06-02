@@ -119,6 +119,8 @@ Comando operativo:
 
 Uso: ejecutar la compuerta dry-run de admisión sobre manifiestos descriptivos.
 
+Estado operacional: forma parte de `make eco-check`.
+
 Salidas:
 
 - `results/eco_real_biological_data_admission_dry_run_report.json`;
