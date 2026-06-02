@@ -70,6 +70,12 @@ El comando operativo estándar es:
 
 Este comando ejecuta solo el dry-run sobre un manifiesto descriptivo seguro por defecto, genera JSON/Markdown en `results/` y no requiere argumentos obligatorios.
 
+Además, la compuerta queda incluida en:
+
+`make eco-check`
+
+`make eco-check-clean` ejecuta `make eco-check` y luego limpia los artefactos generados en `results/`.
+
 El comando no lee datos reales, no descarga datos reales, no procesa secuencias, no interpreta datos biológicos y no aprueba admisión real.
 
 Cualquier avance posterior requiere revisión humana explícita y un sprint separado.

@@ -539,6 +539,7 @@ eco-check:
 	$(MAKE) eco-status
 	$(MAKE) eco-governance-panel
 	$(MAKE) eco-validate-real-data-source-manifest
+	$(MAKE) eco-real-biological-data-admission-dry-run
 	$(MAKE) eco-validate-operational-state-examples
 	$(MAKE) eco-operational-state-examples-report
 	$(MAKE) eco-validate-synthetic-demos
