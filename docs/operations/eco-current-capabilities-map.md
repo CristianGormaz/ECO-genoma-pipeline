@@ -100,6 +100,10 @@ La compuerta evalúa manifiestos descriptivos, usa el schema de manifiesto de fu
 
 Documentación operativa: `docs/operations/eco-real-biological-data-admission-dry-run.md`.
 
+Comando operativo estándar:
+
+- `make eco-real-biological-data-admission-dry-run`.
+
 Salidas generadas:
 
 - `results/eco_real_biological_data_admission_dry_run_report.json`;

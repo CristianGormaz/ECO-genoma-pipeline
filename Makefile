@@ -580,6 +580,10 @@ eco-operational-state-examples-report:
 eco-validate-real-data-source-manifest:
 	python3 scripts/validate_eco_real_data_source_manifest.py
 
+.PHONY: eco-real-biological-data-admission-dry-run
+eco-real-biological-data-admission-dry-run:
+	python3 scripts/run_eco_real_biological_data_admission_dry_run.py
+
 
 # E.C.O. operational panel index
 .PHONY: eco-operational-panel-index
