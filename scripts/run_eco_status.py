@@ -9,11 +9,24 @@ def run_git(args: list[str]) -> str:
     return result.stdout.strip()
 
 
-def build_quick_reading(*, clean: bool, on_main: bool) -> str:
-    if clean and on_main:
+def is_synced_with_origin_main(*, head: str, origin_main: str) -> bool:
+    return bool(head and origin_main and head == origin_main)
+
+
+def compute_operational_state(*, clean: bool, on_main: bool, synced: bool) -> str:
+    return "green" if clean and on_main and synced else "attention"
+
+
+def build_quick_reading(*, clean: bool, on_main: bool, synced: bool) -> str:
+    if clean and on_main and synced:
         return (
             "Semáforo verde: puedes detenerte aquí. Para iniciar un nuevo sprint, "
             "crea una rama nueva desde main antes de modificar archivos."
+        )
+    if clean and on_main:
+        return (
+            "Atención: estás en main, pero HEAD no coincide con origin/main. "
+            "Sincroniza antes de declarar estado green."
         )
     if clean:
         return (
@@ -26,16 +39,15 @@ def build_quick_reading(*, clean: bool, on_main: bool) -> str:
 def main() -> int:
     branch = run_git(["branch", "--show-current"]) or "desconocida"
     status_short = run_git(["status", "--short"])
-    status_full = run_git(["status", "--branch", "--short"])
     last_commit = run_git(["log", "--oneline", "--decorate", "-1"])
     origin_main = run_git(["rev-parse", "--short", "origin/main"])
     head = run_git(["rev-parse", "--short", "HEAD"])
 
     clean = status_short == ""
     on_main = branch == "main"
-    synced_hint = "origin/main" in status_full or "main" in status_full
+    synced = is_synced_with_origin_main(head=head, origin_main=origin_main)
 
-    state = "green" if clean else "attention"
+    state = compute_operational_state(clean=clean, on_main=on_main, synced=synced)
 
     lines = [
         "# E.C.O. status operativo",
@@ -47,12 +59,13 @@ def main() -> int:
         f"- Último commit: {last_commit}",
         f"- Árbol limpio: {clean}",
         f"- En main: {on_main}",
+        f"- Sincronizado con origin/main: {synced}",
         "",
         "## Lectura rápida",
         "",
     ]
 
-    lines.append(build_quick_reading(clean=clean, on_main=on_main))
+    lines.append(build_quick_reading(clean=clean, on_main=on_main, synced=synced))
 
     lines.extend([
         "",

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import importlib.util
 import subprocess
 import sys
 from pathlib import Path
@@ -157,7 +158,20 @@ def _run_git(args: list[str]) -> str:
     return _run(["git", *args]).stdout.strip()
 
 
+def _load_eco_status_module():
+    spec = importlib.util.spec_from_file_location(
+        "run_eco_status",
+        Path(__file__).with_name("run_eco_status.py"),
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec is not None
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
 def collect_repo_status() -> dict[str, Any]:
+    eco_status_module = _load_eco_status_module()
     eco_status = _run([sys.executable, "scripts/run_eco_status.py"])
     status_short = _run_git(["status", "--short"])
     branch = _run_git(["branch", "--show-current"]) or "desconocida"
@@ -165,7 +179,8 @@ def collect_repo_status() -> dict[str, Any]:
     origin_main = _run_git(["rev-parse", "--short", "origin/main"])
     tree_clean = status_short == ""
     on_main = branch == "main"
-    state = "green" if tree_clean else "attention"
+    synced = eco_status_module.is_synced_with_origin_main(head=head, origin_main=origin_main)
+    state = eco_status_module.compute_operational_state(clean=tree_clean, on_main=on_main, synced=synced)
 
     return {
         "state": state,
@@ -174,6 +189,7 @@ def collect_repo_status() -> dict[str, Any]:
         "origin_main": origin_main,
         "tree_clean": tree_clean,
         "on_main": on_main,
+        "synced": synced,
         "eco_status_returncode": eco_status.returncode,
         "eco_status_source": "scripts/run_eco_status.py",
         "eco_status_excerpt": "\n".join(eco_status.stdout.splitlines()[:12]),
@@ -328,7 +344,10 @@ def build_current_risks(
 ) -> list[str]:
     risks: list[str] = []
     if repo_status["state"] != "green":
-        risks.append("El repositorio no está limpio; se recomienda pausar avance hasta cerrar cambios.")
+        risks.append(
+            "El repositorio no cumple la condición clean + main + synced; "
+            "se recomienda pausar avance hasta recuperar ese estado."
+        )
     if maturity_score["global_decision"] != "passed":
         risks.append(
             "El score de madurez sigue en attention; faltan integraciones completas en "
@@ -382,7 +401,10 @@ def decide_final_action(
         or not rollback_evidence["evidence_available"]
         or governed_experimental_cycle["final_decision"] == "pause"
     ):
-        return "pause", "Se requiere pausa: árbol no limpio o evidencia de rollback no disponible."
+        return (
+            "pause",
+            "Se requiere pausa: el repo no cumple clean + main + synced o la evidencia de rollback no está disponible.",
+        )
 
     if (
         maturity_score["global_decision"] != "passed"
@@ -499,6 +521,7 @@ def write_outputs(dashboard: dict) -> None:
     md.append("| origin_main | `{}` |".format(repo_status["origin_main"]))
     md.append("| tree_clean | `{}` |".format(repo_status["tree_clean"]))
     md.append("| on_main | `{}` |".format(repo_status["on_main"]))
+    md.append("| synced | `{}` |".format(repo_status["synced"]))
     md.append("")
     md.append("## Score de madurez")
     md.append("")
