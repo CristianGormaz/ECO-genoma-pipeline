@@ -15,7 +15,7 @@ def test_sne_metrics_from_stable_enteric_system():
     assert metrics.needs_attention is False
 
 
-def test_sne_metrics_detect_attention_state():
+def test_sne_metrics_detect_overload_state():
     system = EntericSystem()
     system.process_dna_sequence("ACGTXYZ", source="bad_one")
     system.process_dna_sequence("TTTXYZ", source="bad_two")
@@ -24,9 +24,9 @@ def test_sne_metrics_detect_attention_state():
 
     assert metrics.total_packets == 2
     assert metrics.immune_load == 1.0
-    assert metrics.homeostasis_state == "attention"
+    assert metrics.homeostasis_state == "overload"
     assert metrics.needs_attention is True
-    assert any("Alta respuesta inmune" in note for note in metrics.notes)
+    assert any("Sobrecarga defensiva" in note for note in metrics.notes)
 
 
 def test_describe_enteric_layers_returns_expected_architecture_names():
