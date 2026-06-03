@@ -586,6 +586,10 @@ eco-validate-real-data-source-manifest:
 eco-real-biological-data-admission-dry-run:
 	$(PY) scripts/run_eco_real_biological_data_admission_dry_run.py
 
+.PHONY: eco-real-biological-data-admission-dry-run-trace-report
+eco-real-biological-data-admission-dry-run-trace-report:
+	$(PY) scripts/run_eco_real_biological_data_admission_dry_run_trace_report.py
+
 
 # E.C.O. operational panel index
 .PHONY: eco-operational-panel-index
