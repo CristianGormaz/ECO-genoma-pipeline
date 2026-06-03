@@ -74,14 +74,14 @@ def normalize_text(value: str) -> str:
 def classify_clinical_significance(clinical_significance: str) -> str:
     """Clasifica el significado clínico declarado por una fuente externa."""
     normalized = normalize_text(clinical_significance)
+    if normalized in CONFLICT_TERMS or "conflicting" in normalized:
+        return "evidencia_conflictiva"
     if normalized in PATHOGENIC_TERMS or "pathogenic" in normalized and "conflicting" not in normalized:
         return "alerta_clinica_alta"
     if normalized in BENIGN_TERMS or "benign" in normalized:
         return "probablemente_no_patogenica"
     if normalized in VUS_TERMS or "uncertain" in normalized:
         return "incertidumbre_clinica"
-    if normalized in CONFLICT_TERMS or "conflicting" in normalized:
-        return "evidencia_conflictiva"
     if normalized in RISK_TERMS or "risk" in normalized:
         return "factor_de_riesgo_no_determinista"
     if normalized in DRUG_TERMS or "drug" in normalized:

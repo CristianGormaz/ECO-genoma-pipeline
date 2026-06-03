@@ -39,6 +39,13 @@ def test_classify_clinical_significance_core_categories():
     assert classify_clinical_significance("Risk factor") == "factor_de_riesgo_no_determinista"
 
 
+def test_classify_clinical_significance_prioritizes_conflicting_over_benign():
+    assert (
+        classify_clinical_significance("Conflicting interpretations of pathogenicity and benign")
+        == "evidencia_conflictiva"
+    )
+
+
 def test_estimate_evidence_strength_from_review_status():
     assert estimate_evidence_strength("practice guideline") == "muy_alta"
     assert estimate_evidence_strength("reviewed by expert panel") == "alta"
