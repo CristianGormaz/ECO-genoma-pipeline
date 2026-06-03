@@ -28,6 +28,8 @@ ARTIFACTS = (
     "results/eco_governed_experimental_cycle.md",
     "results/eco_real_biological_data_admission_dry_run_report.json",
     "results/eco_real_biological_data_admission_dry_run_report.md",
+    "results/eco_real_biological_data_admission_dry_run_trace_report.json",
+    "results/eco_real_biological_data_admission_dry_run_trace_report.md",
     "results/eco_laos_agency_demo.json",
     "results/eco_laos_agency_demo.md",
     "results/eco_laos_governance_gate_demo.json",
