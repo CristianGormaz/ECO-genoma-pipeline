@@ -9,6 +9,20 @@ def run_git(args: list[str]) -> str:
     return result.stdout.strip()
 
 
+def build_quick_reading(*, clean: bool, on_main: bool) -> str:
+    if clean and on_main:
+        return (
+            "Semáforo verde: puedes detenerte aquí. Para iniciar un nuevo sprint, "
+            "crea una rama nueva desde main antes de modificar archivos."
+        )
+    if clean:
+        return (
+            "Atención: el árbol está limpio, pero no estás en main. "
+            "Cierra o integra la rama antes de iniciar otro objetivo."
+        )
+    return "Atención: hay cambios sin guardar. No cambies de sprint todavía."
+
+
 def main() -> int:
     branch = run_git(["branch", "--show-current"]) or "desconocida"
     status_short = run_git(["status", "--short"])
@@ -38,12 +52,7 @@ def main() -> int:
         "",
     ]
 
-    if clean and on_main:
-        lines.append("Semáforo verde: puedes detenerte o iniciar un nuevo sprint desde main.")
-    elif clean:
-        lines.append("Atención: el árbol está limpio, pero no estás en main. Cierra o integra la rama antes de iniciar otro objetivo.")
-    else:
-        lines.append("Atención: hay cambios sin guardar. No cambies de sprint todavía.")
+    lines.append(build_quick_reading(clean=clean, on_main=on_main))
 
     lines.extend([
         "",
