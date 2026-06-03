@@ -247,6 +247,54 @@ def collect_rollback_visibility() -> dict[str, Any]:
     }
 
 
+def _governed_admission_gate_state(gate: dict[str, Any]) -> str:
+    state = gate.get("state", "missing")
+    signal_values = [str(value).strip().lower() for value in gate.get("signals", {}).values()]
+    if state == "passed" and "requires_human_review" in signal_values:
+        return "attention"
+    return state
+
+
+def _governed_admission_gate_check(
+    *,
+    check_id: str,
+    gate_id: str,
+    explanation: str,
+    gate_by_id: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    gate = gate_by_id.get(gate_id, {})
+    state = _governed_admission_gate_state(gate)
+    return {
+        "id": check_id,
+        "state": state,
+        "evidence": gate.get("output"),
+        "explanation": explanation,
+    }
+
+
+def _responsible_limits_check() -> dict[str, Any]:
+    normalized_limits = [str(item).strip() for item in RESPONSIBLE_LIMITS if str(item).strip()]
+    required_limits = {
+        "sin datos reales",
+        "sin entrenamiento",
+        "sin datos sensibles",
+        "sin diagnóstico",
+        "sin interpretación clínica",
+    }
+    state = "passed" if normalized_limits and required_limits.issubset(set(normalized_limits)) else "missing"
+    explanation = (
+        "Listado documental de límites responsables presente; no es un gate operativo ejecutado."
+        if state == "passed"
+        else "Listado documental de límites responsables incompleto o ausente; no es un gate operativo ejecutado."
+    )
+    return {
+        "id": "responsible_limits",
+        "state": state,
+        "evidence": normalized_limits,
+        "explanation": explanation,
+    }
+
+
 def build_governed_admission(
     gates: list[dict[str, Any]],
     maturity_score: dict[str, Any],
@@ -259,12 +307,24 @@ def build_governed_admission(
     gate_by_id = {gate["id"]: gate for gate in gates}
 
     checks = [
-        {
-            "id": "intake_gate",
-            "state": gate_by_id.get("sensitive_intake_gate", {}).get("state", "missing"),
-            "evidence": gate_by_id.get("sensitive_intake_gate", {}).get("output"),
-            "explanation": "Gate de intake sensible conectado.",
-        },
+        _governed_admission_gate_check(
+            check_id="intake_gate",
+            gate_id="sensitive_intake_gate",
+            explanation="Gate de intake sensible conectado.",
+            gate_by_id=gate_by_id,
+        ),
+        _governed_admission_gate_check(
+            check_id="source_admission_decision_summary",
+            gate_id="source_admission_decision_summary",
+            explanation="Resumen de decisión de admisión de fuentes conectado.",
+            gate_by_id=gate_by_id,
+        ),
+        _governed_admission_gate_check(
+            check_id="governed_ml_evaluation_gate",
+            gate_id="governed_ml_evaluation_gate",
+            explanation="Gate de evaluación ML gobernada conectado.",
+            gate_by_id=gate_by_id,
+        ),
         {
             "id": "source_guard",
             "state": "passed" if all(item["state"] == "passed" for item in source_guard_checks) else "missing",
@@ -283,12 +343,7 @@ def build_governed_admission(
             "evidence": rollback_visibility["output"],
             "explanation": "Rollback visible y auditable.",
         },
-        {
-            "id": "responsible_limits",
-            "state": "passed" if all(RESPONSIBLE_LIMITS) else "missing",
-            "evidence": RESPONSIBLE_LIMITS,
-            "explanation": "Límites responsables explícitos.",
-        },
+        _responsible_limits_check(),
         {
             "id": "final_decision",
             "state": "passed",
@@ -304,13 +359,16 @@ def build_governed_admission(
     else:
         status = "passed"
 
+    degraded_checks = [item for item in checks if item["state"] in {"missing", "attention", "future", "blocked"}]
+    degraded_summary = ", ".join(f"{item['id']}={item['state']}" for item in degraded_checks)
+
     return {
         "status": status,
         "checks": checks,
         "explanation": (
             "Admisión gobernada conectada para operación experimental sintética."
             if status == "passed"
-            else "Admisión gobernada requiere revisión por evidencia parcial o bloqueada."
+            else f"Admisión gobernada requiere revisión por: {degraded_summary}."
         ),
     }
 
