@@ -189,6 +189,8 @@ def confidence_from_distances(distances: Dict[str, float]) -> float:
     if len(ordered) < 2:
         return 1.0
     best, second = ordered[0], ordered[1]
+    if best == second:
+        return 0.0
     if second == 0:
         return 1.0
     return round(min(max((second - best) / second, 0.0), 1.0), 4)

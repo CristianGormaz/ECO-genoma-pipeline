@@ -3,6 +3,7 @@ import json
 
 from src.eco_sequence_classifier import (
     build_classifier_report,
+    confidence_from_distances,
     extract_features,
     kmer_frequencies,
     parse_labeled_sequences_tsv,
@@ -35,6 +36,18 @@ def test_extract_features_motif_kmer_mode_adds_kmer_features():
     assert "kmer_2_AC" in features
     assert "kmer_2_TA" in features
     assert "kmer_2_GC" in features
+
+
+def test_confidence_from_distances_returns_zero_for_exact_tie():
+    confidence = confidence_from_distances({"regulatory": 0.0, "non_regulatory": 0.0})
+
+    assert confidence == 0.0
+
+
+def test_confidence_from_distances_preserves_non_ambiguous_margin():
+    confidence = confidence_from_distances({"regulatory": 1.0, "non_regulatory": 2.0})
+
+    assert confidence == 0.5
 
 
 def test_classifier_baseline_demo_dataset_runs_with_explicit_split():
