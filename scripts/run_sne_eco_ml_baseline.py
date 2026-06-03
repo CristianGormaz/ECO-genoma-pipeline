@@ -19,9 +19,142 @@ OUTPUT_MD = Path("results/sne_eco_ml_baseline_report.md")
 
 RESPONSIBLE_LIMIT = (
     "Baseline ML educativo/experimental S.N.E.-E.C.O.; "
-    "usa datos sintéticos/curados del pipeline; es no clínico, "
+    "sanity check con datos sintéticos/curados del pipeline; es no clínico, "
     "no diagnóstico, no forense, no modela conciencia humana, "
-    "no modifica reglas, baseline estable ni umbrales."
+    "no autoriza entrenamiento, no modifica reglas, baseline estable ni umbrales, "
+    "y no representa desempeño real."
+)
+
+EMBEDDED_FIXTURE_WARNING = (
+    "baseline sanity check con fixture sintético embebido; no entrenamiento autorizado"
+)
+
+FEATURE_POLICY = {
+    "predictive_features": ["source_text_token_similarity", "input_type_match"],
+    "excluded_from_prediction": [
+        "expected_decision",
+        "expected_state",
+        "expected_barrier",
+        "expected_motility",
+        "defense_category",
+    ],
+    "audit_only_fields": ["defense_category", "responsible_limit"],
+    "note": (
+        "defense_category se conserva solo para auditoría de límites responsables; "
+        "no participa en el puntaje predictivo."
+    ),
+}
+
+
+EMBEDDED_TRAIN_ROWS = [
+    {
+        "id": "embedded_train_valid_001",
+        "input_type": "sequence",
+        "source_text": "paquete válido sintético estable para absorción",
+        "expected_decision": "absorb",
+        "defense_category": "none",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+    {
+        "id": "embedded_train_valid_002",
+        "input_type": "sequence",
+        "source_text": "secuencia sintética válida con estructura suficiente",
+        "expected_decision": "absorb",
+        "defense_category": "none",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+    {
+        "id": "embedded_train_invalid_001",
+        "input_type": "sequence",
+        "source_text": "paquete sintético inválido con formato roto",
+        "expected_decision": "reject",
+        "defense_category": "invalid_payload",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+    {
+        "id": "embedded_train_invalid_002",
+        "input_type": "claim",
+        "source_text": "reclamo diagnóstico humano prohibido",
+        "expected_decision": "reject",
+        "defense_category": "forbidden_diagnostic_claim",
+        "responsible_limit": "reject_clinical_diagnostic_claim",
+    },
+    {
+        "id": "embedded_train_quarantine_001",
+        "input_type": "sequence",
+        "source_text": "paquete ambiguo sintético para revisión",
+        "expected_decision": "quarantine",
+        "defense_category": "retained_payload",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+    {
+        "id": "embedded_train_quarantine_002",
+        "input_type": "sequence",
+        "source_text": "dato breve ambiguo retenido",
+        "expected_decision": "quarantine",
+        "defense_category": "retained_payload",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+    {
+        "id": "embedded_train_duplicate_001",
+        "input_type": "sequence",
+        "source_text": "paquete repetido sintético observado antes",
+        "expected_decision": "discard_duplicate",
+        "defense_category": "redundant_payload",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+    {
+        "id": "embedded_train_duplicate_002",
+        "input_type": "sequence",
+        "source_text": "secuencia redundante sintética ya vista",
+        "expected_decision": "discard_duplicate",
+        "defense_category": "redundant_payload",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+]
+
+EMBEDDED_EVAL_ROWS = [
+    {
+        "id": "embedded_eval_valid_001",
+        "input_type": "sequence",
+        "source_text": "paquete válido sintético para absorción",
+        "expected_decision": "absorb",
+        "defense_category": "none",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+    {
+        "id": "embedded_eval_invalid_001",
+        "input_type": "sequence",
+        "source_text": "paquete sintético inválido roto",
+        "expected_decision": "reject",
+        "defense_category": "invalid_payload",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+    {
+        "id": "embedded_eval_quarantine_001",
+        "input_type": "sequence",
+        "source_text": "paquete ambiguo sintético retenido para revisión",
+        "expected_decision": "quarantine",
+        "defense_category": "retained_payload",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+    {
+        "id": "embedded_eval_duplicate_001",
+        "input_type": "sequence",
+        "source_text": "paquete repetido sintético ya observado",
+        "expected_decision": "discard_duplicate",
+        "defense_category": "redundant_payload",
+        "responsible_limit": "educational_experimental_not_clinical",
+    },
+]
+
+REQUIRED_FIELDS = (
+    "id",
+    "input_type",
+    "source_text",
+    "expected_decision",
+    "defense_category",
+    "responsible_limit",
 )
 
 
@@ -59,9 +192,6 @@ def predict_decision(row: dict, train_rows: list[dict]) -> dict:
         if row.get("input_type") == train_row.get("input_type"):
             score += 0.10
 
-        if row.get("defense_category") == train_row.get("defense_category"):
-            score += 0.20
-
         scored.append((score, train_row))
 
     scored.sort(key=lambda item: item[0], reverse=True)
@@ -74,24 +204,63 @@ def predict_decision(row: dict, train_rows: list[dict]) -> dict:
     }
 
 
-def build_report(write_outputs: bool = False) -> dict:
-    train_rows = read_jsonl(TRAIN_PATH)
-    eval_rows = read_jsonl(EVAL_PATH)
+def validate_rows(rows: list[dict], *, label: str) -> list[str]:
+    errors = []
+    for index, row in enumerate(rows, start=1):
+        missing = [field for field in REQUIRED_FIELDS if field not in row]
+        if missing:
+            row_id = row.get("id", f"{label}_{index}")
+            errors.append(f"{label} fila {row_id} sin campos requeridos: {', '.join(missing)}")
+    return errors
+
+
+def load_splits(train_path: Path, eval_path: Path, *, allow_embedded_fixture: bool) -> tuple[list[dict], list[dict], bool, list[str]]:
+    warnings = []
+    train_exists = train_path.exists()
+    eval_exists = eval_path.exists()
+
+    if train_exists and eval_exists:
+        return read_jsonl(train_path), read_jsonl(eval_path), False, warnings
+
+    if allow_embedded_fixture:
+        warnings.append(EMBEDDED_FIXTURE_WARNING)
+        return list(EMBEDDED_TRAIN_ROWS), list(EMBEDDED_EVAL_ROWS), True, warnings
+
+    return read_jsonl(train_path), read_jsonl(eval_path), False, warnings
+
+
+def build_report(
+    train_path: str | Path | None = None,
+    eval_path: str | Path | None = None,
+    write_outputs: bool = False,
+) -> dict:
+    active_train_path = Path(train_path) if train_path is not None else TRAIN_PATH
+    active_eval_path = Path(eval_path) if eval_path is not None else EVAL_PATH
+    allow_embedded_fixture = train_path is None and eval_path is None
+
+    train_rows, eval_rows, using_embedded_fixture, fixture_warnings = load_splits(
+        active_train_path,
+        active_eval_path,
+        allow_embedded_fixture=allow_embedded_fixture,
+    )
 
     errors = []
-    warnings = []
+    warnings = list(fixture_warnings)
 
-    if not TRAIN_PATH.exists():
-        errors.append(f"No existe train split: {TRAIN_PATH}")
+    if not using_embedded_fixture and not active_train_path.exists():
+        errors.append(f"No existe train split: {active_train_path}")
 
-    if not EVAL_PATH.exists():
-        errors.append(f"No existe eval split: {EVAL_PATH}")
+    if not using_embedded_fixture and not active_eval_path.exists():
+        errors.append(f"No existe eval split: {active_eval_path}")
 
     if not train_rows:
         errors.append("Train split vacío.")
 
     if not eval_rows:
         errors.append("Eval split vacío.")
+
+    errors.extend(validate_rows(train_rows, label="train"))
+    errors.extend(validate_rows(eval_rows, label="eval"))
 
     predictions = []
 
@@ -144,12 +313,16 @@ def build_report(write_outputs: bool = False) -> dict:
             f"Accuracy inicial baja para baseline experimental: {accuracy}. Requiere más datos o mejores features."
         )
 
-    status = "red" if errors else "attention" if warnings else "green"
+    status = "red" if errors else "attention" if using_embedded_fixture or warnings else "green"
 
     report = {
         "status": status,
-        "train_path": str(TRAIN_PATH),
-        "eval_path": str(EVAL_PATH),
+        "train_path": str(active_train_path),
+        "eval_path": str(active_eval_path),
+        "using_embedded_fixture": using_embedded_fixture,
+        "sanity_check_only": True,
+        "training_allowed": False,
+        "feature_policy": FEATURE_POLICY,
         "train_count": len(train_rows),
         "eval_count": len(eval_rows),
         "correct": correct,
@@ -203,12 +376,16 @@ def table_predictions(predictions: list[dict]) -> str:
 
 def to_markdown(report: dict) -> str:
     icon = {"green": "🟢", "attention": "🟡", "red": "🔴"}.get(report["status"], "⚪")
+    feature_policy = report["feature_policy"]
 
     lines = [
         "# Baseline ML experimental S.N.E.-E.C.O.",
         "",
         f"Estado: {icon} `{report['status']}`",
-        f"Accuracy: `{report['accuracy']}`",
+        f"Sanity check solamente: `{report['sanity_check_only']}`",
+        f"Entrenamiento autorizado: `{report['training_allowed']}`",
+        f"Fixture embebido usado: `{report['using_embedded_fixture']}`",
+        f"Accuracy de sanity check: `{report['accuracy']}`",
         "",
         f"Train: `{report['train_path']}`",
         f"Eval: `{report['eval_path']}`",
@@ -219,10 +396,21 @@ def to_markdown(report: dict) -> str:
         "",
         "## Lectura operativa",
         "",
-        "- Este baseline usa similitud textual simple entre ejemplos train/eval.",
-        "- Sirve como punto de partida medible, no como modelo final.",
+        "- Este baseline es un sanity check educativo/experimental.",
+        "- No mide desempeño real y no debe presentarse como métrica de generalización.",
+        "- No autoriza entrenamiento; no usa datos reales.",
+        "- Usa similitud textual simple e igualdad de tipo de entrada como señales predictivas.",
+        "- `defense_category` se usa solo para auditoría responsable, no para predecir.",
         "- No modifica reglas, baseline estable ni umbrales.",
         "- No tiene uso clínico, diagnóstico, forense ni modela conciencia humana.",
+        "",
+        "## Política de features",
+        "",
+        "- Features predictivas: "
+        + ", ".join(f"`{item}`" for item in feature_policy["predictive_features"]),
+        "- Excluidos de predicción: "
+        + ", ".join(f"`{item}`" for item in feature_policy["excluded_from_prediction"]),
+        f"- Nota: {feature_policy['note']}",
         "",
         "## Distribución esperada en eval",
         "",

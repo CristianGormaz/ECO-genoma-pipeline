@@ -3,11 +3,13 @@ from pathlib import Path
 from scripts.run_sne_eco_training_readiness import build_report, to_markdown
 
 
-def test_training_readiness_allows_training_when_seed_dataset_reaches_minimum():
+def test_training_readiness_marks_human_review_candidate_when_seed_dataset_reaches_minimum():
     report = build_report()
 
     assert report["status"] == "green"
-    assert report["training_allowed"] is True
+    assert report["training_allowed"] is False
+    assert report["ready_for_human_review"] is True
+    assert report["explicit_training_authorization"] is False
     assert report["row_count"] >= 6
     assert report["row_count"] >= report["minimum_rows_for_training"]
 
@@ -34,6 +36,10 @@ def test_training_readiness_markdown_keeps_responsible_limit():
     markdown = to_markdown(build_report())
 
     assert "Preparación de entrenamiento" in markdown
+    assert "Entrenamiento permitido: `True`" not in markdown
+    assert "Candidato a revisión humana: `True`" in markdown
+    assert "Entrenamiento autorizado: `False`" in markdown
+    assert "autorización explícita en un sprint separado" in markdown
     assert "no tiene uso clínico" in markdown
     assert "no modela conciencia humana" in markdown
 
