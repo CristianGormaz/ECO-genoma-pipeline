@@ -20,8 +20,13 @@ def test_run_eco_readiness_report_outputs_required_terms():
 
     required_terms = [
         "E.C.O. READINESS REPORT",
-        "eco-status green",
-        "pytest passing",
+        "readiness report sintético",
+        "no verifica el estado actual de git",
+        "no ejecuta pytest",
+        "no debe interpretarse como prueba de que el repo está green",
+        "ejecutar make eco-status",
+        "ejecutar pytest",
+        "ejecutar make eco-check-clean",
         "límites responsables",
         "sin datos reales",
         "sin entrenamiento",
@@ -34,3 +39,6 @@ def test_run_eco_readiness_report_outputs_required_terms():
 
     for term in required_terms:
         assert term in result.stdout
+
+    assert "eco-status green" not in result.stdout
+    assert "pytest passing" not in result.stdout
