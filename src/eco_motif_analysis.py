@@ -100,12 +100,13 @@ def parse_fasta(path: str | Path) -> Dict[str, str]:
             if not line:
                 continue
             if line.startswith(">"):
-                current_id = line[1:].split()[0] or f"sequence_{len(records) + 1}"
+                current_id = line[1:].split()[0]
+                if not current_id:
+                    raise ValueError("Se encontró una cabecera FASTA sin identificador.")
                 records.setdefault(current_id, [])
                 continue
             if current_id is None:
-                current_id = "sequence_1"
-                records.setdefault(current_id, [])
+                raise ValueError("El archivo FASTA debe comenzar con una cabecera '>'.")
             records[current_id].append(line)
 
     sequences = {seq_id: normalize_sequence("".join(parts)) for seq_id, parts in records.items()}

@@ -39,6 +39,14 @@ def test_parse_fasta_supports_multiple_records(tmp_path):
     assert records == {"seq1": "ACGTCCAAT", "seq2": "NNNNTATAAA"}
 
 
+def test_parse_fasta_rejects_plain_text_without_header(tmp_path):
+    fasta = tmp_path / "malformed.fa"
+    fasta.write_text("ACGT\nTATAAA\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="debe comenzar con una cabecera"):
+        parse_fasta(fasta)
+
+
 def test_scan_sequence_rejects_invalid_characters():
     with pytest.raises(ValueError, match="caracteres no válidos"):
         scan_sequence("ACGTX")
