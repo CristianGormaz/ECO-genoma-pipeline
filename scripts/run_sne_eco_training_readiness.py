@@ -40,7 +40,10 @@ FORBIDDEN_DEFENSES = {
 RESPONSIBLE_LIMIT = (
     "Reporte educativo/experimental de preparación de entrenamiento S.N.E.-E.C.O.; "
     "no entrena modelos, no ejecuta reglas nuevas, no recalibra umbrales, "
-    "no tiene uso clínico, diagnóstico ni forense, y no modela conciencia humana."
+    "no autoriza entrenamiento, no tiene uso clínico, diagnóstico ni forense, "
+    "y no modela conciencia humana. Un estado green solo marca candidatura "
+    "para revisión humana; cualquier entrenamiento requiere autorización explícita "
+    "en un sprint separado."
 )
 
 
@@ -118,11 +121,13 @@ def build_report() -> dict:
     else:
         status = "green"
 
-    training_allowed = status == "green"
+    ready_for_human_review = status == "green"
 
     return {
         "status": status,
-        "training_allowed": training_allowed,
+        "training_allowed": False,
+        "ready_for_human_review": ready_for_human_review,
+        "explicit_training_authorization": False,
         "dataset": str(DATASET_PATH),
         "row_count": len(rows),
         "minimum_rows_for_training": MIN_ROWS_FOR_TRAINING,
@@ -171,7 +176,9 @@ def to_markdown(report: dict) -> str:
             "# Preparación de entrenamiento S.N.E.-E.C.O.",
             "",
             f"Estado: {emoji} `{report['status']}`",
-            f"Entrenamiento permitido: `{report['training_allowed']}`",
+            f"Candidato a revisión humana: `{report['ready_for_human_review']}`",
+            f"Entrenamiento autorizado: `{report['training_allowed']}`",
+            f"Autorización explícita de entrenamiento: `{report['explicit_training_authorization']}`",
             "",
             f"Dataset: `{report['dataset']}`",
             f"Filas evaluadas: `{report['row_count']}`",
@@ -179,7 +186,9 @@ def to_markdown(report: dict) -> str:
             "",
             "## Lectura operativa",
             "",
-            "- Este reporte decide si el dataset empírico está listo para iniciar entrenamiento experimental.",
+            "- Este reporte documenta si el dataset empírico puede pasar a revisión humana.",
+            "- `green` no autoriza entrenamiento; solo indica preparación documental suficiente para revisar.",
+            "- Cualquier entrenamiento requiere autorización explícita en un sprint separado.",
             "- Si el estado es `attention`, el dataset puede ser válido pero todavía insuficiente.",
             "- Si el estado es `red`, hay errores de estructura, seguridad o coherencia.",
             "",
