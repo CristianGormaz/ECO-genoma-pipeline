@@ -1,4 +1,5 @@
 import json
+import importlib.util
 import subprocess
 import sys
 from pathlib import Path
@@ -8,6 +9,15 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = Path("scripts/run_eco_synthetic_operational_dashboard.py")
 JSON_OUTPUT = Path("results/eco_synthetic_operational_dashboard.json")
 MD_OUTPUT = Path("results/eco_synthetic_operational_dashboard.md")
+
+
+def load_dashboard_module():
+    spec = importlib.util.spec_from_file_location("run_eco_synthetic_operational_dashboard", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    assert spec is not None
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
 
 
 def test_synthetic_operational_dashboard_runs():
@@ -32,6 +42,7 @@ def test_synthetic_operational_dashboard_runs():
     assert payload["repo_status"]["state"] in {"green", "attention"}
     assert isinstance(payload["repo_status"]["tree_clean"], bool)
     assert "branch" in payload["repo_status"]
+    assert isinstance(payload["repo_status"]["synced"], bool)
     assert payload["maturity_score"]["global_decision"] in {"passed", "attention"}
     assert payload["maturity_score"]["score_v1"] >= 0.0
     assert payload["maturity_score"]["score_v1"] <= 1.0
@@ -87,6 +98,92 @@ def test_synthetic_operational_dashboard_runs():
     assert "reject" in md
     assert "sin libre albedrío real" in md
     assert "sin conciencia" in md
+
+
+def test_collect_repo_status_is_green_only_when_clean_main_and_synced(monkeypatch):
+    module = load_dashboard_module()
+
+    class Result:
+        def __init__(self, returncode: int = 0, stdout: str = ""):
+            self.returncode = returncode
+            self.stdout = stdout
+
+    class EcoStatusModule:
+        @staticmethod
+        def is_synced_with_origin_main(*, head: str, origin_main: str) -> bool:
+            return head == origin_main
+
+        @staticmethod
+        def compute_operational_state(*, clean: bool, on_main: bool, synced: bool) -> str:
+            return "green" if clean and on_main and synced else "attention"
+
+    monkeypatch.setattr(module, "_load_eco_status_module", lambda: EcoStatusModule())
+    monkeypatch.setattr(module, "_run", lambda command: Result(returncode=0, stdout="Estado: green\n"))
+
+    def fake_run_git(args: list[str]) -> str:
+        mapping = {
+            ("status", "--short"): "",
+            ("branch", "--show-current"): "main",
+            ("rev-parse", "--short", "HEAD"): "abc1234",
+            ("rev-parse", "--short", "origin/main"): "abc1234",
+        }
+        return mapping[tuple(args)]
+
+    monkeypatch.setattr(module, "_run_git", fake_run_git)
+
+    status = module.collect_repo_status()
+
+    assert status["state"] == "green"
+    assert status["tree_clean"] is True
+    assert status["on_main"] is True
+    assert status["synced"] is True
+
+
+def test_collect_repo_status_degrades_clean_non_main_or_unsynced_to_attention(monkeypatch):
+    module = load_dashboard_module()
+
+    class Result:
+        def __init__(self, returncode: int = 0, stdout: str = ""):
+            self.returncode = returncode
+            self.stdout = stdout
+
+    class EcoStatusModule:
+        @staticmethod
+        def is_synced_with_origin_main(*, head: str, origin_main: str) -> bool:
+            return head == origin_main
+
+        @staticmethod
+        def compute_operational_state(*, clean: bool, on_main: bool, synced: bool) -> str:
+            return "green" if clean and on_main and synced else "attention"
+
+    monkeypatch.setattr(module, "_load_eco_status_module", lambda: EcoStatusModule())
+    monkeypatch.setattr(module, "_run", lambda command: Result(returncode=0, stdout="Estado: attention\n"))
+
+    scenarios = [
+        {
+            ("status", "--short"): "",
+            ("branch", "--show-current"): "sprint/demo",
+            ("rev-parse", "--short", "HEAD"): "abc1234",
+            ("rev-parse", "--short", "origin/main"): "abc1234",
+        },
+        {
+            ("status", "--short"): "",
+            ("branch", "--show-current"): "main",
+            ("rev-parse", "--short", "HEAD"): "abc1234",
+            ("rev-parse", "--short", "origin/main"): "def5678",
+        },
+        {
+            ("status", "--short"): " M scripts/run_eco_status.py",
+            ("branch", "--show-current"): "main",
+            ("rev-parse", "--short", "HEAD"): "abc1234",
+            ("rev-parse", "--short", "origin/main"): "abc1234",
+        },
+    ]
+
+    for mapping in scenarios:
+        monkeypatch.setattr(module, "_run_git", lambda args, mapping=mapping: mapping[tuple(args)])
+        status = module.collect_repo_status()
+        assert status["state"] == "attention"
 
 
 def test_synthetic_operational_dashboard_includes_adaptive_dataset_readiness_gate():
