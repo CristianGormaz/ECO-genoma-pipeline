@@ -117,6 +117,18 @@ Esta capacidad no lee, no descarga, no procesa y no interpreta datos reales. Tam
 
 Cualquier avance posterior requiere revisión humana, evidencia auditable, rollback y sprint separado.
 
+## Snapshot Operativo Post Dry-Run y Portabilidad
+
+E.C.O. registra **Snapshot Operativo Post Dry-Run y Portabilidad** como referencia documental en `docs/operations/eco-post-dry-run-portability-snapshot.md`.
+
+Este snapshot conecta el dry-run gate integrado en `make eco-check`, el target `make eco-real-biological-data-admission-dry-run`, el baseline ML S.N.E.-E.C.O. reproducible, training readiness como candidato a revisión humana y el Makefile crítico normalizado con `$(PY)`.
+
+La lectura técnica estable se mantiene como `pytest passing`; cualquier conteo concreto de tests es informativo y no reemplaza ese criterio.
+
+El registro preserva límites responsables: sin datos reales, sin entrenamiento, sin modificación de baseline estable, sin recalibración de umbrales, sin diagnóstico y sin interpretación biomédica aplicada.
+
+Este snapshot no modificó dashboard, maturity score ni governed experimental cycle. Tampoco modifica baseline estable, umbrales, scripts, datasets o entrenamiento.
+
 ## Capacidades de dashboard/reportes
 
 El dashboard sintético operativo con 7 componentes está establecido como vista de control del estado operativo.

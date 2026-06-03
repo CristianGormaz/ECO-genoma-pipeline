@@ -129,6 +129,15 @@ Salidas:
 La compuerta no lee, no descarga, no procesa y no interpreta datos reales. No entrena modelos, no modifica baseline y no recalibra umbrales. No aprueba admisión real y cualquier avance posterior requiere revisión humana, rollback y evidencia auditable.
 
 
+## Snapshot Post Dry-Run y Portabilidad
+
+Referencia: `docs/operations/eco-post-dry-run-portability-snapshot.md`.
+
+Uso: entender el cierre del bloque #256–#261 después de integrar dry-run gate, `make eco-check`, baseline ML reproducible, training readiness seguro y Makefile portable.
+
+Límite: solo documentación de estado; no autoriza datos reales, no autoriza entrenamiento, no modifica baseline, no recalibra umbrales, no habilita diagnóstico y no habilita interpretación biomédica aplicada.
+
+
 ## Contrato LAOS para agencia simulada
 
 Referencia: `docs/operations/eco-laos-agency-formula.md`.

@@ -35,6 +35,7 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 - docs/operations/eco-operational-blueprint.md: plano operativo de orientación para entrar, entender, avanzar, pausar, validar, recuperar y cerrar ciclos sin romper E.C.O.
 - docs/operations/eco-real-biological-data-maturity-manual.md: documento de frontera para definir madurez futura antes de cualquier regla de admisión de datos reales biológicos.
 - docs/operations/eco-real-biological-data-admission-dry-run.md: compuerta dry-run para evaluar manifiestos descriptivos sin leer, descargar, procesar ni interpretar datos reales.
+- docs/operations/eco-post-dry-run-portability-snapshot.md: Snapshot operativo post dry-run y portabilidad; registra el estado posterior a la integración del dry-run gate, `make eco-check`, baseline ML reproducible, training readiness seguro y Makefile portable.
 - docs/research/eco-research-index.md: índice de investigación E.C.O.
 - docs/architecture/eco-synthetic-demos-index.md: índice de demos sintéticas y sus validaciones.
 - docs/architecture/eco-synthetic-data-contract.md: contrato mínimo para datos sintéticos y trazas de simulación.
@@ -63,6 +64,14 @@ Este mapa ayuda a ubicar las piezas principales del repositorio sin cambiar cód
 - Manual: no es una compuerta funcional activa.
 - Siguiente avance posible de frontera: schema o dry-run gate; no datos reales.
 - Estado: no lee, no descarga, no procesa y no interpreta datos reales; no aprueba admisión real.
+
+## Snapshot operativo post dry-run y portabilidad
+
+- Referencia: docs/operations/eco-post-dry-run-portability-snapshot.md.
+- Tipo: documental y no ejecutable.
+- Alcance: registra el estado posterior a la integración del dry-run gate, `make eco-check`, baseline ML reproducible, training readiness seguro y Makefile portable.
+- Límite: no habilita datos reales, no autoriza entrenamiento, no reemplaza tests, dashboard ni revisión humana.
+- Límites preservados: sin datos reales, sin entrenamiento, sin modificación de baseline, sin recalibración de umbrales, sin diagnóstico y sin interpretación biomédica aplicada.
 
 ## Límite responsable
 
