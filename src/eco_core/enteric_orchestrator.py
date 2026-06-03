@@ -205,29 +205,18 @@ class EntericSystem:
         return self.gut_brain_report().to_markdown()
 
     def homeostasis_report(self) -> EntericHomeostasis:
-        total = len(self.processed_packets)
-        absorbed = sum(1 for packet in self.processed_packets if "absorbed_features" in packet.metadata)
-        quarantined = sum(self._has_status(packet, "quarantined") for packet in self.processed_packets)
-        discarded = sum(self._has_status(packet, "discarded") for packet in self.processed_packets)
-        rejected = sum(self._has_status(packet, "rejected") for packet in self.processed_packets)
-        duplicates = sum(1 for packet in self.processed_packets if packet.metadata.get("enteric_decision", {}).get("action") == "discard_duplicate")
-        notes: List[str] = []
-        if total == 0:
-            return EntericHomeostasis(0, 0, 0, 0, 0, 0, "idle", ["Sin paquetes procesados."])
-        if rejected / total > 0.4:
-            notes.append("Alta respuesta inmune: revisar calidad de entrada.")
-        if quarantined / total > 0.3:
-            notes.append("Cuarentena elevada: revisar longitud mínima o ambigüedad de secuencias.")
-        if duplicates:
-            notes.append("Se detectó redundancia: la microbiota informacional evitó absorción duplicada.")
-        if not notes:
-            notes.append("Homeostasis estable: flujo informacional dentro de rangos esperados.")
-        state = "attention" if rejected / total > 0.4 or quarantined / total > 0.3 else "stable"
-        return EntericHomeostasis(total, absorbed, quarantined, discarded, rejected, duplicates, state, notes)
-
-    @staticmethod
-    def _has_status(packet: EcoPacket, status: str) -> bool:
-        return any(log.status == status for log in packet.history)
+        """Mantiene el contrato histórico usando la snapshot canónica actual."""
+        snapshot = self.homeostasis_snapshot()
+        return EntericHomeostasis(
+            snapshot.total_packets,
+            snapshot.absorbed_packets,
+            snapshot.quarantined_packets,
+            snapshot.discarded_packets,
+            snapshot.rejected_packets,
+            snapshot.duplicate_packets,
+            snapshot.state,
+            list(snapshot.notes),
+        )
 
     @staticmethod
     def _payload_key(payload: Any) -> str:

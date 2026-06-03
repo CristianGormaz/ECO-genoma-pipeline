@@ -49,4 +49,5 @@ def test_historical_homeostasis_report_still_works():
 
     assert legacy_report.total_packets == snapshot.total_packets
     assert legacy_report.absorbed_packets == snapshot.absorbed_packets
-    assert legacy_report.state == "stable"
+    assert legacy_report.state == snapshot.state
+    assert legacy_report.notes == list(snapshot.notes)

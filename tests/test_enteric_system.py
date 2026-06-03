@@ -45,7 +45,7 @@ def test_enteric_system_uses_microbiome_memory_to_discard_duplicates():
     assert second.metadata["discard_reason"].startswith("Secuencia duplicada")
 
 
-def test_enteric_homeostasis_reports_stable_and_attention_states():
+def test_enteric_homeostasis_reports_canonical_states():
     stable_system = EntericSystem()
     stable_system.process_dna_sequence("ACGTCCAATGGTATAAA", source="valid_sequence")
     stable_report = stable_system.homeostasis_report()
@@ -54,12 +54,12 @@ def test_enteric_homeostasis_reports_stable_and_attention_states():
     assert stable_report.absorbed_packets == 1
     assert stable_report.state == "stable"
 
-    attention_system = EntericSystem()
-    attention_system.process_dna_sequence("ACGTXYZ", source="bad_one")
-    attention_system.process_dna_sequence("TTTXYZ", source="bad_two")
-    attention_report = attention_system.homeostasis_report()
+    overloaded_system = EntericSystem()
+    overloaded_system.process_dna_sequence("ACGTXYZ", source="bad_one")
+    overloaded_system.process_dna_sequence("TTTXYZ", source="bad_two")
+    overloaded_report = overloaded_system.homeostasis_report()
 
-    assert attention_report.total_packets == 2
-    assert attention_report.rejected_packets == 2
-    assert attention_report.state == "attention"
-    assert any("Alta respuesta inmune" in note for note in attention_report.notes)
+    assert overloaded_report.total_packets == 2
+    assert overloaded_report.rejected_packets == 2
+    assert overloaded_report.state == "overload"
+    assert any("Sobrecarga defensiva" in note for note in overloaded_report.notes)
