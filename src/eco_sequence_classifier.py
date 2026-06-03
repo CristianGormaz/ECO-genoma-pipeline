@@ -197,13 +197,14 @@ def confidence_from_distances(distances: Dict[str, float]) -> float:
 
 
 def prediction_from_features(record: LabeledSequence, features: FeatureVector, centroids: Dict[str, FeatureVector]) -> Prediction:
-    distances = {label: round(euclidean_distance(features, centroid), 4) for label, centroid in centroids.items()}
-    predicted_label = min(distances, key=distances.get)
+    raw_distances = {label: euclidean_distance(features, centroid) for label, centroid in centroids.items()}
+    predicted_label = min(raw_distances, key=raw_distances.get)
+    distances = {label: round(distance, 4) for label, distance in raw_distances.items()}
     return Prediction(
         sequence_id=record.sequence_id,
         true_label=record.label,
         predicted_label=predicted_label,
-        confidence=confidence_from_distances(distances),
+        confidence=confidence_from_distances(raw_distances),
         distances=distances,
         features=features,
     )
