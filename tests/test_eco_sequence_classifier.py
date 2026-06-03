@@ -2,11 +2,13 @@ from pathlib import Path
 import json
 
 from src.eco_sequence_classifier import (
+    LabeledSequence,
     build_classifier_report,
     confidence_from_distances,
     extract_features,
     kmer_frequencies,
     parse_labeled_sequences_tsv,
+    prediction_from_features,
     split_train_test,
     train_centroid_classifier,
     write_json_report,
@@ -48,6 +50,21 @@ def test_confidence_from_distances_preserves_non_ambiguous_margin():
     confidence = confidence_from_distances({"regulatory": 1.0, "non_regulatory": 2.0})
 
     assert confidence == 0.5
+
+
+def test_prediction_from_features_uses_raw_distances_to_break_rounded_tie():
+    record = LabeledSequence(sequence_id="seq_tie_margin", sequence="A", label="regulatory")
+    features = {"axis": 0.0}
+    centroids = {
+        "non_regulatory": {"axis": 0.000049},
+        "regulatory": {"axis": 0.000041},
+    }
+
+    prediction = prediction_from_features(record, features, centroids)
+
+    assert prediction.predicted_label == "regulatory"
+    assert prediction.confidence == 0.1633
+    assert prediction.distances == {"non_regulatory": 0.0, "regulatory": 0.0}
 
 
 def test_classifier_baseline_demo_dataset_runs_with_explicit_split():
