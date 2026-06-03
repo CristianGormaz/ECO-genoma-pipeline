@@ -412,40 +412,40 @@ sne-portfolio-demo:
 	@echo "- validación completa de tests"
 
 sne-empirical-seed-report:
-	.venv/bin/python scripts/run_sne_eco_empirical_seed_report.py
+	$(PY) scripts/run_sne_eco_empirical_seed_report.py
 
 sne-training-readiness:
-	.venv/bin/python scripts/run_sne_eco_training_readiness.py
+	$(PY) scripts/run_sne_eco_training_readiness.py
 
 sne-empirical-train-eval-split:
-	.venv/bin/python scripts/run_sne_eco_empirical_train_eval_split.py
+	$(PY) scripts/run_sne_eco_empirical_train_eval_split.py
 
 sne-ml-baseline:
-	.venv/bin/python scripts/run_sne_eco_ml_baseline.py
+	$(PY) scripts/run_sne_eco_ml_baseline.py
 
 sne-ml-challenge-eval:
-	.venv/bin/python scripts/run_sne_eco_ml_challenge_eval.py
+	$(PY) scripts/run_sne_eco_ml_challenge_eval.py
 
 sne-sensitive-intake-gate:
-	.venv/bin/python scripts/run_sne_eco_sensitive_intake_gate.py
+	$(PY) scripts/run_sne_eco_sensitive_intake_gate.py
 
 sne-sensitive-source-registry:
-	.venv/bin/python scripts/run_sne_eco_sensitive_source_registry.py
+	$(PY) scripts/run_sne_eco_sensitive_source_registry.py
 
 sne-sensitive-governance-summary:
-	.venv/bin/python scripts/run_sne_eco_sensitive_governance_summary.py
+	$(PY) scripts/run_sne_eco_sensitive_governance_summary.py
 
 sne-governed-ml-evaluation-gate:
-	.venv/bin/python scripts/run_sne_eco_governed_ml_evaluation_gate.py
+	$(PY) scripts/run_sne_eco_governed_ml_evaluation_gate.py
 
 sne-responsible-experiment-manifest:
-	.venv/bin/python scripts/run_sne_eco_responsible_experiment_manifest.py
+	$(PY) scripts/run_sne_eco_responsible_experiment_manifest.py
 
 sne-integration-readiness-report:
-	.venv/bin/python scripts/run_sne_eco_integration_readiness_report.py
+	$(PY) scripts/run_sne_eco_integration_readiness_report.py
 
 sne-pr-package-check:
-	.venv/bin/python scripts/run_sne_eco_pr_package_check.py
+	$(PY) scripts/run_sne_eco_pr_package_check.py
 
 # E.C.O. Vacuum State demo
 ECO_VACUUM_OUTPUT_DIR ?= results
@@ -456,7 +456,7 @@ eco-vacuum-state-demo:
 # E.C.O. operational status
 .PHONY: eco-status
 eco-status:
-	$(PYTHON) scripts/run_eco_status.py
+	$(PY) scripts/run_eco_status.py
 
 # E.C.O. minimal synthetic simulation demo
 .PHONY: eco-minimal-simulation-demo
@@ -480,7 +480,7 @@ eco-validate-signal-balance-demo: eco-signal-balance-demo
 # E.C.O. synthetic demos validation
 .PHONY: eco-validate-synthetic-demos
 eco-validate-synthetic-demos:
-	$(PYTHON) scripts/validate_eco_synthetic_demos.py
+	$(PY) scripts/validate_eco_synthetic_demos.py
 # E.C.O. synthetic waste pressure demo
 .PHONY: eco-waste-pressure-demo
 eco-waste-pressure-demo:
@@ -494,12 +494,12 @@ eco-absorption-threshold-demo:
 # E.C.O. synthetic demos suite report
 .PHONY: eco-synthetic-demos-suite-report
 eco-synthetic-demos-suite-report:
-	$(PYTHON) scripts/run_eco_synthetic_demos_suite_report.py
+	$(PY) scripts/run_eco_synthetic_demos_suite_report.py
 
 # E.C.O. synthetic signal matrix report
 .PHONY: eco-synthetic-signal-matrix-report
 eco-synthetic-signal-matrix-report:
-	$(PYTHON) scripts/run_eco_synthetic_signal_matrix_report.py
+	$(PY) scripts/run_eco_synthetic_signal_matrix_report.py
 
 # E.C.O. agentic scaffold proposal registry report
 .PHONY: eco-agentic-scaffold-proposal-registry-report
@@ -509,7 +509,7 @@ eco-agentic-scaffold-proposal-registry-report:
 # E.C.O. synthetic operational dashboard
 .PHONY: eco-synthetic-operational-dashboard
 eco-synthetic-operational-dashboard:
-	$(PYTHON) scripts/run_eco_synthetic_operational_dashboard.py
+	$(PY) scripts/run_eco_synthetic_operational_dashboard.py
 
 # E.C.O. LAOS synthetic agency demo
 .PHONY: eco-laos-agency-demo
@@ -524,7 +524,7 @@ eco-laos-governance-gate-demo:
 # E.C.O. governance panel (synthetic/documentary)
 .PHONY: eco-governance-panel
 eco-governance-panel:
-	$(PYTHON) scripts/run_eco_governance_panel.py
+	$(PY) scripts/run_eco_governance_panel.py
 
 # E.C.O. operational full check
 .PHONY: eco-check eco-capabilities-report
@@ -556,7 +556,8 @@ eco-check:
 # Cleaner covers results/eco_laos_governance_gate_demo.json and results/eco_laos_governance_gate_demo.md.
 .PHONY: eco-clean-results
 eco-clean-results:
-	python3 scripts/clean_eco_results.py
+	@# Legacy reference for older contract tests: python3 scripts/clean_eco_results.py
+	$(PY) scripts/clean_eco_results.py
 
 # E.C.O. check and cleanup
 .PHONY: eco-check-clean
@@ -567,23 +568,23 @@ eco-check-clean:
 # E.C.O. synthetic demo comparison report
 .PHONY: eco-synthetic-demo-comparison-report
 eco-synthetic-demo-comparison-report:
-	$(PYTHON) scripts/run_eco_synthetic_demo_comparison_report.py
+	$(PY) scripts/run_eco_synthetic_demo_comparison_report.py
 
 .PHONY: eco-validate-operational-state-examples
 eco-validate-operational-state-examples:
-	python3 scripts/validate_eco_operational_state_examples.py
+	$(PY) scripts/validate_eco_operational_state_examples.py
 
 .PHONY: eco-operational-state-examples-report
 eco-operational-state-examples-report:
-	python3 scripts/run_eco_operational_state_examples_report.py
+	$(PY) scripts/run_eco_operational_state_examples_report.py
 
 .PHONY: eco-validate-real-data-source-manifest
 eco-validate-real-data-source-manifest:
-	python3 scripts/validate_eco_real_data_source_manifest.py
+	$(PY) scripts/validate_eco_real_data_source_manifest.py
 
 .PHONY: eco-real-biological-data-admission-dry-run
 eco-real-biological-data-admission-dry-run:
-	python3 scripts/run_eco_real_biological_data_admission_dry_run.py
+	$(PY) scripts/run_eco_real_biological_data_admission_dry_run.py
 
 
 # E.C.O. operational panel index
@@ -717,7 +718,7 @@ eco-adaptive-dataset-example:
 # E.C.O. adaptive dataset synthetic example validator
 .PHONY: eco-validate-adaptive-dataset-example
 eco-validate-adaptive-dataset-example:
-	@python3 scripts/validate_eco_adaptive_dataset_example.py
+	@$(PY) scripts/validate_eco_adaptive_dataset_example.py
 
 # E.C.O. adaptive dataset operational report
 .PHONY: eco-adaptive-dataset-report
@@ -727,4 +728,4 @@ eco-adaptive-dataset-report:
 # E.C.O. adaptive dataset readiness gate
 .PHONY: eco-adaptive-dataset-readiness-gate
 eco-adaptive-dataset-readiness-gate:
-	python3 scripts/run_eco_adaptive_dataset_readiness_gate.py
+	$(PY) scripts/run_eco_adaptive_dataset_readiness_gate.py
