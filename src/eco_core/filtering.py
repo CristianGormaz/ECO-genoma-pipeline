@@ -48,17 +48,34 @@ def validate_packet_payload(packet: EcoPacket, required_types: Sequence[type] = 
         packet.metadata["filter_issues"] = [
             f"Payload con tipo no esperado: {type(packet.payload).__name__}"
         ]
-        return route_packet(packet, stage="filtering", status="rejected", message="Payload rechazado por tipo no válido.")
+        return route_packet(
+            packet,
+            stage="filtering",
+            status="rejected",
+            message="Payload rechazado por tipo no válido.",
+            plexus="mucosa_epithelial",
+        )
 
     packet.metadata["filter_issues"] = []
-    return route_packet(packet, stage="filtering", message="Payload aceptado por filtro básico.")
+    return route_packet(
+        packet,
+        stage="filtering",
+        message="Payload aceptado por filtro básico.",
+        plexus="mucosa_epithelial",
+    )
 
 
 def filter_dna_packet(packet: EcoPacket, allow_n: bool = True) -> EcoPacket:
     """Valida un paquete cuyo payload es una secuencia de ADN."""
     if not isinstance(packet.payload, str):
         packet.metadata["filter_issues"] = ["El payload no es texto."]
-        return route_packet(packet, stage="filtering", status="rejected", message="Secuencia rechazada: payload no textual.")
+        return route_packet(
+            packet,
+            stage="filtering",
+            status="rejected",
+            message="Secuencia rechazada: payload no textual.",
+            plexus="mucosa_epithelial",
+        )
 
     sequence = normalize_dna_sequence(packet.payload)
     issues = validate_dna_sequence(sequence, allow_n=allow_n)
@@ -66,9 +83,20 @@ def filter_dna_packet(packet: EcoPacket, allow_n: bool = True) -> EcoPacket:
     packet.metadata["filter_issues"] = issues
 
     if issues:
-        return route_packet(packet, stage="filtering", status="rejected", message="Secuencia rechazada por problemas de calidad.")
+        return route_packet(
+            packet,
+            stage="filtering",
+            status="rejected",
+            message="Secuencia rechazada por problemas de calidad.",
+            plexus="mucosa_epithelial",
+        )
 
-    return route_packet(packet, stage="filtering", message="Secuencia ADN validada correctamente.")
+    return route_packet(
+        packet,
+        stage="filtering",
+        message="Secuencia ADN validada correctamente.",
+        plexus="mucosa_epithelial",
+    )
 
 
 def has_rejection(packet: EcoPacket) -> bool:

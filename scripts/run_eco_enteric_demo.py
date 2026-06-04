@@ -37,8 +37,8 @@ def print_section(title: str) -> None:
 
 
 def compact_history(packet: EcoPacket) -> str:
-    """Devuelve una traza breve etapa:estado para UX de terminal."""
-    return " -> ".join(f"{log.stage}:{log.status}" for log in packet.history)
+    """Devuelve una traza breve etapa:estado (plexo) para UX de terminal."""
+    return " -> ".join(f"{log.stage}:{log.status} ({log.plexus})" for log in packet.history)
 
 
 def print_packet_summary(label: str, packet: EcoPacket) -> None:

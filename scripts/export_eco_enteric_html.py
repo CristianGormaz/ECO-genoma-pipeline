@@ -27,9 +27,11 @@ def history_list(history: List[Dict[str, Any]]) -> str:
     """Renderiza la trazabilidad completa de un paquete."""
     items = []
     for step in history:
+        plexus = step.get("plexus", "unknown")
         items.append(
             "<li>"
-            f"<code>{e(step.get('stage'))}</code> → "
+            f"<code title='Plexo: {e(plexus)}'>{e(step.get('stage'))}</code> "
+            f"({badge(plexus)}) → "
             f"<strong>{e(step.get('status'))}</strong>: "
             f"{e(step.get('message'))}"
             "</li>"
@@ -87,10 +89,22 @@ def record_card(record: Dict[str, Any]) -> str:
 def build_html(report: Dict[str, Any]) -> str:
     """Construye HTML estático desde el reporte entérico JSON."""
     homeostasis = report["homeostasis"]
-    cards = "".join(record_card(record) for record in report.get("records", []))
+    canonical_cards = "".join(record_card(record) for record in report.get("records", []))
+    extreme_cards = "".join(record_card(record) for record in report.get("extreme_scenarios", []))
+
     notes = "".join(f"<li>{e(note)}</li>" for note in homeostasis.get("notes", []))
     expected_actions = ", ".join(report.get("expected_actions", []))
     actual_actions = ", ".join(report.get("actual_actions", []))
+
+    extreme_section = ""
+    if extreme_cards:
+        extreme_section = f"""
+        <section class='section'>
+          <h2>Escenarios Extremos (v1.2 Observabilidad Distribuida)</h2>
+          <p>Se muestran límites operativos responsables: alta ambigüedad y payloads pesados.</p>
+        </section>
+        {extreme_cards}
+        """
 
     return f"""<!doctype html>
 <html lang='es'>
@@ -110,7 +124,7 @@ def build_html(report: Dict[str, Any]) -> str:
     .metric span, .muted {{ color: #65708a; }}
     .card-head {{ display: flex; align-items: center; justify-content: space-between; gap: 1rem; }}
     .badge {{ display: inline-block; background: #eef2ff; color: #263653; border: 1px solid #d9e1ff; border-radius: 999px; padding: .24rem .65rem; font-size: .86rem; font-weight: 700; }}
-    code {{ background: #f0f2f7; border-radius: 7px; padding: .12rem .32rem; }}
+    code {{ background: #f0f2f7; border-radius: 7px; padding: .12rem .32rem; overflow-wrap: break-word; }}
     details {{ border-top: 1px solid #e5e8f0; margin-top: 1rem; padding-top: .8rem; }}
     summary {{ cursor: pointer; font-weight: 700; }}
     .history li {{ margin-bottom: .45rem; }}
@@ -126,7 +140,7 @@ def build_html(report: Dict[str, Any]) -> str:
   </header>
   <main>
     <section class='grid'>
-      <div class='metric'><strong>{e(homeostasis['total_packets'])}</strong><span>Procesados</span></div>
+      <div class='metric'><strong>{e(homeostasis['total_packets'])}</strong><span>Procesados (Canónico)</span></div>
       <div class='metric'><strong>{e(homeostasis['absorbed_packets'])}</strong><span>Absorbidos</span></div>
       <div class='metric'><strong>{e(homeostasis['quarantined_packets'])}</strong><span>Cuarentena</span></div>
       <div class='metric'><strong>{e(homeostasis['discarded_packets'])}</strong><span>Descartados</span></div>
@@ -135,7 +149,7 @@ def build_html(report: Dict[str, Any]) -> str:
     </section>
 
     <section class='section {'attention' if homeostasis['state'] == 'attention' else 'ok'}'>
-      <h2>Resumen homeostático</h2>
+      <h2>Resumen homeostático (Flujo Canónico)</h2>
       <p><strong>Estado:</strong> {badge(homeostasis['state'])}</p>
       <ul>{notes}</ul>
       <p><strong>Acciones esperadas:</strong> {e(expected_actions)}</p>
@@ -143,11 +157,13 @@ def build_html(report: Dict[str, Any]) -> str:
     </section>
 
     <section class='section'>
-      <h2>Paquetes evaluados</h2>
+      <h2>Paquetes evaluados (Flujo Canónico)</h2>
       <p>Esta sección muestra cómo la barrera, el sensado, el reflejo local y la memoria microbiota cambian el destino de cada entrada.</p>
     </section>
 
-    {cards}
+    {canonical_cards}
+
+    {extreme_section}
 
     <section class='section'>
       <h2>Lectura arquitectónica</h2>

@@ -85,6 +85,18 @@ enteric-report:
 enteric-html: enteric-report
 	$(PY) scripts/export_eco_enteric_html.py
 
+distributed-observability-flow: enteric-report
+	$(PY) scripts/export_eco_distributed_observability_flow.py
+
+observability-v1-2: enteric-html distributed-observability-flow
+	@echo ""
+	@echo "S.N.E.-E.C.O. v1.2 Observabilidad Distribuida Ready"
+	@echo "=================================================="
+	@echo "Reportes generados:"
+	@echo "- results/eco_enteric_system_report.json"
+	@echo "- results/eco_enteric_system_report.html"
+	@echo "- results/eco_distributed_observability_flow.md"
+
 open-enteric-html:
 	@xdg-open results/eco_enteric_system_report.html >/dev/null 2>&1 || echo "No se pudo abrir el HTML entérico. Revisa: results/eco_enteric_system_report.html"
 

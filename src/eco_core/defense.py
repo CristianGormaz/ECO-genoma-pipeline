@@ -12,7 +12,7 @@ para mantener trazabilidad, seguridad técnica y calidad de entrada.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 from .barrier import BarrierResult
@@ -39,6 +39,7 @@ class DefenseSignal:
     should_alert: bool
     reason: str
     recommended_action: str
+    internal_logs: tuple[str, ...] = field(default_factory=tuple)
 
 
 def evaluate_defense(
@@ -47,39 +48,51 @@ def evaluate_defense(
     motility_decision: MotilityDecision,
 ) -> DefenseSignal:
     """Evalúa una señal defensiva a partir del sensado, barrera y motilidad."""
+    logs = []
 
     if motility_decision.action == "immune_discard":
+        reason = barrier_result.reason
         return DefenseSignal(
             category="invalid_payload",
             severity="high",
             should_alert=True,
-            reason=barrier_result.reason,
+            reason=reason,
             recommended_action="discard",
+            internal_logs=(reason,),
         )
+    logs.append("Chequeo de motilidad: no se requiere descarte inmune.")
 
     if sensory_profile.is_duplicate or motility_decision.action == "discard_duplicate":
+        reason = "Payload recurrente: la memoria evita absorber redundancia como conocimiento nuevo."
         return DefenseSignal(
             category="redundant_payload",
             severity="low",
             should_alert=False,
-            reason="Payload recurrente: la memoria evita absorber redundancia como conocimiento nuevo.",
+            reason=reason,
             recommended_action="discard_duplicate",
+            internal_logs=tuple(logs + [reason]),
         )
+    logs.append("Chequeo de microbiota: secuencia no redundante.")
 
     if barrier_result.status == "quarantined":
         category: DefenseCategory = "ambiguous_payload" if sensory_profile.n_percent > 0 else "retained_payload"
+        reason = barrier_result.reason
         return DefenseSignal(
             category=category,
             severity="medium",
             should_alert=True,
-            reason=barrier_result.reason,
+            reason=reason,
             recommended_action="quarantine",
+            internal_logs=tuple(logs + [reason]),
         )
+    logs.append("Chequeo de barrera: no hay retención en cuarentena.")
 
+    reason = "Sin señal defensiva relevante: flujo informacional estable."
     return DefenseSignal(
         category="none",
         severity="none",
         should_alert=False,
-        reason="Sin señal defensiva relevante: flujo informacional estable.",
+        reason=reason,
         recommended_action="continue",
+        internal_logs=tuple(logs + [reason]),
     )

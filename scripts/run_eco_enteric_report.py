@@ -58,6 +58,7 @@ def packet_to_record(label: str, packet: EcoPacket) -> Dict[str, Any]:
                 "stage": log.stage,
                 "status": log.status,
                 "message": log.message,
+                "plexus": log.plexus,
                 "timestamp": log.timestamp,
             }
             for log in packet.history
@@ -69,37 +70,64 @@ def build_report() -> Dict[str, Any]:
     """Ejecuta una corrida entérica demostrativa y devuelve reporte estructurado."""
     system = EntericSystem(min_length=6, max_n_percent=25.0)
 
-    examples = [
+    # El flujo canónico preserva los contratos históricos de v1.0/v1.1
+    canonical_examples = [
         ("Secuencia válida", "ACGTCCAATGGTATAAA", "enteric_valid_sequence"),
         ("Secuencia inválida", "ACGTXYZ", "enteric_invalid_sequence"),
         ("Secuencia en cuarentena", "ACG", "enteric_short_sequence"),
         ("Secuencia duplicada", "ACGTCCAATGGTATAAA", "enteric_duplicate_sequence"),
     ]
 
-    records: List[Dict[str, Any]] = []
-    for label, sequence, source in examples:
-        packet = system.process_dna_sequence(sequence, source=source)
-        records.append(packet_to_record(label, packet))
+    # Escenarios v1.2: observabilidad distribuida y límites responsables
+    extreme_scenarios = [
+        (
+            "Secuencia ambigua",
+            "ACGTNNNNNNNNNNNNNNNNNNNNNNNNNNNN",
+            "enteric_ambiguous_sequence",
+        ),
+        (
+            "Secuencia pesada",
+            "A" * 15_000,
+            "enteric_heavy_sequence",
+        ),
+    ]
 
-    homeostasis = system.homeostasis_report()
+    canonical_records: List[Dict[str, Any]] = []
+    for label, sequence, source in canonical_examples:
+        packet = system.process_dna_sequence(sequence, source=source)
+        canonical_records.append(packet_to_record(label, packet))
+
+    # Capturamos homeostasis después del flujo canónico para los tests legacy
+    homeostasis_canonical = system.homeostasis_report()
+
+    extreme_records: List[Dict[str, Any]] = []
+    for label, sequence, source in extreme_scenarios:
+        packet = system.process_dna_sequence(sequence, source=source)
+        extreme_records.append(packet_to_record(label, packet))
 
     return {
         "title": "E.C.O. Enteric System Report",
         "purpose": "Validar sensado, reflejo local, absorción, cuarentena, descarte, microbiota y homeostasis.",
         "architecture_layer": "src.eco_core.enteric_system.EntericSystem",
-        "records": records,
+        "records": canonical_records,
+        "extreme_scenarios": extreme_records,
         "homeostasis": {
-            "total_packets": homeostasis.total_packets,
-            "absorbed_packets": homeostasis.absorbed_packets,
-            "quarantined_packets": homeostasis.quarantined_packets,
-            "discarded_packets": homeostasis.discarded_packets,
-            "rejected_packets": homeostasis.rejected_packets,
-            "duplicate_packets": homeostasis.duplicate_packets,
-            "state": homeostasis.state,
-            "notes": homeostasis.notes,
+            "total_packets": homeostasis_canonical.total_packets,
+            "absorbed_packets": homeostasis_canonical.absorbed_packets,
+            "quarantined_packets": homeostasis_canonical.quarantined_packets,
+            "discarded_packets": homeostasis_canonical.discarded_packets,
+            "rejected_packets": homeostasis_canonical.rejected_packets,
+            "duplicate_packets": homeostasis_canonical.duplicate_packets,
+            "state": homeostasis_canonical.state,
+            "notes": homeostasis_canonical.notes,
         },
-        "expected_actions": ["absorb", "reject", "quarantine", "discard_duplicate"],
-        "actual_actions": [record["decision"].get("action") for record in records],
+        "expected_actions": [
+            "absorb",
+            "reject",
+            "quarantine",
+            "discard_duplicate",
+        ],
+        "actual_actions": [record["decision"].get("action") for record in canonical_records],
     }
 
 
@@ -112,7 +140,7 @@ def report_to_markdown(report: Dict[str, Any]) -> str:
     lines.append("")
     lines.append(f"**Capa técnica:** `{report['architecture_layer']}`")
     lines.append("")
-    lines.append("## Resumen homeostático")
+    lines.append("## Resumen homeostático (Flujo Canónico)")
     lines.append("")
     homeostasis = report["homeostasis"]
     lines.append(f"- Paquetes procesados: {homeostasis['total_packets']}")
@@ -128,36 +156,17 @@ def report_to_markdown(report: Dict[str, Any]) -> str:
     for note in homeostasis["notes"]:
         lines.append(f"- {note}")
     lines.append("")
-    lines.append("## Paquetes evaluados")
+    lines.append("## Paquetes evaluados (Flujo Canónico)")
     lines.append("")
 
     for record in report["records"]:
-        decision = record["decision"]
-        sensory = record["sensory_profile"]
-        lines.append(f"### {record['label']}")
+        _append_record_to_markdown(lines, record)
+
+    if report.get("extreme_scenarios"):
+        lines.append("## Escenarios Extremos (v1.2 Observabilidad Distribuida)")
         lines.append("")
-        lines.append(f"- Origen: `{record['source']}`")
-        lines.append(f"- Payload: `{record['payload']}`")
-        lines.append(f"- Acción: `{decision.get('action')}`")
-        lines.append(f"- Ruta: `{decision.get('route')}`")
-        lines.append(f"- Motivo: {decision.get('reason')}")
-        lines.append(f"- Confianza local: {decision.get('confidence')}")
-        lines.append(f"- Longitud detectada: {sensory.get('length')}")
-        lines.append(f"- GC%: {sensory.get('gc_percent')}")
-        lines.append(f"- N%: {sensory.get('n_percent')}")
-        lines.append(f"- Duplicado: {sensory.get('is_duplicate')}")
-        if record.get("absorbed_features"):
-            lines.append("- Nutrientes informacionales: presentes")
-        if record.get("quarantine_reason"):
-            lines.append(f"- Cuarentena: {record['quarantine_reason']}")
-        if record.get("discard_reason"):
-            lines.append(f"- Descarte: {record['discard_reason']}")
-        lines.append("")
-        lines.append("Historial:")
-        lines.append("")
-        for step in record["history"]:
-            lines.append(f"- `{step['stage']}` → `{step['status']}`: {step['message']}")
-        lines.append("")
+        for record in report["extreme_scenarios"]:
+            _append_record_to_markdown(lines, record)
 
     lines.append("## Lectura arquitectónica")
     lines.append("")
@@ -169,6 +178,35 @@ def report_to_markdown(report: Dict[str, Any]) -> str:
     )
     lines.append("")
     return "\n".join(lines)
+
+
+def _append_record_to_markdown(lines: List[str], record: Dict[str, Any]) -> None:
+    decision = record["decision"]
+    sensory = record["sensory_profile"]
+    lines.append(f"### {record['label']}")
+    lines.append("")
+    lines.append(f"- Origen: `{record['source']}`")
+    lines.append(f"- Payload: `{record['payload'][:50] + '...' if len(record['payload']) > 50 else record['payload']}`")
+    lines.append(f"- Acción: `{decision.get('action')}`")
+    lines.append(f"- Ruta: `{decision.get('route')}`")
+    lines.append(f"- Motivo: {decision.get('reason')}")
+    lines.append(f"- Confianza local: {decision.get('confidence')}")
+    lines.append(f"- Longitud detectada: {sensory.get('length')}")
+    lines.append(f"- GC%: {sensory.get('gc_percent')}")
+    lines.append(f"- N%: {sensory.get('n_percent')}")
+    lines.append(f"- Duplicado: {sensory.get('is_duplicate')}")
+    if record.get("absorbed_features"):
+        lines.append("- Nutrientes informacionales: presentes")
+    if record.get("quarantine_reason"):
+        lines.append(f"- Cuarentena: {record['quarantine_reason']}")
+    if record.get("discard_reason"):
+        lines.append(f"- Descarte: {record['discard_reason']}")
+    lines.append("")
+    lines.append("Historial (Plexos):")
+    lines.append("")
+    for step in record["history"]:
+        lines.append(f"- `{step['stage']}` ({step['plexus']}) → `{step['status']}`: {step['message']}")
+    lines.append("")
 
 
 def parse_args() -> argparse.Namespace:
