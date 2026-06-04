@@ -331,6 +331,8 @@ def main():
     rows = eco.read_dataset(args.input)
 
     semireal_features = lambda seq: eco.features_semireal(seq, args.embedding_k, args.dimensions)
+    baseline_feature_names = eco.feature_names_baseline_v3()
+    semireal_feature_names = eco.feature_names_semireal(args.dimensions, args.embedding_k)
 
     model_v3 = eco.centroid_train(rows, eco.features_baseline_v3)
     model_semireal = eco.centroid_train(rows, semireal_features)
@@ -343,8 +345,20 @@ def main():
         "difficulty": "unknown",
     }
 
-    pred_v3, confidence_v3 = router.predict_with_confidence(row, model_v3, eco.features_baseline_v3)
-    pred_semireal, confidence_semireal = router.predict_with_confidence(row, model_semireal, semireal_features)
+    pred_v3, confidence_v3, baseline_v3_details = router.predict_with_confidence(
+        row,
+        model_v3,
+        eco.features_baseline_v3,
+        feature_names=baseline_feature_names,
+        return_details=True,
+    )
+    pred_semireal, confidence_semireal, embedding_semireal_details = router.predict_with_confidence(
+        row,
+        model_semireal,
+        semireal_features,
+        feature_names=semireal_feature_names,
+        return_details=True,
+    )
 
     if confidence_v3 >= args.threshold:
         selected_route = "baseline_v3"
@@ -363,14 +377,8 @@ def main():
         "length": len(sequence),
         "threshold": args.threshold,
         "sensory_profile": sequence_sensory_profile(sequence),
-        "baseline_v3": {
-            "prediction": pred_v3,
-            "confidence": round(confidence_v3, 4),
-        },
-        "embedding_semireal": {
-            "prediction": pred_semireal,
-            "confidence": round(confidence_semireal, 4),
-        },
+        "baseline_v3": baseline_v3_details,
+        "embedding_semireal": embedding_semireal_details,
         "selected_route": selected_route,
         "final_prediction": final_prediction,
         "reason": reason,

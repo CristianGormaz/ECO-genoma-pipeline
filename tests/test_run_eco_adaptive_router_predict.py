@@ -57,6 +57,12 @@ def test_run_eco_adaptive_router_predict_exports_reports(tmp_path: Path):
     }
     assert payload["enteric_reflex"]["caution_level"] in {"normal", "media", "alta"}
     assert "no diagnostico clinico" in payload["limits"]
+    assert payload["baseline_v3"]["feature_space"] == "minmax"
+    assert payload["baseline_v3"]["scaler_applied"] is True
+    assert payload["baseline_v3"]["feature_names"]
+    assert payload["embedding_semireal"]["feature_space"] == "minmax"
+    assert payload["embedding_semireal"]["scaler_applied"] is True
+    assert payload["embedding_semireal"]["feature_names"]
 
     markdown = output_md.read_text(encoding="utf-8")
     assert "# E.C.O. - Predicción con router adaptativo" in markdown

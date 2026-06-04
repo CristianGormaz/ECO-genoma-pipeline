@@ -81,6 +81,16 @@ def features_semireal(seq, embedding_k=4, dimensions=128):
     return hashed_kmer_features(seq, embedding_k, dimensions)
 
 
+def feature_names_baseline_v3():
+    motif_names = [f"motif_count_{name}" for name, _pattern in MOTIFS]
+    kmer_names = [f"kmer_3_{kmer}" for kmer in all_kmers(3)]
+    return motif_names + kmer_names
+
+
+def feature_names_semireal(dimensions, embedding_k=4):
+    return [f"hashed_kmer_k{embedding_k}_bin_{index:03d}" for index in range(dimensions)]
+
+
 def stratified_split(rows, test_ratio, seed):
     rng = random.Random(seed)
     by_label = defaultdict(list)

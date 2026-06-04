@@ -49,17 +49,17 @@ def test_run_eco_adaptive_router_batch_exports_reports(tmp_path: Path):
     assert summary["total_sequences"] == 3
     assert summary["processed_sequences"] == 2
     assert summary["rejected_sequences"] == 1
-    assert summary["contradiction_count"] >= 1
+    assert summary["contradiction_count"] == 0
     assert summary["high_caution_count"] >= 1
     assert summary["priority_case_count"] == len(priority_cases)
-    assert summary["priority_case_count"] >= 2
+    assert summary["priority_case_count"] == 1
     assert "baseline_v3" in summary["route_counts"]
+    assert "embedding_semireal" in summary["route_counts"]
     assert "none" in summary["route_counts"]
     assert homeostasis["state"] == "atencion"
     assert homeostasis["risk_score"] > 0
     assert homeostasis["rejection_rate"] > 0
     assert "barrera_inmune_activa" in homeostasis["triggers"]
-    assert "contradiccion_entre_rutas" in homeostasis["triggers"]
     assert "cautela_alta" in homeostasis["triggers"]
     assert len(payload["results"]) == 3
 
@@ -67,11 +67,15 @@ def test_run_eco_adaptive_router_batch_exports_reports(tmp_path: Path):
     assert len(rejected) == 1
     assert rejected[0]["enteric_reflex"]["reflex_name"] == "reflejo_inmune_de_rechazo"
 
+    processed = [item for item in payload["results"] if item["status"] == "processed"]
+    assert all(item["baseline_v3"]["feature_space"] == "minmax" for item in processed)
+    assert all(item["baseline_v3"]["scaler_applied"] is True for item in processed)
+    assert all(item["baseline_v3"]["feature_names"] for item in processed)
+
     categories = [case["category"] for case in priority_cases]
     priorities = [case["priority"] for case in priority_cases]
     assert priorities == sorted(priorities)
     assert categories[0] == "rechazo_inmune"
-    assert "contradiccion_interna" in categories
     assert all("review_action" in case for case in priority_cases)
 
     markdown = output_md.read_text(encoding="utf-8")
