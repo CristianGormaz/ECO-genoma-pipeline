@@ -109,12 +109,6 @@ COMPONENTS = [
         "script": "scripts/run_eco_laos_governance_gate_demo.py",
         "output": Path("results/eco_laos_governance_gate_demo.json"),
     },
-    {
-        "id": "governed_experimental_cycle",
-        "label": "governed experimental cycle",
-        "script": "scripts/run_eco_governed_experimental_cycle.py",
-        "output": Path("results/eco_governed_experimental_cycle.json"),
-    },
 ]
 
 
@@ -142,8 +136,37 @@ def normalize_status(raw_status: Any) -> str:
 def run_component(component: dict) -> dict:
     result = _run([sys.executable, component["script"]])
     if result.returncode != 0:
-        raise RuntimeError(result.stdout + result.stderr)
-    payload = _read_json(component["output"])
+        return {
+            "id": component["id"],
+            "label": component["label"],
+            "status": "red",
+            "classification": "blocked",
+            "output": str(component["output"]),
+            "error": f"Execution failed (exit code {result.returncode})",
+        }
+
+    if not component["output"].exists():
+        return {
+            "id": component["id"],
+            "label": component["label"],
+            "status": "red",
+            "classification": "blocked",
+            "output": str(component["output"]),
+            "error": "Output file not found",
+        }
+
+    try:
+        payload = _read_json(component["output"])
+    except json.JSONDecodeError:
+        return {
+            "id": component["id"],
+            "label": component["label"],
+            "status": "red",
+            "classification": "blocked",
+            "output": str(component["output"]),
+            "error": "Failed to decode JSON output",
+        }
+
     status = normalize_status(payload.get("status") or payload.get("estado") or "passed")
     return {
         "id": component["id"],
@@ -228,6 +251,21 @@ def collect_maturity_score() -> dict[str, Any]:
 
 
 def collect_governed_experimental_cycle() -> dict[str, Any]:
+    script = "scripts/run_eco_governed_experimental_cycle.py"
+    result = _run([sys.executable, script])
+
+    if result.returncode != 0:
+        return {
+            "status": "red",
+            "final_decision": "reject",
+            "phase_maturity_status": "error",
+            "governed_admission_status": "error",
+            "output": str(GOVERNED_CYCLE_OUTPUT),
+            "risk_count": 1,
+            "recommendations": [f"Error al ejecutar {script}."],
+            "error": result.stderr or f"Exit code {result.returncode}",
+        }
+
     if not GOVERNED_CYCLE_OUTPUT.exists():
         return {
             "status": "missing",
@@ -236,10 +274,22 @@ def collect_governed_experimental_cycle() -> dict[str, Any]:
             "governed_admission_status": "missing",
             "output": str(GOVERNED_CYCLE_OUTPUT),
             "risk_count": 0,
-            "recommendations": ["Ejecutar scripts/run_eco_governed_experimental_cycle.py."],
+            "recommendations": ["No se generó el artefacto del ciclo gobernado."],
         }
 
-    payload = _read_json(GOVERNED_CYCLE_OUTPUT)
+    try:
+        payload = _read_json(GOVERNED_CYCLE_OUTPUT)
+    except json.JSONDecodeError:
+        return {
+            "status": "red",
+            "final_decision": "review",
+            "phase_maturity_status": "error",
+            "governed_admission_status": "error",
+            "output": str(GOVERNED_CYCLE_OUTPUT),
+            "risk_count": 1,
+            "recommendations": ["Error de formato en el artefacto del ciclo gobernado."],
+        }
+
     return {
         "status": normalize_status(payload.get("status")),
         "final_decision": payload.get("final_decision", "review"),
@@ -447,10 +497,30 @@ def collect_responsible_limits(
 
 def build_dashboard() -> dict:
     components = [run_component(component) for component in COMPONENTS]
-    component_passed = all(component["status"] == "passed" for component in components)
     repo_status = collect_repo_status()
     maturity_score = collect_maturity_score()
     governed_experimental_cycle = collect_governed_experimental_cycle()
+
+    # Re-insert governed cycle into components for UI consistency
+    governed_status = governed_experimental_cycle["status"]
+    governed_classification = (
+        "allowed"
+        if governed_status == "passed"
+        else "conditional"
+        if governed_status == "attention"
+        else "blocked"
+    )
+    components.append(
+        {
+            "id": "governed_experimental_cycle",
+            "label": "governed experimental cycle",
+            "status": governed_status,
+            "classification": governed_classification,
+            "output": str(GOVERNED_CYCLE_OUTPUT),
+        }
+    )
+
+    component_passed = all(component["status"] == "passed" for component in components)
     relevant_gates = collect_relevant_gates()
     rollback_evidence = collect_rollback_evidence()
     current_risks = build_current_risks(
@@ -467,7 +537,13 @@ def build_dashboard() -> dict:
         relevant_gates=relevant_gates,
         rollback_evidence=rollback_evidence,
     )
-    status = "passed" if final_decision == "advance" else "red" if final_decision == "reject" else "attention"
+    status = (
+        "passed"
+        if final_decision == "advance"
+        else "red"
+        if final_decision == "reject"
+        else "attention"
+    )
     classification = {
         "advance": "allowed",
         "review": "conditional",
