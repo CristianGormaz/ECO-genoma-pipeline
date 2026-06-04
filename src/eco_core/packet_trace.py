@@ -28,6 +28,7 @@ class PacketTrace:
     payload_length: int
     stage_count: int
     stages: tuple[str, ...]
+    plexuses: tuple[str, ...]
     final_stage: str
     final_status: str
     barrier_status: str
@@ -46,6 +47,7 @@ class PacketTrace:
     def to_dict(self) -> dict[str, Any]:
         data = asdict(self)
         data["stages"] = list(self.stages)
+        data["plexuses"] = list(self.plexuses)
         return data
 
 
@@ -69,6 +71,7 @@ def build_packet_trace(packet: EcoPacket) -> PacketTrace:
     defense = packet.metadata.get("enteric_defense_signal", {})
     decision = packet.metadata.get("enteric_decision", {})
     stages = tuple(log.stage for log in packet.history)
+    plexuses = tuple(log.plexus for log in packet.history)
     final_log = packet.history[-1] if packet.history else None
 
     return PacketTrace(
@@ -79,6 +82,7 @@ def build_packet_trace(packet: EcoPacket) -> PacketTrace:
         payload_length=_payload_length(packet.payload),
         stage_count=len(packet.history),
         stages=stages,
+        plexuses=plexuses,
         final_stage=final_log.stage if final_log else "unknown",
         final_status=final_log.status if final_log else "unknown",
         barrier_status=str(barrier.get("status", "unknown")),
@@ -111,10 +115,11 @@ def traces_to_markdown(traces: Iterable[PacketTrace]) -> str:
         "",
         f"Paquetes trazados: {len(trace_list)}",
         "",
-        "| source | final_decision | barrier | motility | defense | final_status | seen |",
-        "|---|---|---|---|---|---|---|",
+        "| source | final_decision | barrier | motility | defense | plexus_path |",
+        "|---|---|---|---|---|---|",
     ]
     for trace in trace_list:
+        plexus_path = " → ".join(sorted(set(trace.plexuses), key=trace.plexuses.index))
         lines.append(
             "| "
             f"{trace.source} | "
@@ -122,8 +127,7 @@ def traces_to_markdown(traces: Iterable[PacketTrace]) -> str:
             f"{trace.barrier_status} | "
             f"{trace.motility_action} | "
             f"{trace.defense_category}/{trace.defense_severity} | "
-            f"{trace.final_status} | "
-            f"{trace.microbiota_seen_count} |"
+            f"{plexus_path} |"
         )
 
     lines.extend(

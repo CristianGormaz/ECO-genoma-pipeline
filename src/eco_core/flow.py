@@ -26,6 +26,7 @@ class EcoStageLog:
     stage: str
     status: str
     message: str
+    plexus: str = "unknown"
     timestamp: str = field(default_factory=utc_now_iso)
 
 
@@ -40,12 +41,14 @@ class EcoPacket:
     metadata: Dict[str, Any] = field(default_factory=dict)
     history: List[EcoStageLog] = field(default_factory=list)
 
-    def log(self, stage: str, status: str, message: str) -> None:
+    def log(self, stage: str, status: str, message: str, plexus: str = "unknown") -> None:
         """Agrega un registro de trazabilidad al paquete."""
-        self.history.append(EcoStageLog(stage=stage, status=status, message=message))
+        self.history.append(EcoStageLog(stage=stage, status=status, message=message, plexus=plexus))
 
 
-def route_packet(packet: EcoPacket, stage: str, message: str, status: str = "ok") -> EcoPacket:
+def route_packet(
+    packet: EcoPacket, stage: str, message: str, status: str = "ok", plexus: str = "unknown"
+) -> EcoPacket:
     """Registra que un paquete avanzó por una etapa del pipeline."""
-    packet.log(stage=stage, status=status, message=message)
+    packet.log(stage=stage, status=status, message=message, plexus=plexus)
     return packet

@@ -55,7 +55,12 @@ class EntericSystem:
         if isinstance(payload, str):
             return ingest_text(payload, source=source, packet_type=packet_type)
         packet = EcoPacket(payload=payload, source=source, packet_type=packet_type)
-        return route_packet(packet, stage="ingestion", message="Dato no textual ingerido por E.C.O.")
+        return route_packet(
+            packet,
+            stage="ingestion",
+            message="Dato no textual ingerido por E.C.O.",
+            plexus="mucosa_epithelial",
+        )
 
     def sense(self, packet: EcoPacket) -> Dict[str, Any]:
         profile = analyze_packet(
@@ -117,41 +122,84 @@ class EntericSystem:
         return EntericDecision("absorb", motility.status, motility.reason, 0.92, motility.route)
 
     def process_packet(self, packet: EcoPacket) -> EcoPacket:
-        route_packet(packet, stage="enteric_epithelium", message="El paquete entra a la barrera epitelial informacional.")
+        route_packet(
+            packet,
+            stage="enteric_epithelium",
+            message="El paquete entra a la barrera epitelial informacional.",
+            plexus="mucosa_epithelial",
+        )
         sensory_profile = self.sense(packet)
         packet.metadata["enteric_sensory_profile"] = sensory_profile
-        route_packet(packet, stage="enteric_sensing", message="Perfil sensorial generado antes de la microdecisión local.")
+        route_packet(
+            packet,
+            stage="enteric_sensing",
+            message="Perfil sensorial generado antes de la microdecisión local.",
+            plexus="plexo_submucoso",
+        )
 
         barrier_result = self.barrier_reflex(sensory_profile)
         packet.metadata["enteric_barrier_result"] = asdict(barrier_result)
+        for log_msg in barrier_result.internal_logs:
+            route_packet(
+                packet,
+                stage="enteric_barrier:internal",
+                status=barrier_result.status,
+                message=log_msg,
+                plexus="mucosa_epithelial",
+            )
         route_packet(
             packet,
             stage="enteric_barrier",
             status=barrier_result.status,
             message=barrier_result.reason,
+            plexus="mucosa_epithelial",
         )
 
         motility_decision = self.motility_reflex(sensory_profile, barrier_result)
         packet.metadata["myenteric_motility_decision"] = asdict(motility_decision)
+        for log_msg in motility_decision.internal_logs:
+            route_packet(
+                packet,
+                stage="enteric_motility:internal",
+                status=motility_decision.status,
+                message=log_msg,
+                plexus="plexo_mienterico",
+            )
         route_packet(
             packet,
             stage="enteric_motility",
             status=motility_decision.status,
             message=motility_decision.reason,
+            plexus="plexo_mienterico",
         )
 
         defense_signal = self.defense_reflex(sensory_profile, barrier_result, motility_decision)
         packet.metadata["enteric_defense_signal"] = asdict(defense_signal)
+        for log_msg in defense_signal.internal_logs:
+            route_packet(
+                packet,
+                stage="enteric_defense:internal",
+                status=defense_signal.severity,
+                message=log_msg,
+                plexus="sistema_inmune_entérico",
+            )
         route_packet(
             packet,
             stage="enteric_defense",
             status=defense_signal.severity,
             message=defense_signal.reason,
+            plexus="sistema_inmune_entérico",
         )
 
         decision = self.local_reflex(sensory_profile, motility_decision)
         packet.metadata["enteric_decision"] = asdict(decision)
-        route_packet(packet, stage="enteric_reflex", status=decision.status, message=decision.reason)
+        route_packet(
+            packet,
+            stage="enteric_reflex",
+            status=decision.status,
+            message=decision.reason,
+            plexus="plexo_mienterico",
+        )
 
         if decision.action == "reject":
             discard_packet(packet, reason=decision.reason)
@@ -159,7 +207,13 @@ class EntericSystem:
             discard_packet(packet, reason=decision.reason)
         elif decision.action == "quarantine":
             packet.metadata["quarantine_reason"] = decision.reason
-            route_packet(packet, stage="enteric_quarantine", status="quarantined", message="Paquete conservado para revisión; no se absorbe todavía.")
+            route_packet(
+                packet,
+                stage="enteric_quarantine",
+                status="quarantined",
+                message="Paquete conservado para revisión; no se absorbe todavía.",
+                plexus="plexo_mienterico",
+            )
         elif decision.action in {"absorb", "batch_absorb"}:
             packet = filter_dna_packet(packet)
             if has_rejection(packet):
@@ -167,7 +221,13 @@ class EntericSystem:
             else:
                 if decision.action == "batch_absorb":
                     packet.metadata["batch_recommended"] = True
-                    route_packet(packet, stage="enteric_batch_flow", status="batched", message="Plexo mientérico digital marca el paquete para procesamiento por lotes.")
+                    route_packet(
+                        packet,
+                        stage="enteric_batch_flow",
+                        status="batched",
+                        message="Plexo mientérico digital marca el paquete para procesamiento por lotes.",
+                        plexus="plexo_mienterico",
+                    )
                 packet = absorb_dna_packet(packet)
 
         self.update_microbiome(packet)

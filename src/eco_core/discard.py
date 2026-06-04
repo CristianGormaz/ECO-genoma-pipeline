@@ -26,5 +26,11 @@ class EcoDiscardRecord:
 def discard_packet(packet: EcoPacket, reason: str) -> EcoDiscardRecord:
     """Marca un paquete como descartado y devuelve un registro auditable."""
     packet.metadata["discard_reason"] = reason
-    route_packet(packet, stage="discard", status="discarded", message=reason)
+    route_packet(
+        packet,
+        stage="discard",
+        status="discarded",
+        message=reason,
+        plexus="mucosa_epithelial",
+    )
     return EcoDiscardRecord(packet_id=packet.packet_id, source=packet.source, reason=reason)

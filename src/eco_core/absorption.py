@@ -48,7 +48,18 @@ def absorb_sequence_features(sequence: str) -> Dict[str, float | int]:
 def absorb_dna_packet(packet: EcoPacket) -> EcoPacket:
     """Agrega features básicas de ADN al metadata del paquete."""
     if not isinstance(packet.payload, str):
-        return route_packet(packet, stage="absorption", status="rejected", message="No se pudo absorber: payload no textual.")
+        return route_packet(
+            packet,
+            stage="absorption",
+            status="rejected",
+            message="No se pudo absorber: payload no textual.",
+            plexus="mucosa_epithelial",
+        )
 
     packet.metadata["absorbed_features"] = absorb_sequence_features(packet.payload)
-    return route_packet(packet, stage="absorption", message="Features básicas absorbidas como conocimiento útil.")
+    return route_packet(
+        packet,
+        stage="absorption",
+        message="Features básicas absorbidas como conocimiento útil.",
+        plexus="mucosa_epithelial",
+    )

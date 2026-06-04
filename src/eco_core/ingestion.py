@@ -26,7 +26,12 @@ def ingest_text(text: str, source: str = "manual_input", packet_type: str = "tex
         EcoPacket con registro inicial de ingesta.
     """
     packet = EcoPacket(payload=text, source=source, packet_type=packet_type)
-    return route_packet(packet, stage="ingestion", message="Dato crudo ingerido por E.C.O.")
+    return route_packet(
+        packet,
+        stage="ingestion",
+        message="Dato crudo ingerido por E.C.O.",
+        plexus="mucosa_epithelial",
+    )
 
 
 def ingest_file(path: str | Path, packet_type: Optional[str] = None) -> EcoPacket:
@@ -42,4 +47,9 @@ def ingest_file(path: str | Path, packet_type: Optional[str] = None) -> EcoPacke
     inferred_type = packet_type or file_path.suffix.lstrip(".") or "text"
     content = file_path.read_text(encoding="utf-8")
     packet = EcoPacket(payload=content, source=str(file_path), packet_type=inferred_type)
-    return route_packet(packet, stage="ingestion", message=f"Archivo ingerido: {file_path}")
+    return route_packet(
+        packet,
+        stage="ingestion",
+        message=f"Archivo ingerido: {file_path}",
+        plexus="mucosa_epithelial",
+    )
