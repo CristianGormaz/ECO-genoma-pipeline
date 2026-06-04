@@ -10,9 +10,9 @@ E.C.O. no es un sistema clínico. No diagnostica, no interpreta pacientes, no ca
 
 ## Estado actual
 
-E.C.O. mantiene una base técnica estable con pruebas automatizadas, reportes reproducibles, gates de gobernanza, validaciones responsables y auditorías sintéticas de coherencia.
+E.C.O. mantiene una base post-RC1 con validación automatizada, dashboard sintético fresco, Operational Gauntlet v1, gates de gobernanza y límites responsables.
 
-La línea **S.N.E.-E.C.O. v1.0/v1.x** está enfocada en estabilidad operativa, trazabilidad de rutas, recurrencia, homeostasis y límites responsables.
+S.N.E.-E.C.O. v1.2 añade observabilidad distribuida por plexos y micro-trazas, sin alterar el flujo canónico v1.0/v1.1.
 
 Validación rápida recomendada:
 
@@ -44,6 +44,9 @@ E.C.O. trabaja actualmente con rutas controladas:
 4. **Embeddings experimentales.** Contratos vectoriales placeholder/semireales para preparar comparación futura con embeddings reales.
 5. **S.N.E.-E.C.O.** Arquitectura entérica computacional para trazabilidad, defensa informacional, homeostasis, decisión adaptativa y auditoría de rutas.
 6. **Gobernanza operacional.** Gates, snapshots, score de madurez, auditorías de coherencia, admisión gobernada y paneles sintéticos de decisión.
+7. **Observabilidad distribuida (v1.2).** Trazas por plexos, micro-trazas internas y exportación Mermaid.
+8. **Operational Gauntlet v1.** Batería sintética de regresión para bordes críticos.
+9. **Dashboard sintético fresco.** Recompone el governed experimental cycle durante su ejecución.
 
 ## Límites responsables
 
@@ -90,6 +93,9 @@ En Linux, si `python` no existe fuera del entorno virtual, usa `python3` o `.ven
 ```bash
 make eco-status                  # Estado operativo del repositorio
 make test                        # Suite pytest
+make observability-v1-2          # Generar reportes de observabilidad v1.2
+.venv/bin/python scripts/run_eco_operational_gauntlet.py  # Ejecutar Gauntlet Operacional v1
+make eco-synthetic-operational-dashboard  # Dashboard operacional sintético fresco
 make check-fast                  # Validación rápida local
 make eco-check                   # Chequeo operativo amplio con validación global de demos sintéticas
 make eco-check-clean             # Chequeo operativo + limpieza de artefactos
@@ -106,25 +112,28 @@ docs/operations/eco-operational-panel-index.md
 
 ## S.N.E.-E.C.O.
 
-**S.N.E.-E.C.O. v1.0/v1.x** convierte la metáfora del Sistema Nervioso Entérico en una arquitectura computacional verificable.
+**S.N.E.-E.C.O.** convierte la metáfora del Sistema Nervioso Entérico en una arquitectura computacional verificable.
 
-El sistema observa paquetes, aplica barreras, decide tránsito, registra recurrencia, evalúa homeostasis, detecta alertas defensivas, proyecta estados adaptativos y genera reportes auditables.
+- **S.N.E.-E.C.O. v1.0/v1.1:** Flujo entérico canónico, homeostasis, defensa, rutas y reportes.
+- **v1.2:** Observabilidad distribuida por plexos, micro-trazas y diagramas Mermaid.
 
-Componentes principales:
+El sistema utiliza plexos como analogía funcional para segmentar la lógica:
+- **mucosa epitelial:** Ingestión, barrera física, filtrado y absorción.
+- **plexo submucoso:** Sensado local y perfil sensorial.
+- **plexo mientérico:** Motilidad operativa y reflejos locales.
+- **sistema inmune entérico:** Señales de defensa y riesgo técnico.
 
-```text
-barrier.py                    → barrera informacional
-sensor_local.py               → sensado local
-motility.py                   → tránsito operativo
-microbiota.py                 → memoria adaptativa / recurrencia
-defense.py                    → defensa informacional
-homeostasis.py                → equilibrio operativo del flujo
-gut_brain_axis.py             → reporte comunicable
-adaptive_state_baseline.py    → baseline jerárquico auditable
-adaptive_state_coverage.py    → diagnóstico de cobertura
-adaptive_state_confusion.py   → rutas confundidas
-enteric_system.py             → coordinación entérica
-```
+### Operational Gauntlet v1
+
+Batería de 8 checks críticos para asegurar la integridad del pipeline:
+- `classifier_exact_tie_confidence`
+- `classifier_raw_distance_prediction`
+- `motif_rejects_plain_text_fasta`
+- `homeostasis_public_paths_consistent`
+- `readiness_report_does_not_claim_live_green`
+- `eco_status_green_requires_clean_main_synced`
+- `governed_admission_blocks_on_relevant_gates`
+- `responsible_limits_not_tautological`
 
 Documentos clave:
 
@@ -280,10 +289,10 @@ make eco-status
 Lectura rápida:
 
 ```text
-Estado green     → puedes detenerte o iniciar sprint controlado desde main
-Estado attention → revisa cambios pendientes antes de seguir
-Estado unknown   → no hagas commit ni push hasta diagnosticar
-Estado error     → prioriza recuperación
+Estado green     → puedes detenerte aquí. Para iniciar un nuevo sprint, crea una rama nueva desde main antes de modificar archivos.
+Estado attention → hay cambios, rama no final o desincronización; revisar antes de continuar.
+Estado unknown   → no hagas commit ni push hasta diagnosticar.
+Estado error     → prioriza recuperación.
 ```
 
 Flujo recomendado:
@@ -324,15 +333,14 @@ docs/operations/project-map.md
 
 ## Roadmap inmediato
 
-Prioridades actuales:
+1. Cerrar y publicar **S.N.E.-E.C.O. v1.2** (Observabilidad Distribuida).
+2. Revisar notebook Colab rastreado antes de difusión pública.
+3. Fortalecer el **release checklist** y preparar changelog/tag para v1.2.
+4. Planificar **v1.3 Observabilidad Temporal** (fase futura).
 
-1. Reducir estados `attention` del score de madurez operativa.
-2. Fortalecer `phase_maturity`.
-3. Integrar `governed_admission` al flujo operacional final.
-4. Mantener rollback visible y auditable.
-5. Evitar expansión funcional sin gates, tests y límites responsables.
+## Publicación responsable
 
-No se deben incorporar datos reales biológicos sin manifiesto de fuente, clasificación de sensibilidad, revisión humana, límites interpretativos, evidencia auditable, rollback y validaciones pasando.
+El proyecto puede compartirse como arquitectura experimental y educativa. No debe presentarse como herramienta clínica, diagnóstico genético, interpretación de pacientes ni sistema biológico/consciente.
 
 ## Autoría
 
