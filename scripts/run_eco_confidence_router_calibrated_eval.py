@@ -28,38 +28,72 @@ def euclidean(a, b):
     return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
 
 
-def get_centroids(model):
-    """
-    Extrae centroides desde varias estructuras posibles.
-
-    El modelo usado por centroid_train puede venir como:
-    - dict directo: {"regulatory": [...], "non_regulatory": [...]}
-    - dict con clave "centroids"
-    - tuple/list donde uno de los elementos es el dict de centroides
-    - objeto con atributo .centroids
-
-    Esta función evita acoplar el router a una sola forma interna del modelo.
-    """
+def get_model_contract(model):
+    """Extrae centroides y contrato de escalado desde varias estructuras."""
     if isinstance(model, dict):
         if "centroids" in model and isinstance(model["centroids"], dict):
-            return model["centroids"]
+            return {
+                "centroids": model["centroids"],
+                "feature_min": list(model.get("feature_min") or model.get("mins") or []),
+                "feature_max": list(model.get("feature_max") or model.get("maxs") or []),
+                "feature_names": list(model.get("feature_names") or []),
+                "schema_version": model.get("schema_version"),
+            }
 
         if model and all(isinstance(v, (list, tuple)) for v in model.values()):
-            return model
+            return {
+                "centroids": model,
+                "feature_min": [],
+                "feature_max": [],
+                "feature_names": [],
+                "schema_version": None,
+            }
 
     if isinstance(model, (tuple, list)):
+        if (
+            len(model) >= 3
+            and isinstance(model[0], dict)
+            and model[0]
+            and all(isinstance(v, (list, tuple)) for v in model[0].values())
+        ):
+            metadata = model[3] if len(model) >= 4 and isinstance(model[3], dict) else {}
+            return {
+                "centroids": model[0],
+                "feature_min": list(model[1]),
+                "feature_max": list(model[2]),
+                "feature_names": list(metadata.get("feature_names") or []),
+                "schema_version": metadata.get("schema_version"),
+            }
         for item in model:
             if isinstance(item, dict):
                 if "centroids" in item and isinstance(item["centroids"], dict):
-                    return item["centroids"]
+                    return {
+                        "centroids": item["centroids"],
+                        "feature_min": list(item.get("feature_min") or item.get("mins") or []),
+                        "feature_max": list(item.get("feature_max") or item.get("maxs") or []),
+                        "feature_names": list(item.get("feature_names") or []),
+                        "schema_version": item.get("schema_version"),
+                    }
 
                 if item and all(isinstance(v, (list, tuple)) for v in item.values()):
-                    return item
+                    return {
+                        "centroids": item,
+                        "feature_min": [],
+                        "feature_max": [],
+                        "feature_names": [],
+                        "schema_version": None,
+                    }
 
     if hasattr(model, "centroids"):
         centroids = getattr(model, "centroids")
         if isinstance(centroids, dict):
-            return centroids
+            return {
+                "centroids": centroids,
+                "feature_min": list(getattr(model, "feature_min", []) or []),
+                "feature_max": list(getattr(model, "feature_max", []) or []),
+                "feature_names": list(getattr(model, "feature_names", []) or []),
+                "schema_version": getattr(model, "schema_version", None),
+            }
 
     raise TypeError(
         "No se pudo interpretar la estructura del modelo centroid. "
@@ -67,9 +101,53 @@ def get_centroids(model):
     )
 
 
-def predict_with_confidence(row, model, feature_fn):
-    centroids = get_centroids(model)
-    vector = feature_fn(row["sequence"])
+def apply_minmax(vector, feature_min, feature_max):
+    if len(vector) != len(feature_min) or len(vector) != len(feature_max):
+        raise ValueError(
+            "Contrato de escalado inválido: dimensiones incompatibles entre features y scaler. "
+            f"features={len(vector)} mins={len(feature_min)} maxs={len(feature_max)}"
+        )
+
+    scaled = []
+    for value, minimum, maximum in zip(vector, feature_min, feature_max):
+        if maximum == minimum:
+            scaled.append(0.0)
+        else:
+            scaled.append((value - minimum) / (maximum - minimum))
+    return scaled
+
+
+def build_feature_names(feature_names, size):
+    if feature_names:
+        if len(feature_names) != size:
+            raise ValueError(
+                "Contrato de features inválido: la cantidad de feature_names no coincide con el vector. "
+                f"feature_names={len(feature_names)} vector={size}"
+            )
+        return list(feature_names)
+    return [f"feature_{index}" for index in range(size)]
+
+
+def predict_with_confidence(row, model, feature_fn, *, feature_names=None, return_details=False):
+    contract = get_model_contract(model)
+    centroids = contract["centroids"]
+    raw_vector = feature_fn(row["sequence"])
+    feature_min = contract["feature_min"]
+    feature_max = contract["feature_max"]
+
+    if feature_min or feature_max:
+        vector = apply_minmax(raw_vector, feature_min, feature_max)
+        feature_space = "minmax"
+        scaler_applied = True
+    else:
+        vector = raw_vector
+        feature_space = "raw"
+        scaler_applied = False
+
+    resolved_feature_names = build_feature_names(
+        feature_names or contract["feature_names"],
+        len(vector),
+    )
 
     distances = []
     for label, centroid in centroids.items():
@@ -86,6 +164,19 @@ def predict_with_confidence(row, model, feature_fn):
 
     confidence = (d2 - d1) / (d2 + 1e-12)
     confidence = max(0.0, min(1.0, confidence))
+    details = {
+        "label": pred,
+        "prediction": pred,
+        "confidence": round(confidence, 4),
+        "feature_space": feature_space,
+        "feature_names": resolved_feature_names,
+        "scaler_applied": scaler_applied,
+        "feature_min": feature_min if scaler_applied else [],
+        "feature_max": feature_max if scaler_applied else [],
+        "schema_version": contract["schema_version"] or "eco_confidence_router_contract_v1",
+    }
+    if return_details:
+        return pred, confidence, details
     return pred, confidence
 
 
