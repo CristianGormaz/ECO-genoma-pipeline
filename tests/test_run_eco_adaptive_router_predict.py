@@ -46,6 +46,12 @@ def test_run_eco_adaptive_router_predict_exports_reports(tmp_path: Path):
     assert payload["sequence_id"] == "pytest_adaptive_router"
     assert payload["selected_route"] in {"baseline_v3", "embedding_semireal"}
     assert payload["final_prediction"] in {"regulatory", "non_regulatory"}
+    assert payload["arbitration_reason"]
+    assert payload["confidence_policy"]
+    assert "route_confidences" in payload
+    assert payload["route_confidences"]["baseline_v3"] == payload["baseline_v3"]["confidence"]
+    assert payload["route_confidences"]["embedding_semireal"] == payload["embedding_semireal"]["confidence"]
+    assert "conflicting_routes" in payload
     assert "baseline_v3" in payload
     assert "embedding_semireal" in payload
     assert "sensory_profile" in payload

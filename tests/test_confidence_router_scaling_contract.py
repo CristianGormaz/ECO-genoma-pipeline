@@ -112,6 +112,11 @@ def test_adaptive_router_predict_matches_base_logic_for_known_sequence(tmp_path:
     assert payload["baseline_v3"]["prediction"] == EXPECTED_LABEL
     assert payload["selected_route"] == "baseline_v3"
     assert payload["final_prediction"] == EXPECTED_LABEL
+    assert payload["arbitration_reason"].startswith("conflict_resolved_by_higher_confidence")
+    assert payload["confidence_policy"]
+    assert payload["route_confidences"]["baseline_v3"] == payload["baseline_v3"]["confidence"]
+    assert payload["route_confidences"]["embedding_semireal"] == payload["embedding_semireal"]["confidence"]
+    assert payload["conflicting_routes"] == ["baseline_v3", "embedding_semireal"]
     assert payload["baseline_v3"]["feature_space"] == "minmax"
     assert payload["baseline_v3"]["scaler_applied"] is True
     assert payload["baseline_v3"]["feature_names"]
@@ -165,6 +170,11 @@ def test_adaptive_router_batch_matches_base_logic_for_known_sequence(tmp_path: P
     assert item["baseline_v3"]["prediction"] == EXPECTED_LABEL
     assert item["selected_route"] == "baseline_v3"
     assert item["final_prediction"] == EXPECTED_LABEL
+    assert item["arbitration_reason"].startswith("conflict_resolved_by_higher_confidence")
+    assert item["confidence_policy"]
+    assert item["route_confidences"]["baseline_v3"] == item["baseline_v3"]["confidence"]
+    assert item["route_confidences"]["embedding_semireal"] == item["embedding_semireal"]["confidence"]
+    assert item["conflicting_routes"] == ["baseline_v3", "embedding_semireal"]
     assert item["baseline_v3"]["feature_space"] == "minmax"
     assert item["baseline_v3"]["scaler_applied"] is True
     assert item["baseline_v3"]["feature_names"]
