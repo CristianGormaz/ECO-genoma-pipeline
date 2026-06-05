@@ -167,6 +167,45 @@ def fasta_records_to_dict(records: Iterable[FastaRecord]) -> dict[str, str]:
     return {record.sequence_id: record.sequence for record in records}
 
 
+def iter_fasta_lines(records: Iterable[FastaRecord], line_width: int = 60) -> Iterator[str]:
+    if line_width <= 0:
+        raise ValueError("line_width debe ser mayor que 0.")
+
+    for record in records:
+        yield f">{record.sequence_id}\n"
+        sequence = record.sequence
+        for index in range(0, len(sequence), line_width):
+            yield sequence[index : index + line_width] + "\n"
+
+
+def write_fasta_records(
+    records: Iterable[FastaRecord],
+    output_path: str | Path,
+    line_width: int = 60,
+) -> int:
+    if line_width <= 0:
+        raise ValueError("line_width debe ser mayor que 0.")
+
+    output = Path(output_path)
+    handle = None
+    count = 0
+
+    try:
+        for record in records:
+            if handle is None:
+                output.parent.mkdir(parents=True, exist_ok=True)
+                handle = output.open("w", encoding="utf-8")
+
+            count += 1
+            for line in iter_fasta_lines((record,), line_width=line_width):
+                handle.write(line)
+    finally:
+        if handle is not None:
+            handle.close()
+
+    return count
+
+
 def validate_bed_fields(fields: Sequence[str], line_number: int) -> BedRecord:
     if len(fields) < 3:
         raise ValueError(f"Línea BED {line_number}: se esperaban al menos 3 columnas.")

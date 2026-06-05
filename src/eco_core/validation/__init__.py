@@ -6,6 +6,7 @@ from .dna_validation import (
     ParseErrorRecord,
     ValidationResult,
     fasta_records_to_dict,
+    iter_fasta_lines,
     iter_bed_records,
     iter_fasta_records,
     normalize_dna_sequence,
@@ -16,6 +17,7 @@ from .dna_validation import (
     validate_bed_fields,
     validate_dna_sequence,
     validate_fasta_header,
+    write_fasta_records,
 )
 
 __all__ = [
@@ -24,6 +26,7 @@ __all__ = [
     "ParseErrorRecord",
     "ValidationResult",
     "fasta_records_to_dict",
+    "iter_fasta_lines",
     "iter_bed_records",
     "iter_fasta_records",
     "normalize_dna_sequence",
@@ -34,4 +37,5 @@ __all__ = [
     "validate_bed_fields",
     "validate_dna_sequence",
     "validate_fasta_header",
+    "write_fasta_records",
 ]

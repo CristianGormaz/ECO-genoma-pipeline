@@ -6,6 +6,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from eco_core.validation.dna_validation import write_fasta_records
 from eco_bed_to_fasta import (
     BedRegion,
     bed_to_fasta,
@@ -81,6 +82,25 @@ def test_bed_to_fasta_and_format_output():
         ">second|chr1:4-8(.)\n"
         "ACGT\n"
     )
+
+
+def test_write_fasta_records_matches_format_output(tmp_path):
+    reference = {"chr1": "ACGTACGTACGT"}
+    regions = [
+        BedRegion(chrom="chr1", start=0, end=4, name="first"),
+        BedRegion(chrom="chr1", start=4, end=8, name="second"),
+    ]
+    output = tmp_path / "output.fa"
+
+    expected = format_fasta(bed_to_fasta(reference, regions), line_width=4)
+    written = write_fasta_records(
+        (extract_region(reference, region) for region in regions),
+        output,
+        line_width=4,
+    )
+
+    assert written == 2
+    assert output.read_text(encoding="utf-8") == expected
 
 
 def test_parse_bed_reads_multiple_regions(tmp_path):

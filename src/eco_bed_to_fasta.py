@@ -27,20 +27,24 @@ from typing import Dict, Iterable, Iterator, List, Optional
 try:
     from eco_core.validation.dna_validation import (
         fasta_records_to_dict,
+        iter_fasta_lines,
         iter_bed_records,
         iter_fasta_records,
         normalize_dna_sequence,
         parse_bed_record,
         validate_dna_sequence as shared_validate_dna_sequence,
+        write_fasta_records,
     )
 except ImportError:  # pragma: no cover - compatibilidad cuando se importa como src.eco_bed_to_fasta
     from src.eco_core.validation.dna_validation import (
         fasta_records_to_dict,
+        iter_fasta_lines,
         iter_bed_records,
         iter_fasta_records,
         normalize_dna_sequence,
         parse_bed_record,
         validate_dna_sequence as shared_validate_dna_sequence,
+        write_fasta_records,
     )
 
 COMPLEMENT_TABLE = str.maketrans("ACGTNacgtn", "TGCANtgcan")
@@ -197,16 +201,7 @@ def bed_to_fasta(reference: Dict[str, str], regions: Iterable[BedRegion]) -> Lis
 
 def format_fasta(records: Iterable[FastaRecord], line_width: int = 60) -> str:
     """Formatea registros FASTA con ancho de línea configurable."""
-    if line_width <= 0:
-        raise ValueError("line_width debe ser mayor que 0.")
-
-    chunks: List[str] = []
-    for record in records:
-        chunks.append(f">{record.sequence_id}")
-        sequence = record.sequence
-        for index in range(0, len(sequence), line_width):
-            chunks.append(sequence[index : index + line_width])
-    return "\n".join(chunks) + "\n"
+    return "".join(iter_fasta_lines(records, line_width=line_width))
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -239,15 +234,14 @@ def main() -> None:
 
     try:
         reference = parse_fasta(args.reference)
-        regions = iter_bed_regions(args.bed)
-        records = bed_to_fasta(reference, regions)
-        output_text = format_fasta(records, line_width=args.line_width)
-
         output_path = Path(args.output)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(output_text, encoding="utf-8")
+        written = write_fasta_records(
+            (extract_region(reference, region) for region in iter_bed_regions(args.bed)),
+            output_path,
+            line_width=args.line_width,
+        )
 
-        print(f"Regiones procesadas: {len(records)}")
+        print(f"Regiones procesadas: {written}")
         print(f"FASTA guardado en: {output_path}")
     except (FileNotFoundError, ValueError) as exc:
         parser.exit(status=1, message=f"Error: {exc}\n")
