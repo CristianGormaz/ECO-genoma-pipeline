@@ -7,7 +7,13 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from eco_motif_analysis import parse_fasta, reports_to_json, scan_sequence, write_csv
+from eco_motif_analysis import (
+    iter_reports_from_fasta,
+    parse_fasta,
+    reports_to_json,
+    scan_sequence,
+    write_csv,
+)
 
 
 def test_scan_sequence_detects_expected_motifs():
@@ -45,6 +51,20 @@ def test_parse_fasta_rejects_plain_text_without_header(tmp_path):
 
     with pytest.raises(ValueError, match="debe comenzar con una cabecera"):
         parse_fasta(fasta)
+
+
+def test_iter_reports_from_fasta_supports_partial_consumption(tmp_path):
+    fasta = tmp_path / "partial.fa"
+    fasta.write_text(">seq1\nCCAAT\n>seq2\nACGX\n", encoding="utf-8")
+
+    iterator = iter_reports_from_fasta(fasta)
+
+    first = next(iterator)
+    assert first.sequence_id == "seq1"
+    assert first.hits[0].motif_name == "CAAT_box"
+
+    with pytest.raises(ValueError, match="caracteres no válidos"):
+        next(iterator)
 
 
 def test_scan_sequence_rejects_invalid_characters():

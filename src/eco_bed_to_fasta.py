@@ -22,24 +22,24 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, Iterator, List, Optional
 
 try:
     from eco_core.validation.dna_validation import (
         fasta_records_to_dict,
+        iter_bed_records,
+        iter_fasta_records,
         normalize_dna_sequence,
         parse_bed_record,
-        parse_bed_records,
-        parse_fasta_records,
         validate_dna_sequence as shared_validate_dna_sequence,
     )
 except ImportError:  # pragma: no cover - compatibilidad cuando se importa como src.eco_bed_to_fasta
     from src.eco_core.validation.dna_validation import (
         fasta_records_to_dict,
+        iter_bed_records,
+        iter_fasta_records,
         normalize_dna_sequence,
         parse_bed_record,
-        parse_bed_records,
-        parse_fasta_records,
         validate_dna_sequence as shared_validate_dna_sequence,
     )
 
@@ -102,7 +102,7 @@ def parse_fasta(path: str | Path) -> Dict[str, str]:
     if not fasta_path.exists():
         raise FileNotFoundError(f"No existe el archivo FASTA de referencia: {fasta_path}")
 
-    sequences = fasta_records_to_dict(parse_fasta_records(fasta_path))
+    sequences = fasta_records_to_dict(iter_fasta_records(fasta_path))
     if not sequences:
         raise ValueError(f"El archivo no contiene secuencias FASTA: {fasta_path}")
 
@@ -140,8 +140,17 @@ def parse_bed(path: str | Path) -> List[BedRegion]:
     if not bed_path.exists():
         raise FileNotFoundError(f"No existe el archivo BED: {bed_path}")
 
-    regions = [
-        BedRegion(
+    regions = list(iter_bed_regions(bed_path))
+
+    if not regions:
+        raise ValueError(f"El archivo BED no contiene regiones válidas: {bed_path}")
+    return regions
+
+
+def iter_bed_regions(path: str | Path) -> Iterator[BedRegion]:
+    """Adapta BedRecord -> BedRegion sin materializar toda la entrada BED."""
+    for record in iter_bed_records(path):
+        yield BedRegion(
             chrom=record.chrom,
             start=record.start,
             end=record.end,
@@ -149,12 +158,6 @@ def parse_bed(path: str | Path) -> List[BedRegion]:
             score=record.score,
             strand=record.strand,
         )
-        for record in parse_bed_records(bed_path)
-    ]
-
-    if not regions:
-        raise ValueError(f"El archivo BED no contiene regiones válidas: {bed_path}")
-    return regions
 
 
 def reverse_complement(sequence: str) -> str:
@@ -236,7 +239,7 @@ def main() -> None:
 
     try:
         reference = parse_fasta(args.reference)
-        regions = parse_bed(args.bed)
+        regions = iter_bed_regions(args.bed)
         records = bed_to_fasta(reference, regions)
         output_text = format_fasta(records, line_width=args.line_width)
 

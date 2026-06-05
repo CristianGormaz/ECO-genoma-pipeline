@@ -11,6 +11,7 @@ from eco_bed_to_fasta import (
     bed_to_fasta,
     extract_region,
     format_fasta,
+    iter_bed_regions,
     parse_bed,
     parse_bed_line,
     parse_fasta,
@@ -91,6 +92,19 @@ def test_parse_bed_reads_multiple_regions(tmp_path):
     assert len(regions) == 2
     assert regions[0].name == "first"
     assert regions[1].strand == "+"
+
+
+def test_iter_bed_regions_supports_partial_consumption(tmp_path):
+    bed = tmp_path / "partial_regions.bed"
+    bed.write_text("chr1\t0\t4\tfirst\nchr1\t4\twrong\tsecond\n", encoding="utf-8")
+
+    iterator = iter_bed_regions(bed)
+
+    first = next(iterator)
+    assert first == BedRegion(chrom="chr1", start=0, end=4, name="first")
+
+    with pytest.raises(ValueError, match="start/end deben ser enteros"):
+        next(iterator)
 
 
 def test_extract_region_rejects_missing_chromosome():
