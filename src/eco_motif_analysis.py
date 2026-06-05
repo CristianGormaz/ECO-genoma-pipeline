@@ -35,20 +35,20 @@ import json
 import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Pattern
+from typing import Dict, Iterable, Iterator, List, Optional, Pattern
 
 try:
     from eco_core.validation.dna_validation import (
         fasta_records_to_dict,
+        iter_fasta_records,
         normalize_dna_sequence,
-        parse_fasta_records,
         validate_dna_sequence as shared_validate_dna_sequence,
     )
 except ImportError:  # pragma: no cover - compatibilidad cuando se importa como src.eco_motif_analysis
     from src.eco_core.validation.dna_validation import (
         fasta_records_to_dict,
+        iter_fasta_records,
         normalize_dna_sequence,
-        parse_fasta_records,
         validate_dna_sequence as shared_validate_dna_sequence,
     )
 
@@ -104,7 +104,7 @@ def parse_fasta(path: str | Path) -> Dict[str, str]:
     if not fasta_path.exists():
         raise FileNotFoundError(f"No existe el archivo FASTA: {fasta_path}")
 
-    sequences = fasta_records_to_dict(parse_fasta_records(fasta_path))
+    sequences = fasta_records_to_dict(iter_fasta_records(fasta_path))
     if not sequences:
         raise ValueError(f"El archivo no contiene secuencias FASTA: {fasta_path}")
     return sequences
@@ -197,6 +197,22 @@ def scan_sequence(
         n_percent=n_percent(seq),
         hits=hits,
     )
+
+
+def iter_reports_from_fasta(
+    path: str | Path,
+    *,
+    allow_n: bool = True,
+    motifs: Optional[Dict[str, str]] = None,
+) -> Iterator[SequenceReport]:
+    """Consume FASTA registro a registro y produce reportes sin materializar el archivo completo."""
+    for record in iter_fasta_records(path):
+        yield scan_sequence(
+            record.sequence,
+            sequence_id=record.sequence_id,
+            motifs=motifs,
+            allow_n=allow_n,
+        )
 
 
 def reports_to_json(reports: Iterable[SequenceReport]) -> str:
@@ -296,11 +312,7 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
-        sequences = parse_fasta(args.fasta)
-        reports = [
-            scan_sequence(seq, sequence_id=seq_id, allow_n=not args.strict_acgt)
-            for seq_id, seq in sequences.items()
-        ]
+        reports = list(iter_reports_from_fasta(args.fasta, allow_n=not args.strict_acgt))
 
         print_human_report(reports)
 
