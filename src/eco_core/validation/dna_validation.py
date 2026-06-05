@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Iterable, Iterator, Sequence
 
 
 DNA_ALPHABET = frozenset("ACGTN")
@@ -85,13 +85,36 @@ def parse_fasta_header(line: str) -> str:
     return tokens[0]
 
 
-def parse_fasta_records(path: str | Path) -> list[FastaRecord]:
+def _build_fasta_record(
+    sequence_id: str,
+    parts: Sequence[str],
+    *,
+    allow_n: bool = True,
+    validate_sequences: bool = False,
+) -> FastaRecord:
+    sequence = normalize_dna_sequence("".join(parts))
+    if validate_sequences:
+        result = validate_dna_sequence(sequence, allow_n=allow_n)
+        if not result.is_valid:
+            raise ValueError(
+                f"La secuencia FASTA '{sequence_id}' es inválida: " + "; ".join(result.issues)
+            )
+    return FastaRecord(sequence_id=sequence_id, sequence=sequence)
+
+
+def iter_fasta_records(
+    path: str | Path,
+    *,
+    allow_n: bool = True,
+    validate_sequences: bool = False,
+) -> Iterator[FastaRecord]:
     fasta_path = Path(path)
     if not fasta_path.exists():
         raise FileNotFoundError(f"No existe el archivo FASTA: {fasta_path}")
 
-    records: dict[str, list[str]] = {}
+    yielded = False
     current_id: str | None = None
+    current_parts: list[str] = []
 
     with fasta_path.open("r", encoding="utf-8") as handle:
         for raw_line in handle:
@@ -99,20 +122,45 @@ def parse_fasta_records(path: str | Path) -> list[FastaRecord]:
             if not line:
                 continue
             if line.startswith(">"):
+                if current_id is not None:
+                    yielded = True
+                    yield _build_fasta_record(
+                        current_id,
+                        current_parts,
+                        allow_n=allow_n,
+                        validate_sequences=validate_sequences,
+                    )
                 current_id = parse_fasta_header(line)
-                records.setdefault(current_id, [])
+                current_parts = []
                 continue
             if current_id is None:
                 raise ValueError("El archivo FASTA debe comenzar con una cabecera '>'.")
-            records[current_id].append(line)
+            current_parts.append(line)
 
-    parsed_records = [
-        FastaRecord(sequence_id=sequence_id, sequence=normalize_dna_sequence("".join(parts)))
-        for sequence_id, parts in records.items()
-    ]
-    if not parsed_records:
+    if current_id is None and not yielded:
         raise ValueError(f"El archivo no contiene secuencias FASTA: {fasta_path}")
-    return parsed_records
+    if current_id is not None:
+        yield _build_fasta_record(
+            current_id,
+            current_parts,
+            allow_n=allow_n,
+            validate_sequences=validate_sequences,
+        )
+
+
+def parse_fasta_records(
+    path: str | Path,
+    *,
+    allow_n: bool = True,
+    validate_sequences: bool = False,
+) -> list[FastaRecord]:
+    return list(
+        iter_fasta_records(
+            path,
+            allow_n=allow_n,
+            validate_sequences=validate_sequences,
+        )
+    )
 
 
 def fasta_records_to_dict(records: Iterable[FastaRecord]) -> dict[str, str]:
@@ -154,18 +202,22 @@ def parse_bed_record(line: str, line_number: int) -> BedRecord | None:
     return validate_bed_fields(stripped.split(), line_number)
 
 
-def parse_bed_records(path: str | Path) -> list[BedRecord]:
+def iter_bed_records(path: str | Path) -> Iterator[BedRecord]:
     bed_path = Path(path)
     if not bed_path.exists():
         raise FileNotFoundError(f"No existe el archivo BED: {bed_path}")
 
-    records: list[BedRecord] = []
+    yielded = False
     with bed_path.open("r", encoding="utf-8") as handle:
         for line_number, line in enumerate(handle, start=1):
             record = parse_bed_record(line, line_number)
             if record is not None:
-                records.append(record)
+                yielded = True
+                yield record
 
-    if not records:
+    if not yielded:
         raise ValueError(f"El archivo BED no contiene regiones válidas: {bed_path}")
-    return records
+
+
+def parse_bed_records(path: str | Path) -> list[BedRecord]:
+    return list(iter_bed_records(path))

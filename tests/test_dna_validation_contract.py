@@ -12,6 +12,8 @@ sys.path.insert(0, str(ROOT / "src"))
 from eco_bed_to_fasta import parse_bed_line, parse_fasta as parse_reference_fasta
 from eco_core.validation.dna_validation import (
     fasta_records_to_dict,
+    iter_bed_records,
+    iter_fasta_records,
     normalize_dna_sequence,
     parse_bed_record,
     parse_bed_records,
@@ -78,6 +80,20 @@ def test_parse_fasta_records_rejects_missing_header(tmp_path: Path):
         parse_fasta_records(fasta)
 
 
+def test_iter_fasta_records_supports_partial_consumption(tmp_path: Path):
+    fasta = tmp_path / "partial.fa"
+    fasta.write_text(">seq1\nACGT\n>seq2\nACGX\n", encoding="utf-8")
+
+    iterator = iter_fasta_records(fasta, validate_sequences=True)
+
+    first = next(iterator)
+    assert first.sequence_id == "seq1"
+    assert first.sequence == "ACGT"
+
+    with pytest.raises(ValueError, match="seq2"):
+        next(iterator)
+
+
 def test_parse_bed_record_ignores_comments_and_empty_lines():
     assert parse_bed_record("# comment", 1) is None
     assert parse_bed_record("   ", 2) is None
@@ -92,6 +108,19 @@ def test_parse_bed_records_reads_multiple_regions(tmp_path: Path):
     assert len(records) == 2
     assert records[0].name == "first"
     assert records[1].strand == "+"
+
+
+def test_iter_bed_records_supports_partial_consumption(tmp_path: Path):
+    bed = tmp_path / "partial.bed"
+    bed.write_text("chr1\t0\t4\tfirst\nchr1\t4\twrong\tsecond\n", encoding="utf-8")
+
+    iterator = iter_bed_records(bed)
+
+    first = next(iterator)
+    assert first.name == "first"
+
+    with pytest.raises(ValueError, match="start/end deben ser enteros"):
+        next(iterator)
 
 
 def test_motif_analysis_keeps_previous_invalid_character_behavior():
