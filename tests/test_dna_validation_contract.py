@@ -11,7 +11,11 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from eco_bed_to_fasta import parse_bed_line, parse_fasta as parse_reference_fasta
 from eco_core.validation.dna_validation import (
+    fasta_records_to_dict,
     normalize_dna_sequence,
+    parse_bed_record,
+    parse_bed_records,
+    parse_fasta_records,
     validate_dna_sequence,
     validate_fasta_header,
 )
@@ -51,6 +55,43 @@ def test_validate_fasta_header_accepts_leading_marker():
 
 def test_validate_fasta_header_rejects_missing_marker():
     assert validate_fasta_header("seq1 descripcion") is False
+
+
+def test_parse_fasta_records_reads_multiple_sequences(tmp_path: Path):
+    fasta = tmp_path / "demo.fa"
+    fasta.write_text(">seq1\nACGT\nCCAAT\n>seq2\nNNNNTATAAA\n", encoding="utf-8")
+
+    records = parse_fasta_records(fasta)
+
+    assert records[0].sequence_id == "seq1"
+    assert records[0].sequence == "ACGTCCAAT"
+    assert records[1].sequence_id == "seq2"
+    assert records[1].sequence == "NNNNTATAAA"
+    assert fasta_records_to_dict(records) == {"seq1": "ACGTCCAAT", "seq2": "NNNNTATAAA"}
+
+
+def test_parse_fasta_records_rejects_missing_header(tmp_path: Path):
+    fasta = tmp_path / "malformed.fa"
+    fasta.write_text("ACGT\nTATAAA\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="debe comenzar con una cabecera"):
+        parse_fasta_records(fasta)
+
+
+def test_parse_bed_record_ignores_comments_and_empty_lines():
+    assert parse_bed_record("# comment", 1) is None
+    assert parse_bed_record("   ", 2) is None
+
+
+def test_parse_bed_records_reads_multiple_regions(tmp_path: Path):
+    bed = tmp_path / "regions.bed"
+    bed.write_text("# comment\nchr1\t0\t4\tfirst\nchr1\t4\t8\tsecond\t0\t+\n", encoding="utf-8")
+
+    records = parse_bed_records(bed)
+
+    assert len(records) == 2
+    assert records[0].name == "first"
+    assert records[1].strand == "+"
 
 
 def test_motif_analysis_keeps_previous_invalid_character_behavior():

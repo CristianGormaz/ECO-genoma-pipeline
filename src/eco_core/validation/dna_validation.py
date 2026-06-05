@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Sequence
+from pathlib import Path
+from typing import Iterable, Sequence
 
 
 DNA_ALPHABET = frozenset("ACGTN")
@@ -84,6 +85,40 @@ def parse_fasta_header(line: str) -> str:
     return tokens[0]
 
 
+def parse_fasta_records(path: str | Path) -> list[FastaRecord]:
+    fasta_path = Path(path)
+    if not fasta_path.exists():
+        raise FileNotFoundError(f"No existe el archivo FASTA: {fasta_path}")
+
+    records: dict[str, list[str]] = {}
+    current_id: str | None = None
+
+    with fasta_path.open("r", encoding="utf-8") as handle:
+        for raw_line in handle:
+            line = raw_line.strip()
+            if not line:
+                continue
+            if line.startswith(">"):
+                current_id = parse_fasta_header(line)
+                records.setdefault(current_id, [])
+                continue
+            if current_id is None:
+                raise ValueError("El archivo FASTA debe comenzar con una cabecera '>'.")
+            records[current_id].append(line)
+
+    parsed_records = [
+        FastaRecord(sequence_id=sequence_id, sequence=normalize_dna_sequence("".join(parts)))
+        for sequence_id, parts in records.items()
+    ]
+    if not parsed_records:
+        raise ValueError(f"El archivo no contiene secuencias FASTA: {fasta_path}")
+    return parsed_records
+
+
+def fasta_records_to_dict(records: Iterable[FastaRecord]) -> dict[str, str]:
+    return {record.sequence_id: record.sequence for record in records}
+
+
 def validate_bed_fields(fields: Sequence[str], line_number: int) -> BedRecord:
     if len(fields) < 3:
         raise ValueError(f"Línea BED {line_number}: se esperaban al menos 3 columnas.")
@@ -110,3 +145,27 @@ def validate_bed_fields(fields: Sequence[str], line_number: int) -> BedRecord:
         )
 
     return BedRecord(chrom=chrom, start=start, end=end, name=name, score=score, strand=strand)
+
+
+def parse_bed_record(line: str, line_number: int) -> BedRecord | None:
+    stripped = line.strip()
+    if not stripped or stripped.startswith("#"):
+        return None
+    return validate_bed_fields(stripped.split(), line_number)
+
+
+def parse_bed_records(path: str | Path) -> list[BedRecord]:
+    bed_path = Path(path)
+    if not bed_path.exists():
+        raise FileNotFoundError(f"No existe el archivo BED: {bed_path}")
+
+    records: list[BedRecord] = []
+    with bed_path.open("r", encoding="utf-8") as handle:
+        for line_number, line in enumerate(handle, start=1):
+            record = parse_bed_record(line, line_number)
+            if record is not None:
+                records.append(record)
+
+    if not records:
+        raise ValueError(f"El archivo BED no contiene regiones válidas: {bed_path}")
+    return records
