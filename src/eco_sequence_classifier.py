@@ -14,7 +14,15 @@ import csv
 import json
 import math
 
-from src.eco_motif_analysis import scan_sequence
+try:
+    from eco_core.validation.dna_validation import normalize_dna_sequence
+except ImportError:  # pragma: no cover - compatibilidad cuando se importa como src.eco_sequence_classifier
+    from src.eco_core.validation.dna_validation import normalize_dna_sequence
+
+try:
+    from eco_motif_analysis import scan_sequence
+except ImportError:  # pragma: no cover - compatibilidad cuando se importa como src.eco_sequence_classifier
+    from src.eco_motif_analysis import scan_sequence
 
 FeatureVector = Dict[str, float]
 FeatureScaler = Dict[str, Dict[str, float]]
@@ -80,7 +88,7 @@ def all_kmers(k: int = 2) -> List[str]:
 
 
 def kmer_frequencies(sequence: str, k: int = 2) -> FeatureVector:
-    sequence = sequence.upper()
+    sequence = normalize_dna_sequence(sequence)
     keys = all_kmers(k)
     counts = {f"kmer_{k}_{key}": 0.0 for key in keys}
     valid_windows = 0

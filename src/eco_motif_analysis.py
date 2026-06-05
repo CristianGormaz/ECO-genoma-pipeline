@@ -37,7 +37,18 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Pattern
 
-DNA_ALPHABET = set("ACGTN")
+try:
+    from eco_core.validation.dna_validation import (
+        normalize_dna_sequence,
+        parse_fasta_header,
+        validate_dna_sequence as shared_validate_dna_sequence,
+    )
+except ImportError:  # pragma: no cover - compatibilidad cuando se importa como src.eco_motif_analysis
+    from src.eco_core.validation.dna_validation import (
+        normalize_dna_sequence,
+        parse_fasta_header,
+        validate_dna_sequence as shared_validate_dna_sequence,
+    )
 
 DEFAULT_MOTIFS: Dict[str, str] = {
     "TATA_box_canonica": r"TATAAA",
@@ -100,9 +111,7 @@ def parse_fasta(path: str | Path) -> Dict[str, str]:
             if not line:
                 continue
             if line.startswith(">"):
-                current_id = line[1:].split()[0]
-                if not current_id:
-                    raise ValueError("Se encontró una cabecera FASTA sin identificador.")
+                current_id = parse_fasta_header(line)
                 records.setdefault(current_id, [])
                 continue
             if current_id is None:
@@ -121,7 +130,7 @@ def normalize_sequence(sequence: str) -> str:
     Convierte a mayúsculas y elimina espacios, saltos de línea y caracteres
     comunes de separación.
     """
-    return re.sub(r"\s+", "", sequence.upper())
+    return normalize_dna_sequence(sequence)
 
 
 def validate_sequence(sequence: str, allow_n: bool = True) -> None:
@@ -134,11 +143,11 @@ def validate_sequence(sequence: str, allow_n: bool = True) -> None:
     Raises:
         ValueError: Si aparecen caracteres no válidos.
     """
-    allowed = DNA_ALPHABET if allow_n else set("ACGT")
-    invalid = sorted(set(sequence) - allowed)
-    if invalid:
+    result = shared_validate_dna_sequence(sequence, allow_n=allow_n)
+    if result.invalid_characters:
         raise ValueError(
-            "La secuencia contiene caracteres no válidos: " + ", ".join(invalid)
+            "La secuencia contiene caracteres no válidos: "
+            + ", ".join(result.invalid_characters)
         )
 
 

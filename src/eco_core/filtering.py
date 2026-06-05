@@ -8,17 +8,19 @@ mínima antes de permitir que el dato avance hacia absorción.
 
 from __future__ import annotations
 
-import re
 from typing import Iterable, List, Sequence
 
 from .flow import EcoPacket, route_packet
-
-DNA_ALPHABET = set("ACGTN")
+from .validation.dna_validation import (
+    DNA_ALPHABET,
+    normalize_dna_sequence as shared_normalize_dna_sequence,
+    validate_dna_sequence as shared_validate_dna_sequence,
+)
 
 
 def normalize_dna_sequence(sequence: str) -> str:
     """Normaliza una secuencia de ADN eliminando espacios y usando mayúsculas."""
-    return re.sub(r"\s+", "", sequence.upper())
+    return shared_normalize_dna_sequence(sequence)
 
 
 def validate_dna_sequence(sequence: str, allow_n: bool = True) -> List[str]:
@@ -27,19 +29,7 @@ def validate_dna_sequence(sequence: str, allow_n: bool = True) -> List[str]:
     No lanza excepción por diseño: funciona como filtro diagnóstico para que
     el flujo decida si absorbe, descarta o deriva a revisión.
     """
-    normalized = normalize_dna_sequence(sequence)
-    allowed = DNA_ALPHABET if allow_n else set("ACGT")
-    issues: List[str] = []
-
-    if not normalized:
-        issues.append("La secuencia está vacía.")
-        return issues
-
-    invalid = sorted(set(normalized) - allowed)
-    if invalid:
-        issues.append("Caracteres no válidos: " + ", ".join(invalid))
-
-    return issues
+    return list(shared_validate_dna_sequence(sequence, allow_n=allow_n).issues)
 
 
 def validate_packet_payload(packet: EcoPacket, required_types: Sequence[type] = (str,)) -> EcoPacket:
