@@ -20,12 +20,25 @@ Actualización asistida por ChatGPT.
 from __future__ import annotations
 
 import argparse
-import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
-DNA_ALPHABET = set("ACGTN")
+try:
+    from eco_core.validation.dna_validation import (
+        normalize_dna_sequence,
+        parse_fasta_header,
+        validate_bed_fields,
+        validate_dna_sequence as shared_validate_dna_sequence,
+    )
+except ImportError:  # pragma: no cover - compatibilidad cuando se importa como src.eco_bed_to_fasta
+    from src.eco_core.validation.dna_validation import (
+        normalize_dna_sequence,
+        parse_fasta_header,
+        validate_bed_fields,
+        validate_dna_sequence as shared_validate_dna_sequence,
+    )
+
 COMPLEMENT_TABLE = str.maketrans("ACGTNacgtn", "TGCANtgcan")
 
 
@@ -55,16 +68,16 @@ class FastaRecord:
 
 def normalize_sequence(sequence: str) -> str:
     """Normaliza una secuencia de ADN."""
-    return re.sub(r"\s+", "", sequence.upper())
+    return normalize_dna_sequence(sequence)
 
 
 def validate_reference_sequence(sequence: str, sequence_id: str) -> None:
     """Valida que una secuencia de referencia contenga bases esperadas."""
-    invalid = sorted(set(sequence) - DNA_ALPHABET)
-    if invalid:
+    result = shared_validate_dna_sequence(sequence, allow_n=True)
+    if result.invalid_characters:
         raise ValueError(
             f"La secuencia de referencia '{sequence_id}' contiene caracteres no válidos: "
-            + ", ".join(invalid)
+            + ", ".join(result.invalid_characters)
         )
 
 
@@ -94,9 +107,7 @@ def parse_fasta(path: str | Path) -> Dict[str, str]:
             if not line:
                 continue
             if line.startswith(">"):
-                current_id = line[1:].split()[0]
-                if not current_id:
-                    raise ValueError("Se encontró una cabecera FASTA sin identificador.")
+                current_id = parse_fasta_header(line)
                 records.setdefault(current_id, [])
                 continue
             if current_id is None:
@@ -122,32 +133,15 @@ def parse_bed_line(line: str, line_number: int) -> Optional[BedRegion]:
     if not stripped or stripped.startswith("#"):
         return None
 
-    fields = stripped.split()
-    if len(fields) < 3:
-        raise ValueError(f"Línea BED {line_number}: se esperaban al menos 3 columnas.")
-
-    chrom = fields[0]
-    try:
-        start = int(fields[1])
-        end = int(fields[2])
-    except ValueError as exc:
-        raise ValueError(f"Línea BED {line_number}: start/end deben ser enteros.") from exc
-
-    if start < 0:
-        raise ValueError(f"Línea BED {line_number}: start no puede ser negativo.")
-    if end <= start:
-        raise ValueError(f"Línea BED {line_number}: end debe ser mayor que start.")
-
-    name = fields[3] if len(fields) >= 4 else f"{chrom}:{start}-{end}"
-    score = fields[4] if len(fields) >= 5 else None
-    strand = fields[5] if len(fields) >= 6 else None
-
-    if strand is not None and strand not in {"+", "-", "."}:
-        raise ValueError(
-            f"Línea BED {line_number}: strand debe ser '+', '-' o '.', no '{strand}'."
-        )
-
-    return BedRegion(chrom=chrom, start=start, end=end, name=name, score=score, strand=strand)
+    record = validate_bed_fields(stripped.split(), line_number)
+    return BedRegion(
+        chrom=record.chrom,
+        start=record.start,
+        end=record.end,
+        name=record.name,
+        score=record.score,
+        strand=record.strand,
+    )
 
 
 def parse_bed(path: str | Path) -> List[BedRegion]:
