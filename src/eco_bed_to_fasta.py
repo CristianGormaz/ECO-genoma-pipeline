@@ -26,16 +26,20 @@ from typing import Dict, Iterable, List, Optional
 
 try:
     from eco_core.validation.dna_validation import (
+        fasta_records_to_dict,
         normalize_dna_sequence,
-        parse_fasta_header,
-        validate_bed_fields,
+        parse_bed_record,
+        parse_bed_records,
+        parse_fasta_records,
         validate_dna_sequence as shared_validate_dna_sequence,
     )
 except ImportError:  # pragma: no cover - compatibilidad cuando se importa como src.eco_bed_to_fasta
     from src.eco_core.validation.dna_validation import (
+        fasta_records_to_dict,
         normalize_dna_sequence,
-        parse_fasta_header,
-        validate_bed_fields,
+        parse_bed_record,
+        parse_bed_records,
+        parse_fasta_records,
         validate_dna_sequence as shared_validate_dna_sequence,
     )
 
@@ -98,23 +102,7 @@ def parse_fasta(path: str | Path) -> Dict[str, str]:
     if not fasta_path.exists():
         raise FileNotFoundError(f"No existe el archivo FASTA de referencia: {fasta_path}")
 
-    records: Dict[str, List[str]] = {}
-    current_id: Optional[str] = None
-
-    with fasta_path.open("r", encoding="utf-8") as handle:
-        for raw_line in handle:
-            line = raw_line.strip()
-            if not line:
-                continue
-            if line.startswith(">"):
-                current_id = parse_fasta_header(line)
-                records.setdefault(current_id, [])
-                continue
-            if current_id is None:
-                raise ValueError("El archivo FASTA debe comenzar con una cabecera '>'.")
-            records[current_id].append(line)
-
-    sequences = {seq_id: normalize_sequence("".join(parts)) for seq_id, parts in records.items()}
+    sequences = fasta_records_to_dict(parse_fasta_records(fasta_path))
     if not sequences:
         raise ValueError(f"El archivo no contiene secuencias FASTA: {fasta_path}")
 
@@ -133,7 +121,9 @@ def parse_bed_line(line: str, line_number: int) -> Optional[BedRegion]:
     if not stripped or stripped.startswith("#"):
         return None
 
-    record = validate_bed_fields(stripped.split(), line_number)
+    record = parse_bed_record(stripped, line_number)
+    if record is None:
+        return None
     return BedRegion(
         chrom=record.chrom,
         start=record.start,
@@ -150,12 +140,17 @@ def parse_bed(path: str | Path) -> List[BedRegion]:
     if not bed_path.exists():
         raise FileNotFoundError(f"No existe el archivo BED: {bed_path}")
 
-    regions: List[BedRegion] = []
-    with bed_path.open("r", encoding="utf-8") as handle:
-        for line_number, line in enumerate(handle, start=1):
-            region = parse_bed_line(line, line_number)
-            if region is not None:
-                regions.append(region)
+    regions = [
+        BedRegion(
+            chrom=record.chrom,
+            start=record.start,
+            end=record.end,
+            name=record.name,
+            score=record.score,
+            strand=record.strand,
+        )
+        for record in parse_bed_records(bed_path)
+    ]
 
     if not regions:
         raise ValueError(f"El archivo BED no contiene regiones válidas: {bed_path}")
