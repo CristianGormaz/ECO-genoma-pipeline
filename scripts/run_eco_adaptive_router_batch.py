@@ -103,16 +103,11 @@ def predict_one(
         return_details=True,
     )
 
-    if confidence_v3 >= threshold:
-        selected_route = "baseline_v3"
-        final_prediction = pred_v3
-        reason = "confianza_baseline_v3_supera_umbral"
-        eco_reading = "La secuencia fue tratada como un dato relativamente claro. E.C.O. usó la ruta explicable rápida."
-    else:
-        selected_route = "embedding_semireal"
-        final_prediction = pred_semireal
-        reason = "confianza_baseline_v3_bajo_umbral"
-        eco_reading = "La secuencia fue tratada como un dato incierto. E.C.O. derivó hacia la ruta vectorial semi-real."
+    arbitration = predict.arbitrate_routes(
+        baseline_v3_details=baseline_v3_details,
+        embedding_semireal_details=embedding_semireal_details,
+        threshold=threshold,
+    )
 
     payload = {
         "row_number": row["row_number"],
@@ -125,10 +120,14 @@ def predict_one(
         "sensory_profile": predict.sequence_sensory_profile(sequence),
         "baseline_v3": baseline_v3_details,
         "embedding_semireal": embedding_semireal_details,
-        "selected_route": selected_route,
-        "final_prediction": final_prediction,
-        "reason": reason,
-        "eco_reading": eco_reading,
+        "selected_route": arbitration["selected_route"],
+        "final_prediction": arbitration["final_prediction"],
+        "reason": arbitration["reason"],
+        "arbitration_reason": arbitration["arbitration_reason"],
+        "confidence_policy": arbitration["confidence_policy"],
+        "conflicting_routes": arbitration["conflicting_routes"],
+        "route_confidences": arbitration["route_confidences"],
+        "eco_reading": arbitration["eco_reading"],
     }
     payload["enteric_reflex"] = predict.build_enteric_reflex(payload)
     return payload

@@ -71,6 +71,12 @@ def test_run_eco_adaptive_router_batch_exports_reports(tmp_path: Path):
     assert all(item["baseline_v3"]["feature_space"] == "minmax" for item in processed)
     assert all(item["baseline_v3"]["scaler_applied"] is True for item in processed)
     assert all(item["baseline_v3"]["feature_names"] for item in processed)
+    assert all(item["arbitration_reason"] for item in processed)
+    assert all(item["confidence_policy"] for item in processed)
+    assert all("route_confidences" in item for item in processed)
+    assert all(item["route_confidences"]["baseline_v3"] == item["baseline_v3"]["confidence"] for item in processed)
+    assert all(item["route_confidences"]["embedding_semireal"] == item["embedding_semireal"]["confidence"] for item in processed)
+    assert all("conflicting_routes" in item for item in processed)
 
     categories = [case["category"] for case in priority_cases]
     priorities = [case["priority"] for case in priority_cases]

@@ -38,25 +38,152 @@ def sequence_sensory_profile(sequence):
     }
 
 
+CONFIDENCE_POLICY = "prefer_higher_confidence_on_conflict_else_baseline_threshold_gate"
+
+
+def conflicting_routes(baseline_v3_details, embedding_semireal_details):
+    if baseline_v3_details["prediction"] == embedding_semireal_details["prediction"]:
+        return []
+    return ["baseline_v3", "embedding_semireal"]
+
+
+def route_confidences(baseline_v3_details, embedding_semireal_details):
+    return {
+        "baseline_v3": baseline_v3_details["confidence"],
+        "embedding_semireal": embedding_semireal_details["confidence"],
+    }
+
+
+def arbitrate_routes(*, baseline_v3_details, embedding_semireal_details, threshold):
+    conflicts = conflicting_routes(baseline_v3_details, embedding_semireal_details)
+    confidences = route_confidences(baseline_v3_details, embedding_semireal_details)
+
+    baseline_prediction = baseline_v3_details["prediction"]
+    embedding_prediction = embedding_semireal_details["prediction"]
+    baseline_confidence = baseline_v3_details["confidence"]
+    embedding_confidence = embedding_semireal_details["confidence"]
+
+    if conflicts:
+        if baseline_confidence > embedding_confidence:
+            return {
+                "selected_route": "baseline_v3",
+                "final_prediction": baseline_prediction,
+                "reason": "conflict_resolved_by_higher_confidence_baseline_v3",
+                "arbitration_reason": "conflict_resolved_by_higher_confidence_baseline_v3",
+                "confidence_policy": CONFIDENCE_POLICY,
+                "conflicting_routes": conflicts,
+                "route_confidences": confidences,
+                "eco_reading": (
+                    "Las rutas discrepan y E.C.O. sostuvo la ruta explicable porque "
+                    "baseline_v3 tiene mayor confianza que embedding_semireal."
+                ),
+            }
+        if embedding_confidence > baseline_confidence:
+            return {
+                "selected_route": "embedding_semireal",
+                "final_prediction": embedding_prediction,
+                "reason": "conflict_resolved_by_higher_confidence_embedding_semireal",
+                "arbitration_reason": "conflict_resolved_by_higher_confidence_embedding_semireal",
+                "confidence_policy": CONFIDENCE_POLICY,
+                "conflicting_routes": conflicts,
+                "route_confidences": confidences,
+                "eco_reading": (
+                    "Las rutas discrepan y E.C.O. derivó a la ruta vectorial porque "
+                    "embedding_semireal tiene mayor confianza que baseline_v3."
+                ),
+            }
+
+        if baseline_confidence >= threshold:
+            return {
+                "selected_route": "baseline_v3",
+                "final_prediction": baseline_prediction,
+                "reason": "conflict_equal_confidence_baseline_v3_threshold_tiebreaker",
+                "arbitration_reason": "conflict_equal_confidence_baseline_v3_threshold_tiebreaker",
+                "confidence_policy": CONFIDENCE_POLICY,
+                "conflicting_routes": conflicts,
+                "route_confidences": confidences,
+                "eco_reading": (
+                    "Las rutas discrepan y empatan en confianza. E.C.O. conservó baseline_v3 "
+                    "porque cumplió el umbral operativo."
+                ),
+            }
+
+        return {
+            "selected_route": "embedding_semireal",
+            "final_prediction": embedding_prediction,
+            "reason": "conflict_equal_confidence_embedding_semireal_threshold_fallback",
+            "arbitration_reason": "conflict_equal_confidence_embedding_semireal_threshold_fallback",
+            "confidence_policy": CONFIDENCE_POLICY,
+            "conflicting_routes": conflicts,
+            "route_confidences": confidences,
+            "eco_reading": (
+                "Las rutas discrepan y empatan en confianza por debajo del umbral del baseline. "
+                "E.C.O. mantiene la derivacion vectorial como fallback operativo."
+            ),
+        }
+
+    if baseline_confidence >= threshold:
+        return {
+            "selected_route": "baseline_v3",
+            "final_prediction": baseline_prediction,
+            "reason": "agreement_baseline_v3_meets_threshold",
+            "arbitration_reason": "agreement_baseline_v3_meets_threshold",
+            "confidence_policy": CONFIDENCE_POLICY,
+            "conflicting_routes": conflicts,
+            "route_confidences": confidences,
+            "eco_reading": (
+                "La secuencia fue tratada como un dato relativamente claro. "
+                "E.C.O. uso la ruta explicable rapida."
+            ),
+        }
+
+    return {
+        "selected_route": "embedding_semireal",
+        "final_prediction": embedding_prediction,
+        "reason": "agreement_baseline_v3_below_threshold",
+        "arbitration_reason": "agreement_baseline_v3_below_threshold",
+        "confidence_policy": CONFIDENCE_POLICY,
+        "conflicting_routes": conflicts,
+        "route_confidences": confidences,
+        "eco_reading": (
+            "La secuencia fue tratada como un dato incierto. "
+            "E.C.O. derivo hacia la ruta vectorial semi-real."
+        ),
+    }
+
+
 def build_enteric_reflex(payload):
     baseline_confidence = payload["baseline_v3"]["confidence"]
     embedding_confidence = payload["embedding_semireal"]["confidence"]
     threshold = payload["threshold"]
     selected_route = payload["selected_route"]
+    arbitration_reason = payload.get("arbitration_reason", payload.get("reason", ""))
+    conflicts = payload.get("conflicting_routes", [])
 
     confidence_gap = round(abs(baseline_confidence - embedding_confidence), 4)
     sensory_profile = payload["sensory_profile"]
 
-    if selected_route == "baseline_v3":
+    if arbitration_reason == "conflict_resolved_by_higher_confidence_baseline_v3":
+        reflex_name = "reflejo_conflictivo_priorizado"
+        biological_analogy = "plexo submucoso: prevalece la señal mas consistente cuando las rutas discrepan"
+        ux_summary = "E.C.O. detecto conflicto entre rutas y sostuvo baseline_v3 por mayor confianza."
+    elif arbitration_reason == "conflict_resolved_by_higher_confidence_embedding_semireal":
+        reflex_name = "reflejo_conflictivo_priorizado"
+        biological_analogy = "plexo mienterico: prevalece la senal vectorial cuando supera a la ruta explicable"
+        ux_summary = "E.C.O. detecto conflicto entre rutas y sostuvo embedding_semireal por mayor confianza."
+    elif selected_route == "baseline_v3":
         reflex_name = "reflejo_explicable_rapido"
         biological_analogy = "plexo submucoso: absorción directa de una señal suficientemente clara"
-        ux_summary = "E.C.O. eligió la ruta explicable porque la confianza del baseline superó el umbral operativo."
+        ux_summary = "E.C.O. eligio la ruta explicable porque baseline_v3 cumplio el umbral operativo."
     else:
         reflex_name = "reflejo_vectorial_de_derivacion"
         biological_analogy = "plexo mientérico: redirección del flujo cuando la señal local no es suficiente"
-        ux_summary = "E.C.O. derivó la secuencia hacia la ruta vectorial porque el baseline no alcanzó el umbral de confianza."
+        ux_summary = "E.C.O. derivo la secuencia hacia la ruta vectorial porque baseline_v3 no alcanzo el umbral de confianza."
 
-    if confidence_gap < 0.02:
+    if conflicts:
+        caution_level = "alta"
+        caution_message = "Las rutas discrepan. Tratar el caso como conflicto auditado y no como decision silenciosa."
+    elif confidence_gap < 0.02:
         caution_level = "alta"
         caution_message = "Las rutas están muy cercanas; tratar como empate operativo y no como decisión fuerte."
     elif max(baseline_confidence, embedding_confidence) < threshold:
@@ -96,7 +223,9 @@ def make_markdown(payload):
     lines.append("Este reporte ejecuta una predicción individual usando la válvula adaptativa E.C.O.")
     lines.append("")
     lines.append("```text")
-    lines.append("si confianza_baseline_v3 >= umbral:")
+    lines.append("si baseline_v3 y embedding_semireal discrepan:")
+    lines.append("    usar la ruta con mayor confianza")
+    lines.append("si no y confianza_baseline_v3 >= umbral:")
     lines.append("    usar baseline_v3")
     lines.append("si no:")
     lines.append("    usar embedding_semireal")
@@ -133,7 +262,9 @@ def make_markdown(payload):
     lines.append("| --- | --- |")
     lines.append(f"| Ruta seleccionada | {payload['selected_route']} |")
     lines.append(f"| Predicción final | {payload['final_prediction']} |")
-    lines.append(f"| Motivo | {payload['reason']} |")
+    lines.append(f"| Motivo | {payload['arbitration_reason']} |")
+    lines.append(f"| Política de confianza | {payload['confidence_policy']} |")
+    lines.append(f"| Rutas en conflicto | {', '.join(payload['conflicting_routes']) or 'ninguna'} |")
     lines.append("")
     lines.append("## Reflejo entérico del router")
     lines.append("")
@@ -279,7 +410,9 @@ pre {{ background: #0b1020; color: #e5e7eb; padding: 16px; border-radius: 14px; 
       <h2>Decisión final</h2>
       <div class="route">{escape(payload['final_prediction'])}</div>
       {make_metric('Ruta seleccionada', payload['selected_route'])}
-      {make_metric('Motivo', payload['reason'])}
+      {make_metric('Motivo', payload['arbitration_reason'])}
+      {make_metric('Politica', payload['confidence_policy'])}
+      {make_metric('Conflicto', ', '.join(payload['conflicting_routes']) or 'ninguna')}
     </article>
   </section>
 
@@ -360,16 +493,11 @@ def main():
         return_details=True,
     )
 
-    if confidence_v3 >= args.threshold:
-        selected_route = "baseline_v3"
-        final_prediction = pred_v3
-        reason = "confianza_baseline_v3_supera_umbral"
-        eco_reading = "La secuencia fue tratada como un dato relativamente claro. E.C.O. usó la ruta explicable rápida."
-    else:
-        selected_route = "embedding_semireal"
-        final_prediction = pred_semireal
-        reason = "confianza_baseline_v3_bajo_umbral"
-        eco_reading = "La secuencia fue tratada como un dato incierto. E.C.O. derivó hacia la ruta vectorial semi-real."
+    arbitration = arbitrate_routes(
+        baseline_v3_details=baseline_v3_details,
+        embedding_semireal_details=embedding_semireal_details,
+        threshold=args.threshold,
+    )
 
     payload = {
         "sequence_id": args.sequence_id,
@@ -379,10 +507,14 @@ def main():
         "sensory_profile": sequence_sensory_profile(sequence),
         "baseline_v3": baseline_v3_details,
         "embedding_semireal": embedding_semireal_details,
-        "selected_route": selected_route,
-        "final_prediction": final_prediction,
-        "reason": reason,
-        "eco_reading": eco_reading,
+        "selected_route": arbitration["selected_route"],
+        "final_prediction": arbitration["final_prediction"],
+        "reason": arbitration["reason"],
+        "arbitration_reason": arbitration["arbitration_reason"],
+        "confidence_policy": arbitration["confidence_policy"],
+        "conflicting_routes": arbitration["conflicting_routes"],
+        "route_confidences": arbitration["route_confidences"],
+        "eco_reading": arbitration["eco_reading"],
         "limits": [
             "dataset demostrativo",
             "no diagnostico clinico",
@@ -406,8 +538,11 @@ def main():
     print(f"Longitud: {len(sequence)}")
     print(f"baseline_v3: {pred_v3} | confianza={round(confidence_v3, 4)}")
     print(f"embedding_semireal: {pred_semireal} | confianza={round(confidence_semireal, 4)}")
-    print(f"Ruta seleccionada: {selected_route}")
-    print(f"Predicción final: {final_prediction}")
+    print(f"Ruta seleccionada: {payload['selected_route']}")
+    print(f"Predicción final: {payload['final_prediction']}")
+    print(f"Arbitraje: {payload['arbitration_reason']}")
+    print(f"Politica de confianza: {payload['confidence_policy']}")
+    print(f"Rutas en conflicto: {', '.join(payload['conflicting_routes']) or 'ninguna'}")
     print(f"Reflejo entérico: {payload['enteric_reflex']['reflex_name']}")
     print(f"Cautela: {payload['enteric_reflex']['caution_level']}")
     print(f"Reporte Markdown: {args.output_md}")
