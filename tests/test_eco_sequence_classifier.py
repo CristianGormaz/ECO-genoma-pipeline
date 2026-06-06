@@ -1,10 +1,13 @@
 from pathlib import Path
 import json
 
+import pytest
+
 from src.eco_sequence_classifier import (
     LabeledSequence,
     build_classifier_report,
     confidence_from_distances,
+    extract_feature_map,
     extract_features,
     kmer_frequencies,
     parse_labeled_sequences_tsv,
@@ -50,6 +53,54 @@ def test_confidence_from_distances_preserves_non_ambiguous_margin():
     confidence = confidence_from_distances({"regulatory": 1.0, "non_regulatory": 2.0})
 
     assert confidence == 0.5
+
+
+def test_parse_labeled_sequences_accepts_unique_sequence_ids(tmp_path):
+    input_path = tmp_path / "unique_sequences.tsv"
+    input_path.write_text(
+        "sequence_id\tsequence\tlabel\tsplit\n"
+        "seq_a\tAAAAAA\tregulatory\ttrain\n"
+        "seq_b\tGGGCGG\tnon_regulatory\ttest\n",
+        encoding="utf-8",
+    )
+
+    records = parse_labeled_sequences_tsv(input_path)
+
+    assert [record.sequence_id for record in records] == ["seq_a", "seq_b"]
+
+
+def test_parse_labeled_sequences_rejects_duplicate_sequence_id(tmp_path):
+    input_path = tmp_path / "duplicate_sequences.tsv"
+    input_path.write_text(
+        "sequence_id\tsequence\tlabel\tsplit\n"
+        "dup\tAAAAAA\tregulatory\ttrain\n"
+        "dup\tGGGCGG\tnon_regulatory\ttest\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="sequence_id único: dup"):
+        parse_labeled_sequences_tsv(input_path)
+
+
+def test_extract_feature_map_rejects_duplicate_sequence_id():
+    records = [
+        LabeledSequence(sequence_id="dup", sequence="AAAAAA", label="regulatory"),
+        LabeledSequence(sequence_id="dup", sequence="GGGCGG", label="non_regulatory"),
+    ]
+
+    with pytest.raises(ValueError, match="sequence_id único: dup"):
+        extract_feature_map(records)
+
+
+def test_training_rejects_duplicate_sequence_id_before_centroids():
+    records = [
+        LabeledSequence(sequence_id="dup", sequence="AAAAAA", label="regulatory", split="train"),
+        LabeledSequence(sequence_id="train_ok", sequence="GGGCGG", label="non_regulatory", split="train"),
+        LabeledSequence(sequence_id="dup", sequence="TTTTTT", label="regulatory", split="test"),
+    ]
+
+    with pytest.raises(ValueError, match="sequence_id único: dup"):
+        build_classifier_report(records)
 
 
 def test_prediction_from_features_uses_raw_distances_to_break_rounded_tie():
