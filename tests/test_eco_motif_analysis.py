@@ -89,3 +89,20 @@ def test_json_and_csv_exports(tmp_path):
     csv_text = csv_path.read_text(encoding="utf-8")
     assert "CAAT_box" in csv_text
     assert "CCAAT" in csv_text
+
+
+def test_write_csv_supports_partial_writes(tmp_path):
+    csv_path = tmp_path / "partial.csv"
+    first = scan_sequence("CCAAT", sequence_id="seq1")
+
+    def reports():
+        yield first
+        raise ValueError("late report failure")
+
+    with pytest.raises(ValueError, match="late report failure"):
+        write_csv(reports(), csv_path)
+
+    csv_text = csv_path.read_text(encoding="utf-8")
+    assert "sequence_id,length,gc_percent,n_percent,motif_name,pattern,start,end,matched_sequence" in csv_text
+    assert "seq1" in csv_text
+    assert "CAAT_box" in csv_text

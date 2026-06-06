@@ -11,8 +11,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from eco_bed_to_fasta import parse_bed_line, parse_fasta as parse_reference_fasta
 from eco_core.validation.dna_validation import (
+    FastaRecord,
     fasta_records_to_dict,
     iter_bed_records,
+    iter_fasta_lines,
     iter_fasta_records,
     normalize_dna_sequence,
     parse_bed_record,
@@ -20,6 +22,7 @@ from eco_core.validation.dna_validation import (
     parse_fasta_records,
     validate_dna_sequence,
     validate_fasta_header,
+    write_fasta_records,
 )
 from eco_motif_analysis import scan_sequence
 from src.eco_sequence_classifier import extract_features, kmer_frequencies
@@ -121,6 +124,48 @@ def test_iter_bed_records_supports_partial_consumption(tmp_path: Path):
 
     with pytest.raises(ValueError, match="start/end deben ser enteros"):
         next(iterator)
+
+
+def test_iter_fasta_lines_matches_existing_format_contract():
+    records = [
+        FastaRecord(sequence_id="seq1", sequence="ACGT"),
+        FastaRecord(sequence_id="seq2", sequence="TTAA"),
+    ]
+
+    assert "".join(iter_fasta_lines(records, line_width=2)) == (
+        ">seq1\n"
+        "AC\n"
+        "GT\n"
+        ">seq2\n"
+        "TT\n"
+        "AA\n"
+    )
+
+
+def test_write_fasta_records_supports_partial_writes(tmp_path: Path):
+    output = tmp_path / "partial.fa"
+
+    def records():
+        yield FastaRecord(sequence_id="seq1", sequence="ACGT")
+        raise ValueError("late failure")
+
+    with pytest.raises(ValueError, match="late failure"):
+        write_fasta_records(records(), output, line_width=4)
+
+    assert output.read_text(encoding="utf-8") == ">seq1\nACGT\n"
+
+
+def test_write_fasta_records_does_not_create_output_before_first_record(tmp_path: Path):
+    output = tmp_path / "no_output.fa"
+
+    def records():
+        raise ValueError("boom before first record")
+        yield  # pragma: no cover
+
+    with pytest.raises(ValueError, match="boom before first record"):
+        write_fasta_records(records(), output)
+
+    assert not output.exists()
 
 
 def test_motif_analysis_keeps_previous_invalid_character_behavior():
