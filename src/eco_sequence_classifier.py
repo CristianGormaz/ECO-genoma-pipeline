@@ -48,6 +48,25 @@ class Prediction:
     features: FeatureVector
 
 
+def validate_unique_sequence_ids(records: Sequence[LabeledSequence]) -> None:
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+
+    for record in records:
+        if record.sequence_id in seen:
+            duplicates.add(record.sequence_id)
+            continue
+        seen.add(record.sequence_id)
+
+    if duplicates:
+        duplicate_ids = ", ".join(sorted(duplicates))
+        raise ValueError(
+            "Se detectaron sequence_id duplicados. "
+            "Cada secuencia etiquetada debe tener un sequence_id único: "
+            + duplicate_ids
+        )
+
+
 def parse_labeled_sequences_tsv(path: str | Path) -> List[LabeledSequence]:
     records: List[LabeledSequence] = []
     with Path(path).open("r", encoding="utf-8", newline="") as handle:
@@ -67,10 +86,12 @@ def parse_labeled_sequences_tsv(path: str | Path) -> List[LabeledSequence]:
             )
     if not records:
         raise ValueError(f"No hay secuencias etiquetadas en {path}")
+    validate_unique_sequence_ids(records)
     return records
 
 
 def split_train_test(records: Sequence[LabeledSequence]) -> Tuple[List[LabeledSequence], List[LabeledSequence]]:
+    validate_unique_sequence_ids(records)
     train = [record for record in records if record.split == "train"]
     test = [record for record in records if record.split == "test"]
     if not train or not test:
@@ -133,6 +154,7 @@ def extract_features(sequence: str, feature_mode: str = "motif", kmer_k: int = 2
 def extract_feature_map(
     records: Sequence[LabeledSequence], feature_mode: str = "motif", kmer_k: int = 2
 ) -> Dict[str, FeatureVector]:
+    validate_unique_sequence_ids(records)
     return {record.sequence_id: extract_features(record.sequence, feature_mode, kmer_k) for record in records}
 
 
@@ -172,6 +194,7 @@ def average_vectors(vectors: Sequence[FeatureVector]) -> FeatureVector:
 def train_centroid_classifier_from_features(
     records: Sequence[LabeledSequence], feature_map: Dict[str, FeatureVector]
 ) -> Dict[str, FeatureVector]:
+    validate_unique_sequence_ids(records)
     grouped: Dict[str, List[FeatureVector]] = {}
     for record in records:
         grouped.setdefault(record.label, []).append(feature_map[record.sequence_id])
